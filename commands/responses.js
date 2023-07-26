@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require("discord.js");
 
-module.exports = {
+module.exports = { /*so it can be requred()*/
     data: new SlashCommandBuilder()
         .setName('hi!')
         .setDescription('Says Hi back!'),
