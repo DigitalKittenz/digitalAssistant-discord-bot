@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "register": "node -r dotenv/config register.js"
+    "register": "node -r dotenv/config register.js",
+    "start": "node -r dotenv/config index.js"
   },
   "author": "",
   "license": "ISC",

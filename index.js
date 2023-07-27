@@ -1,6 +1,6 @@
 // reload discord client
 const { CLient, Intents } = require('discord.js');
-const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
+const client = new CLient({ intents: [Intents.FLAGS.GUILDS] });
 // intents is needed to register a client apparently?
 
 // listen and see when connected
@@ -19,3 +19,15 @@ const options = [
     'hello!',
 ];
 
+// listen to intereactions and fire an event 🔥
+client.on('interactionCreate', async (interaction) => {
+    if (!interaction.isCommand()) return;
+
+    if (interaction.commandName === 'hello'){
+
+        // randomize the response
+         await interaction.reply(
+            options[Math.floor(Math.random() * options.length)]
+);}});
+// call login command with the bot token
+client.login(process.env.TOKEN);
