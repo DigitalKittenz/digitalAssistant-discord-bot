@@ -5,6 +5,13 @@ const commands = [
     name: 'hello',
     description: 'Says hello!'
 },
+
+{
+    name: 'manul',
+    description: 'shows a manul pic'
+}
+
+
 ];
 
 const rest = new REST({version:'9'}).setToken(process.env.TOKEN);
