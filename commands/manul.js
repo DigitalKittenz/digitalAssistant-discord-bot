@@ -10,7 +10,11 @@ module.exports = {
             'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZGZ4M3dwc2NoMXdxd2ltOGR3MHlxcDYyd2Y2Y3JsZGVqdDg1bzkxeCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/YL8quuOin5E7C/giphy.gif',
             'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNTVoZW85b3lwajhtY2tpYjA4N20xeWJ0eWh2OHAyeGt2N3NobXlvZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/K8l4eiS88UvWU/giphy.gif',
             'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExN2U5c2piNG1odWJ2cTBycm9xcXA5Y2ZkOXN0eDNrcHN3NXY0Z2lnaSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/12fjBkQf5CV596/giphy.gif',
-            'https://media.tenor.com/URusWFQaYgUAAAAC/cute-cat-cat.gif'
+            'https://media.tenor.com/URusWFQaYgUAAAAC/cute-cat-cat.gif',
+            'https://media.tenor.com/oy-mdeRTit0AAAAM/snow-manul-cat.gif',
+            'https://media.tenor.com/RxFcDriAs4sAAAAM/cat-pallas.gif',
+            'https://media.tenor.com/m6YhTm3Q5pgAAAAM/cat-scritch-scratch.gif',
+            'https://media.tenor.com/_qyMzZTVrFwAAAAM/manul-pallas-cat.gif'
         ];
 
         // choose a random manul pic
