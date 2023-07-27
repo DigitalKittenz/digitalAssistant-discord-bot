@@ -1,6 +1,6 @@
 // reload discord client
-const { CLient, Intents } = require('discord.js');
-const client = new CLient({ intents: [Intents.FLAGS.GUILDS] });
+const { Client, GatewayIntentBits } = require('discord.js');
+const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 // intents is needed to register a client apparently?
 
 // listen and see when connected
