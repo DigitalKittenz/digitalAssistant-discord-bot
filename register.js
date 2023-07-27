@@ -12,7 +12,7 @@ const commands = [
     options: [
         {
             name: 'random',
-            type: 'BOOLEAN',
+            type: 5,
             description: 'whether 2 show a random manul pic or not',
             required: false
         }
