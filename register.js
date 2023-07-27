@@ -8,7 +8,15 @@ const commands = [
 
 {
     name: 'manul',
-    description: 'shows a manul pic'
+    description: 'shows a manul pic',
+    options: [
+        {
+            name: 'random',
+            type: 'BOOLEAN',
+            description: 'whether 2 show a random manul pic or not',
+            required: false
+        }
+    ]
 }
 
 
