@@ -38,7 +38,8 @@ module.exports = {
             'gamzee faked being godtier',
             'the squiddles was a real show! unfortunately, most of the footage was lost after their studio caught fire.',
             'vriska did nothing wrong',
-            `import universe;
+            `
+            import universe;
 
             life USER = universe.get_life("USER");
             significant_event EVENT = USER.get_event_future("EndOfLife");
@@ -51,8 +52,7 @@ module.exports = {
                       MUTATE(REALITY.alter_timeline(i.death_earlier(EVENT)));
                   }
               } EXECUTE(NULL);
-            } EXECUTE(DEATH);
-          `,
+            } EXECUTE(DEATH);`,
           'Dreamselves and God Tier are ideal versions of the person. Like how Tavros’s dreamself could walk and Vriska’s God tier had her arm and eye back. Terezi’s could have seen but her ideal self was being blind. Jade’s dreamself grew more arms on one occasion. ',
           'Tavros being in a wheelchair is from a popular fan theory before his reveal, and Eridan’s interest in wizards comes from his similar appearance to Harry Potter.',
           'Davesprite’s Fan Nickname of Seppucrow is used by Dave in an actual page of the comic.',
@@ -65,7 +65,8 @@ module.exports = {
           'Fortnite Is the Largest Discord Server',
           'Discord Rejected a $12 Billion Purchase Offer From Microsoft ',
           'if your server gets rate limited, you can join the server but can never leave! isn’t that exciting!',
-          'someone is watching you right now'
+          'someone is watching you right now',
+          'Squiddles are subconscious manifestations of Horrorterrors, and Skipper Plumbthroat is implied to be Lord English'
         ];
 
         // choose a random fact
