@@ -4,6 +4,8 @@ A discord bot that does stuff
 # Features
 - Says hello
 - Shows manul pics
+- random facts!
+- basic server info
 
 # Usage
 - /hello: Says hello with a random message
