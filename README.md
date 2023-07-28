@@ -1,4 +1,4 @@
-# discord-bot
+# DA-Bot discord bot
 A discord bot that does stuff
 
 # Features
