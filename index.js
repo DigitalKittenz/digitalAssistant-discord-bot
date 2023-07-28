@@ -1,9 +1,10 @@
 // index.js
 // reload discord client
-const { Client, GatewayIntentBits } = require('discord.js');
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
-const { Collection } = require('discord.js');
 
+const { Client, GatewayIntentBits } = require('discord.js');
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
+const { Collection } = require('discord.js');
+const messageEvent = require('./events/message.js');
 // intents are needed to register a client, apparently?
 
 // require fs module
@@ -13,6 +14,7 @@ const fs = require('fs');
 // loop through the files in the events folder and attach them to the client
 const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
 for (const file of eventFiles) {
+    if (file === 'message.js') continue; // Skip registering message.js here
     const event = require(`./events/${file}`);
     client.on(event.name, (...args) => event.execute(...args, client));
 }
