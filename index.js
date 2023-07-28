@@ -9,6 +9,16 @@ const { Collection } = require('discord.js');
 // require fs module
 const fs = require('fs');
 
+
+// loop through the files in the events folder and attach them to the client
+const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
+for (const file of eventFiles) {
+    const event = require(`./events/${file}`);
+    client.on(event.name, (...args) => event.execute(...args, client));
+}
+
+
+
 // create a collection to store commands
 client.commands = new Collection();
 
