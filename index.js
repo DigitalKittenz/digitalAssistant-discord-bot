@@ -2,10 +2,16 @@
 // reload discord client
 
 const { Client, GatewayIntentBits } = require('discord.js');
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
 const { Collection } = require('discord.js');
 const messageEvent = require('./events/message.js');
 // intents are needed to register a client, apparently?
+const client = new Client({ 
+    intents: [
+        GatewayIntentBits.Guilds, 
+        GatewayIntentBits.GuildMessages, 
+        GatewayIntentBits.MessageContent
+    ] 
+});
 
 // require fs module
 const fs = require('fs');
