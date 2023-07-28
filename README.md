@@ -1,5 +1,5 @@
 # DA-Bot discord bot
-A discord bot that does stuff
+A discord bot that does stuff. da stands for digital assistant!
 
 # Features
 - Says hello
