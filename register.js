@@ -9,7 +9,16 @@ const commands = [
         name: 'manul',
         description: 'Shows a manul pic',
 
+    },
+    {
+        name: 'botfact',
+        description: 'Tells a random fact!'
+    },
+    {
+        name: 'server',
+        description: 'displays server info'
     }
+
 ];
 
 const rest = new REST({ version: '9' }).setToken(process.env.TOKEN);
