@@ -14,9 +14,9 @@ const fs = require('fs');
 // loop through the files in the events folder and attach them to the client
 const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
 for (const file of eventFiles) {
-    if (file === 'message.js') continue; // Skip registering message.js here
+   
     const event = require(`./events/${file}`);
-    client.on(event.name, (...args) => event.execute(...args, client));
+    client.on('messageCreate', (...args) => messageEvent.execute(...args, client));
 }
 
 
