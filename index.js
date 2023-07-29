@@ -13,14 +13,19 @@ const client = new Client({
 });
 
 // i have 2 channels.
-const channel_id = process.env.CHANNEL_ID.split(",").map(Number);
+const channel_id = process.env.CHANNEL_ID.split(',').map(Number);
+
 // require fs module
-const fs = require("fs");
-// Collection to store links
-const links = new Collection();
+const fs = require('fs');
 
-client.on("messageCreate", (...args) => messageEvent.execute(...args, client, links));
+const { links } = require('./utils');
 
+// loop through the files in the events folder and attach them to the client
+const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
+for (const file of eventFiles) {
+    const event = require(`./events/${file}`);
+    client.on('messageCreate', (...args) => messageEvent.execute(...args, client, links, channel_id)); // Pass channel_id here
+}
 
 
 // create a collection to store commands
@@ -42,25 +47,24 @@ client.on('ready', () => {
 client.on('interactionCreate', async (interaction) => {
     if (!interaction.isCommand()) return;
 
+    // get the command name from the interaction
     const commandName = interaction.commandName;
 
+    // check if the command exists in the collection
     if (!client.commands.has(commandName)) return;
 
+    // get the command from the collection
     const command = client.commands.get(commandName);
 
+    // try to execute the command
     try {
-        // Defer the reply if the command takes more than 3 seconds to execute
-        await interaction.deferReply();
         await command.execute(interaction);
     } catch (error) {
-        console.error(`Error on command: ${commandName}\n`, error);
-        if(!interaction.replied){
-            await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
-        }
+        console.error(error);
+        await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
     }
 });
 
-
-
 // call login command with the bot token
 client.login(process.env.TOKEN);
+module.exports.channel_id = channel_id;

@@ -1,24 +1,26 @@
 // message.js
+// At the top of message.js, add:
+const channel_id = process.env.CHANNEL_ID.split(',').map(Number);
 const { Collection } = require('discord.js');
+const { links } = require('../utils');
+
 
 // export the message event listener as a module
 module.exports = {
   name: 'messageCreate',
   // add async here
-  async execute(message, client, links) { 
+  async execute(message, client, links, channel_id) { 
     // check if the message is from the channel you want to monitor
     // use the environment variable here
     console.log(`Message received: ${message.content}`);
-    if (message.author.bot) return;
 
-    // get channel_id from environment variables
-    const channel_id = process.env.CHANNEL_ID.split(',').map(Number);
-
+    // i have 2 channels so i need to change this one
     if (channel_id.includes(message.channel.id)) {
+
       console.log(process.env.CHANNEL_ID);
 
       // check if the message contains a link
-      const linkRegex = /https?:\/\/\S+/g; 
+      const linkRegex = /https?:\/\/\S+/g; // this is a simple regex that matches http or https URLs
       const linkMatch = message.content.match(linkRegex);
       if (linkMatch) {
         console.log(links);
@@ -37,6 +39,7 @@ module.exports = {
           // add the link to the collection
           console.log('Adding new link: ' + link);
           links.set(link, true);
+          
         }
       }
     }
