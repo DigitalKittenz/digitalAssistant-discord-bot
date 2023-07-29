@@ -22,14 +22,12 @@ const channel_id = process.env.CHANNEL_ID.split(',').map(Number);
 const fs = require('fs');
 
 
-// loop through the files in the events folder and attach them to the client
+/// loop through the files in the events folder and attach them to the client
 const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
 for (const file of eventFiles) {
-   
     const event = require(`./events/${file}`);
-    client.on('messageCreate', (...args) => messageEvent.execute(...args, client));
+    client.on('messageCreate', (...args) => messageEvent.execute(...args, client, channel_id)); // Pass channel_id here
 }
-
 
 
 // create a collection to store commands
@@ -71,3 +69,4 @@ client.on('interactionCreate', async (interaction) => {
 
 // call login command with the bot token
 client.login(process.env.TOKEN);
+module.exports.channel_id = channel_id;

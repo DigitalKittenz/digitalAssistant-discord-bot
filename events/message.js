@@ -1,4 +1,5 @@
 // message.js
+const { channel_id } = require('../index.js');
 const { Collection } = require('discord.js');
 const links = new Collection();
 
@@ -7,15 +8,13 @@ const links = new Collection();
 module.exports = {
   name: 'messageCreate',
   // add async here
-  async execute(message, client) {
+  async execute(message, client, channel_id) { // Add channel_id as a parameter here
     // check if the message is from the channel you want to monitor
     // use the environment variable here
     console.log(`Message received: ${message.content}`);
 
-
     // i have 2 channels so i need to change this one
-   // if (message.channel.id === process.env.CHANNEL_ID) {
-    if (channel_id.includes(message.channel.id)){
+    if (channel_id.includes(message.channel.id)) {
 
       console.log(process.env.CHANNEL_ID);
 
