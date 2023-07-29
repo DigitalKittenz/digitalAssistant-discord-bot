@@ -58,9 +58,11 @@ module.exports = {
           'Davesprite’s Fan Nickname of Seppucrow is used by Dave in an actual page of the comic.',
           'Aradia is the only troll not seen to have ever died in any timeline while godtier',
           'The Halloween documents, internal Microsoft memos which were leaked to the open source community beginning in 1998, indicate that some Microsoft employees perceive "open source" software — in particular, Linux — as a growing long-term threat to Microsoft’s position in the software industry.',
-          'Microsoft ignored unauthorized copying of its own software for their benefit on the long term. While talking about users in China who don’t pay for the software they use in 2006, to an audience at the University of Washington, Bill Gates said "And as long as they’re going to steal it, we want them to steal ours. They’ll get sort of addicted, and then we’ll somehow figure out how to collect sometime in the next decade.',
+          `Microsoft ignored unauthorized copying of its own software for their benefit on the long term. 
+          While talking about users in China who don’t pay for the software they use in 2006, to an audience at the University of Washington, Bill Gates said:
+           "And as long as they’re going to steal it, we want them to steal ours. They’ll get sort of addicted, and then we’ll somehow figure out how to collect sometime in the next decade.`,
           'On June 4, 2021, the 32nd anniversary of the 1989 Tiananmen Square massacre, searches for the Tank Man image and videos were censored by Microsoft Bing search engine worldwide.',
-          'Google cut its taxes by $3.1 billion in the period of 2007 to 2009 using a technique that moves most of its foreign profits through Ireland and The Netherlands to Bermuda. ',
+          'Google cut its taxes by $3.1 billion in the period of 2007 to 2009 using a technique that moves most of its foreign profits through Ireland and The Netherlands to Bermuda. wow! what a respectable business!',
           '78% of Discord Users Claim to Use the App Mostly for Non-Gaming Activities',
           'Fortnite Is the Largest Discord Server',
           'Discord Rejected a $12 Billion Purchase Offer From Microsoft ',
