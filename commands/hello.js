@@ -2,8 +2,7 @@
 module.exports = {
     name: 'hello',
     description: 'Says hello!',
-    execute(interaction) {
-        // randomize the response
+    async execute(interaction) {
         const options = [
             'hiii <3',
             'hii. i‛m not a bot, btw. swear 🤞',
@@ -14,6 +13,6 @@ module.exports = {
             'da bot? more like, daring and awesome bot, am i right? right guys? guys? 😢 where is everyone?',
             'heya! i‛m totally not a bot, btw, swear! i have crippling self-doubt just like you!',
         ];
-        interaction.reply(options[Math.floor(Math.random() * options.length)]);
+        await interaction.followUp(options[Math.floor(Math.random() * options.length)]);
     }
 };
