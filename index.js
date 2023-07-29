@@ -15,18 +15,16 @@ const client = new Client({
 // i have 2 channels.
 const channel_id = process.env.CHANNEL_ID.split(',').map(Number);
 
-
-
-
 // require fs module
 const fs = require('fs');
 
+const { links } = require('./utils');
 
-/// loop through the files in the events folder and attach them to the client
+// loop through the files in the events folder and attach them to the client
 const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
 for (const file of eventFiles) {
     const event = require(`./events/${file}`);
-    client.on('messageCreate', (...args) => messageEvent.execute(...args, client, channel_id)); // Pass channel_id here
+    client.on('messageCreate', (...args) => messageEvent.execute(...args, client, links, channel_id)); // Pass channel_id here
 }
 
 
