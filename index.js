@@ -1,6 +1,5 @@
 // index.js
 // reload discord client
-
 const { Client, GatewayIntentBits } = require('discord.js');
 const { Collection } = require('discord.js');
 const messageEvent = require('./events/message.js');
@@ -12,6 +11,12 @@ const client = new Client({
         GatewayIntentBits.MessageContent
     ] 
 });
+
+// i have 2 channels.
+const channel_id = process.env.channel_id.split(',').map(Number);
+
+
+
 
 // require fs module
 const fs = require('fs');

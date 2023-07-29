@@ -2,6 +2,7 @@
 const { Collection } = require('discord.js');
 const links = new Collection();
 
+
 // export the message event listener as a module
 module.exports = {
   name: 'messageCreate',
@@ -11,7 +12,11 @@ module.exports = {
     // use the environment variable here
     console.log(`Message received: ${message.content}`);
 
-    if (message.channel.id === process.env.CHANNEL_ID) {
+
+    // i have 2 channels so i need to change this one
+   // if (message.channel.id === process.env.CHANNEL_ID) {
+    if (channel_id.includes(message.channel.id)){
+
       console.log(process.env.CHANNEL_ID);
 
       // check if the message contains a link
