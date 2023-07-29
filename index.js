@@ -13,7 +13,7 @@ const client = new Client({
 });
 
 // i have 2 channels.
-const channel_id = process.env.CHANNEL_ID.split(',').map(Number);
+const channel_id = process.env.channel_id.split(',').map(Number);
 
 
 
