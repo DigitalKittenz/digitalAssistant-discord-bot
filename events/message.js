@@ -1,15 +1,14 @@
 // message.js
-// At the top of message.js, add:
-const channel_id = process.env.CHANNEL_ID.split(',').map(Number);
+const { channel_id } = require('../index.js');
 const { Collection } = require('discord.js');
-const { links } = require('../utils');
+const links = new Collection();
 
 
 // export the message event listener as a module
 module.exports = {
   name: 'messageCreate',
   // add async here
-  async execute(message, client, links, channel_id) { 
+  async execute(message, client, channel_id) { // Add channel_id as a parameter here
     // check if the message is from the channel you want to monitor
     // use the environment variable here
     console.log(`Message received: ${message.content}`);
