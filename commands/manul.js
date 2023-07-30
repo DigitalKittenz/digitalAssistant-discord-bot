@@ -46,7 +46,8 @@ module.exports = {
             'https://tenor.com/view/manul-pallas-cat-lucki-real-rx-rx-papi-gif-26362070',
             'https://tenor.com/view/manul-gif-20905492',
             'https://tenor.com/view/manul-lazy-lazy-manul-sleep-gif-26516029',
-            ''
+            'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNmhzeW03dmV6czM0Ymp5bmRjcjM2aWl4bnNxbzlsMzZkaWRoc3I1byZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/L4G60Ewtdoem4/giphy.gif',
+            'https://giphy.com/gifs/cat-manul-haies-F0ZriKBdzZjnARVTeM'
             
         ];
 
@@ -54,6 +55,6 @@ module.exports = {
         const pic = pics[Math.floor(Math.random() * pics.length)];
 
         // send a response with the manul pic
-        interaction.reply(`here's a manul pic for u <3: ${pic}`);
+        interaction.reply(pic);
     }
 };
