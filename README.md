@@ -6,6 +6,7 @@ A discord bot that does stuff. da stands for digital assistant!
 - Shows manul pics
 - random facts!
 - basic server info
+- deletes duplicate urls
 
 # Usage
 - /hello: Says hello with a random message
