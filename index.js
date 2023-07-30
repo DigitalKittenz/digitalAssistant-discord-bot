@@ -18,8 +18,8 @@ const fs = require('fs');
 
 
 const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
-
-
+const eventHandler = require('./events/message.js');
+client.on(eventHandler.name, eventHandler.execute.bind(eventHandler));
 
 // create a collection to store commands
 client.commands = new Collection();
