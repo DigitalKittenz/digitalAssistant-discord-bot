@@ -17,13 +17,7 @@ const client = new Client({
 const fs = require('fs');
 
 
-// loop through the files in the events folder and attach them to the client
 const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
-for (const file of eventFiles) {
-   
-    const event = require(`./events/${file}`);
-    client.on('messageCreate', (...args) => messageEvent.execute(...args, client));
-}
 
 
 
@@ -36,7 +30,7 @@ for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
     client.commands.set(command.name, command);
 }
-
+let lastMessageContent = '';
 // listen and see when connected
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
