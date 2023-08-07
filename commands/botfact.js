@@ -5,6 +5,7 @@ module.exports = {
     execute(interaction) {
         // define a list of facts 
         const facts = [
+            'Discord was originally designed as a dating app for bots. But then they realized bots donʼt date, so they turned it into a chat platform instead. 💔🤖',
             'the word "bot" comes from "robot", bet u didnʼt know that one 😉',
             'the first chatbot was ELIZA, created by Joseph Weizenbaum in 1966. it simulated a psychotherapist and used pattern matching to respond',
             'bots are kinda boring sometimes. hopefully iʼm not one of them. 😢',
