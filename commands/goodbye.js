@@ -24,8 +24,11 @@ module.exports = {
             'farewell, my friend!',
             'Stay fab, my friend! Chat with you soon! Buh-bye for now! 🌈✨'
         ];
+
         try {
             await interaction.reply(options[Math.floor(Math.random() * options.length)]);
+
+            // Set the autoReply state to false
             client.globalState.autoReply = false;
         } catch (error) {
             console.error('Failed to reply to interaction:', error);
