@@ -29,32 +29,42 @@ client.globalState = {
 };//brooooooooo this is all wrong im using not the chatbot
 //but the completion omfg u piece of shit
 
-// send message to OpenAI's API
-const response = await openai.createChatCompletion({
-    model: 'gpt-3.5-turbo',
-    messages: [
-        {
-            "role": "system",
-            "content": "You are chatting with Dotty, a helpful AI assistant."
-        },
-        {
-            "role": "user",
-            "content": message.content
+client.on('messageCreate', async (message) => {
+    if (message.author.bot) return;
+
+    try {
+        // send message to OpenAI's API
+        const response = await openai.createChatCompletion({
+            model: 'gpt-3.5-turbo',
+            temperature: 1.45,
+            messages: [
+                {
+                    "role": "system",
+                    "content": "You are chatting with Dotty, a helpful AI assistant."
+                },
+                {
+                    "role": "user",
+                    "content": message.content
+                }
+            ],
+        });
+
+        console.log("OpenAI API response:", response);
+
+        // make sure response and message exist
+        if (response && response.data && response.data.choices && response.data.choices.length > 0) {
+            const reply = response.data.choices[0].message.content;
+            console.log("Replying with message:", reply);
+
+            // reply with OpenAI's response
+            await message.reply(reply);
+        } else {
+            console.log("Unexpected response from OpenAI API:", response);
         }
-    ],
-    temperature: 1.4
+    } catch (error) {
+        console.error("Error while communicating with OpenAI API or Discord API:", error);
+    }
 });
-
-console.log("OpenAI API response:", response);
-
-// make sure response and choices array exist and is not empty
-if (response && response.choices && response.choices.length > 0) {
-    // reply with OpenAI's response
-    message.reply(response['choices'][0]['message']['content']);
-} else {
-    console.log("Unexpected response from OpenAI API:", response);
-}
-
 /*
 const messageEvent = require('./events/message.js');
 client.on('messageCreate', messageEvent.execute.bind(messageEvent));
