@@ -2,7 +2,7 @@
 module.exports = {
     name: 'hello',
     description: 'Says hello and turns on automatic replies',
-    execute(interaction) {
+    execute(interaction, client) { // client!
         // randomize the response
         const options = [
             'hiii <3',

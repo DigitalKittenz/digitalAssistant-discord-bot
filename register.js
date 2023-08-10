@@ -6,6 +6,10 @@ const commands = [
         description: 'Says hello!'
     },
     {
+        name: 'goodbye',
+        description: 'says goodbye!'
+    },
+    {
         name: 'manul',
         description: 'Shows a manul pic',
 

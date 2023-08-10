@@ -21,8 +21,32 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 // handle message events
+
+
+
+client.globalState = {
+    autoReply: false
+};
+
+client.on('messageCreate', async (message) => {
+    if (!client.globalState.autoReply) return;
+
+    if (message.content.includes('dottybot') || message.mentions.has(client.user)) {
+        // send message to OpenAI's API
+        const response = await openai.createCompletion({
+            prompt: message.content,
+            maxTokens: 60,
+        });
+
+        // reply with OpenAI's response
+        message.reply(response.choices[0].text.trim());
+    }
+});
+
+/*
 const messageEvent = require('./events/message.js');
 client.on('messageCreate', messageEvent.execute.bind(messageEvent));
+*/
 
 // load commands
 client.commands = new Collection();
