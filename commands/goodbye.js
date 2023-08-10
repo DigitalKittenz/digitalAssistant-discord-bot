@@ -2,7 +2,7 @@
 module.exports = {
     name: 'goodbye',
     description: 'Says goodbye',
-    execute(interaction) {
+    execute(interaction, client) {
         // randomize the response
         const options = [
             'byeee!!!',
