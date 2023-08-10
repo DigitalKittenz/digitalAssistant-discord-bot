@@ -1,9 +1,7 @@
-//goodbye.js
 module.exports = {
     name: 'goodbye',
     description: 'Says goodbye',
-    execute(interaction, client) {
-        // randomize the response
+    async execute(interaction, client) { // Add the async keyword here
         const options = [
             'byeee!!!',
             'take care!',
@@ -26,9 +24,10 @@ module.exports = {
             'farewell, my friend!',
             'Stay fab, my friend! Chat with you soon! Buh-bye for now! 🌈✨'
         ];
-        interaction.reply(options[Math.floor(Math.random() * options.length)]);
-        
-        // Set the autoReply state to true
-        client.globalState.autoReply = false;
+        try {
+            await interaction.reply(options[Math.floor(Math.random() * options.length)]);
+        } catch (error) {
+            console.error('Failed to reply to interaction:', error);
+        }
     }
 };
