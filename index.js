@@ -29,30 +29,31 @@ client.globalState = {
 };//brooooooooo this is all wrong im using not the chatbot
 //but the completion omfg u piece of shit
 
-client.on('messageCreate', async (message) => {
-    if (!client.globalState.autoReply) return;
-
-    if (message.content.includes('dottybot') || message.mentions.has(client.user)) {
-        // send message to OpenAI's API
-        const response = await openai.createChatCompletion({
-            model: 'gpt-3.5-turbo',
-            messages: [
-                {
-                    "role": "system",
-                    "content": "You are chatting with Dotty, a helpful AI assistant."
-                },
-                {
-                    "role": "user",
-                    "content": message.content
-                }
-            ],
-            temperature: 1.4
-        });
-
-        // reply with OpenAI's response
-        message.reply(response['choices'][0]['message']['content']);
-    }
+// send message to OpenAI's API
+const response = await openai.createChatCompletion({
+    model: 'gpt-3.5-turbo',
+    messages: [
+        {
+            "role": "system",
+            "content": "You are chatting with Dotty, a helpful AI assistant."
+        },
+        {
+            "role": "user",
+            "content": message.content
+        }
+    ],
+    temperature: 1.4
 });
+
+console.log("OpenAI API response:", response);
+
+// make sure response and choices array exist and is not empty
+if (response && response.choices && response.choices.length > 0) {
+    // reply with OpenAI's response
+    message.reply(response['choices'][0]['message']['content']);
+} else {
+    console.log("Unexpected response from OpenAI API:", response);
+}
 
 /*
 const messageEvent = require('./events/message.js');
