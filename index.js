@@ -26,20 +26,31 @@ const openai = new OpenAIApi(configuration);
 
 client.globalState = {
     autoReply: false
-};
+};//brooooooooo this is all wrong im using not the chatbot
+//but the completion omfg u piece of shit
 
 client.on('messageCreate', async (message) => {
     if (!client.globalState.autoReply) return;
 
     if (message.content.includes('dottybot') || message.mentions.has(client.user)) {
         // send message to OpenAI's API
-        const response = await openai.createCompletion({
-            prompt: message.content,
-            maxTokens: 60,
+        const response = await openai.createChatCompletion({
+            model: 'gpt-3.5-turbo',
+            messages: [
+                {
+                    "role": "system",
+                    "content": "You are chatting with Dotty, a helpful AI assistant."
+                },
+                {
+                    "role": "user",
+                    "content": message.content
+                }
+            ],
+            temperature: 1.4
         });
 
         // reply with OpenAI's response
-        message.reply(response.choices[0].text.trim());
+        message.reply(response['choices'][0]['message']['content']);
     }
 });
 
