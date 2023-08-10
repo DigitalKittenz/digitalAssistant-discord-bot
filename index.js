@@ -1,46 +1,47 @@
-// index.js
+require('dotenv').config();
 
-const { Client, GatewayIntentBits } = require('discord.js');
-const { Collection } = require('discord.js');
-// intents are needed to register a client, apparently?
+const { Client, Collection, GatewayIntentBits } = require('discord.js');
+const { Configuration, OpenAIApi } = require('openai');
+const fs = require('fs');
+
+// setup discord client
 const client = new Client({ 
     intents: [
         GatewayIntentBits.Guilds, 
         GatewayIntentBits.GuildMessages, 
         GatewayIntentBits.MessageContent,
-        GatewayIntentBits.GuildMessageReactions // added this line
+        GatewayIntentBits.GuildMessageReactions
     ] 
 });
 
-// require fs module
-const fs = require('fs');
+// setup openai
+const configuration = new Configuration({
+    apiKey: process.env.OPENAI_API_KEY,
+});
+const openai = new OpenAIApi(configuration);
 
+// handle message events
 const messageEvent = require('./events/message.js');
+client.on('messageCreate', messageEvent.execute.bind(messageEvent));
 
-client.on('messageCreate', messageEvent.execute.bind(messageEvent)); // bind the event here
-
-// create a collection to store commands
+// load commands
 client.commands = new Collection();
-
-// loop through the files in the commands folder and add them to the collection
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
     client.commands.set(command.name, command);
 }
 
-// listen and see when connected
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
 });
 
-// listen to interactions and fire an event 🔥
 client.on('interactionCreate', async (interaction) => {
     if (!interaction.isCommand()) return;
 
-    const commandName = interaction.commandName;
-    if (!client.commands.has(commandName)) return;
-    const command = client.commands.get(commandName);
+    const command = client.commands.get(interaction.commandName);
+    if (!command) return;
+    
     try {
         await command.execute(interaction);
     } catch (error) {
@@ -49,5 +50,4 @@ client.on('interactionCreate', async (interaction) => {
     }
 });
 
-// call login command with the bot token
 client.login(process.env.TOKEN);
