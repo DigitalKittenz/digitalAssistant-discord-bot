@@ -17,6 +17,7 @@ module.exports = {
             'heya! i‛m totally not a bot, btw, swear! i have crippling self-doubt just like you!',
         ];
         try {
+            
             interaction.reply(options[Math.floor(Math.random() * options.length)]);
             
             // Set the autoReply state to true
