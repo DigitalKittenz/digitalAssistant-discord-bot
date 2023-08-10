@@ -69,13 +69,13 @@ async function processMessage(message) {
 client.on('messageCreate', (message) => {
     if (message.author.bot) return;
 
-    // Call the processMessage function without waiting for it to finish
-    processMessage(message);
+    // Check if autoReply is enabled
+    if (client.globalState.autoReply) {
+        // Call the processMessage function without waiting for it to finish
+        processMessage(message);
+    }
 });
-/*
-const messageEvent = require('./events/message.js');
-client.on('messageCreate', messageEvent.execute.bind(messageEvent));
-*/
+
 
 // load commands
 client.commands = new Collection();
