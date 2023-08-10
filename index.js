@@ -26,21 +26,23 @@ const openai = new OpenAIApi(configuration);
 
 client.globalState = {
     autoReply: false
-};//brooooooooo this is all wrong im using not the chatbot
-//but the completion omfg u piece of shit
+};
 
 client.on('messageCreate', async (message) => {
     if (message.author.bot) return;
 
     try {
+        // send typing indicator
+        message.channel.sendTyping();
+
         // send message to OpenAI's API
         const response = await openai.createChatCompletion({
             model: 'gpt-3.5-turbo',
-            temperature: 1.45,
+            temperature: 2,
             messages: [
                 {
                     "role": "system",
-                    "content": "You are chatting with Dotty, a helpful AI assistant."
+                    "content": "Your name is Dotty, an excited & kind AI girl."
                 },
                 {
                     "role": "user",
