@@ -26,6 +26,7 @@ module.exports = {
         ];
         try {
             await interaction.reply(options[Math.floor(Math.random() * options.length)]);
+            client.globalState.autoReply = false;
         } catch (error) {
             console.error('Failed to reply to interaction:', error);
         }

@@ -28,12 +28,10 @@ client.globalState = {
     autoReply: false
 };
 
-client.on('messageCreate', async (message) => {
-    if (message.author.bot) return;
-
+async function processMessage(message) {
     try {
         // send typing indicator
-        message.channel.sendTyping();
+        await message.channel.sendTyping();
 
         // send message to OpenAI's API
         const response = await openai.createChatCompletion({
@@ -66,6 +64,13 @@ client.on('messageCreate', async (message) => {
     } catch (error) {
         console.error("Error while communicating with OpenAI API or Discord API:", error);
     }
+}
+
+client.on('messageCreate', (message) => {
+    if (message.author.bot) return;
+
+    // Call the processMessage function without waiting for it to finish
+    processMessage(message);
 });
 /*
 const messageEvent = require('./events/message.js');
