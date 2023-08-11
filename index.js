@@ -35,7 +35,8 @@ const openai = new OpenAIApi(configuration);
 
 
 client.globalState = {
-    autoReply: {} // changed it to an object
+    autoReply: {},
+    botActive: true,  //bot's state
 };
 
 async function processMessage(message) {
@@ -78,8 +79,12 @@ async function processMessage(message) {
     }
 }
 
-client.on('messageCreate', (message) => {
-    if (message.author.bot) return;
+client.on('messageCreate', async (message) => {
+    if (!client.globalState.botActive) {
+        console.log("Bot is inactive, not processing messages");
+        return;
+    }
+
 
     // Check if autoReply is enabled for this channel
     if (client.globalState.autoReply[message.channel.id]) {
