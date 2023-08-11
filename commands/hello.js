@@ -12,9 +12,11 @@ module.exports = {
             'i‛m bored 😔',
             '😊👋',
             'hello! :D',
+            'Your favorite cheer tank, Dotty reporting for duty',
             'hope ur doing well today friend 😁',
-            'da bot? more like, daring and awesome bot, am i right? right guys? guys? 😢 where is everyone?',
-            'heya! i‛m totally not a bot, btw, swear! i have crippling self-doubt just like you!',
+            'Ready to embark on captivation mode with me, Dotty? :D',
+            'hi everyone!',
+            'Hi there! My pretty patches!? Guess whos joining the buzzing creatures in the internet zoo?'
         ];
         try {
             
@@ -27,3 +29,4 @@ module.exports = {
         }
     }
 };
+

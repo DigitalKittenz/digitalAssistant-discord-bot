@@ -13,6 +13,16 @@ const client = new Client({
         GatewayIntentBits.GuildMessageReactions
     ] 
 });
+// for sending long messages
+async function sendLongMessage(channel, message) {
+    const parts = message.match(/[\s\S]{1,2000}/g) || [];
+
+    for (const part of parts) {
+        await channel.send(part);
+        // wait a bit between message parts
+        await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+}
 
 // setup openai
 const configuration = new Configuration({
@@ -57,7 +67,8 @@ async function processMessage(message) {
             console.log("Replying with message:", reply);
 
             // reply with OpenAI's response
-            await message.reply(reply);
+            // await message.reply(reply); // Comment this line
+            await sendLongMessage(message.channel, reply); // Replace with this line
         } else {
             console.log("Unexpected response from OpenAI API:", response);
         }
