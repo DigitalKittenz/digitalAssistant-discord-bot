@@ -54,7 +54,8 @@ async function processMessage(message) {
                 },
                 {
                     "role": "user",
-                    "content": message.content
+                    // include the sender's username in the message
+                    "content": `${message.author.username}: ${message.content}`
                 }
             ],
         });
