@@ -23,7 +23,7 @@ module.exports = {
             interaction.reply(options[Math.floor(Math.random() * options.length)]);
             
             // Set the autoReply state to true
-            client.globalState.autoReply = true;
+            client.globalState.autoReply[interaction.channel.id] = true;
         } catch (error) {
             console.error('Failed to reply to interaction:', error);
         }

@@ -35,7 +35,7 @@ const openai = new OpenAIApi(configuration);
 
 
 client.globalState = {
-    autoReply: false
+    autoReply: {} // changed it to an object
 };
 
 async function processMessage(message) {
@@ -80,8 +80,8 @@ async function processMessage(message) {
 client.on('messageCreate', (message) => {
     if (message.author.bot) return;
 
-    // Check if autoReply is enabled
-    if (client.globalState.autoReply) {
+    // Check if autoReply is enabled for this channel
+    if (client.globalState.autoReply[message.channel.id]) {
         // Call the processMessage function without waiting for it to finish
         processMessage(message);
     }
