@@ -44,41 +44,50 @@ async function processMessage(message) {
         // send typing indicator
         await message.channel.sendTyping();
 
-        // send message to OpenAI's API
+        // initial message array
+        let messages = [
+            {
+                "role": "system",
+                "content": "Your name is Dotty, an excited & kind AI girl."
+            }, 
+            {
+                "role": "user",
+                "content": `${message.author.username}: ${message.content}`
+            }
+        ];
+
+        // check if those funny words r in the chat
+        if (message.content.includes('dottybot') || message.content.includes('dotty') || message.content.includes('dotbot')) { 
+            messages.push({
+                "role": "system",
+                "content": "Dotty, what do you have to say about that??"
+            });
+        }
+
+        // hit up openai's fancy api
         const response = await openai.createChatCompletion({
             model: 'gpt-3.5-turbo',
             temperature: 1.4,
-            messages: [
-                {
-                    "role": "system",
-                    "content": "Your name is Dotty, an excited & kind AI girl."
-                },
-                {
-                    "role": "user",
-                    // include the sender's username in the message
-                    "content": `${message.author.username}: ${message.content}`
-                }
-            ],
+            messages: messages
         });
 
         console.log("OpenAI API response:", response);
 
-        // make sure response and message exist
+        // does the response actually exist? let's check
         if (response && response.data && response.data.choices && response.data.choices.length > 0) {
             const reply = response.data.choices[0].message.content;
             console.log("Replying with message:", reply);
 
-            // reply with OpenAI's response
-            // await message.reply(reply); // Comment this line
-            await sendLongMessage(message.channel, reply); // Replace with this line
+            // send that reply out into the world
+            await sendLongMessage(message.channel, reply); 
         } else {
             console.log("Unexpected response from OpenAI API:", response);
         }
+
     } catch (error) {
         console.error("Error while communicating with OpenAI API or Discord API:", error);
     }
 }
-
 client.on('messageCreate', async (message) => {
     // Ignore messages sent by the bot
     if (message.author.bot) return;
