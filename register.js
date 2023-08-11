@@ -12,7 +12,6 @@ const commands = [
     {
         name: 'manul',
         description: 'Shows a manul pic',
-
     },
     {
         name: 'botfact',

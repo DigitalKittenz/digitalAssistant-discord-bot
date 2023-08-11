@@ -27,7 +27,6 @@ module.exports = {
 
         try {
             await interaction.reply(options[Math.floor(Math.random() * options.length)]);
-
             // Set the autoReply state to false for this channel
             client.globalState.autoReply[interaction.channel.id] = false;
         } catch (error) {
