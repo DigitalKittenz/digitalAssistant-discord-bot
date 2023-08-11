@@ -97,9 +97,9 @@ client.on('messageCreate', async (message) => {
         return;
     }
 
-    // Check if autoReply is enabled for this channel
-    if (client.globalState.autoReply[message.channel.id]) {
-        // Call the processMessage function without waiting for it to finish
+    // Call the processMessage function without waiting for it to finish
+    // If the message contains "dottybot", "dotty" or "dotbot" or autoReply is enabled
+    if(message.content.includes('dottybot') || message.content.includes('dotty') || message.content.includes('dotbot') || client.globalState.autoReply[message.channel.id]) {
         processMessage(message);
     }
 });
