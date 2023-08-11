@@ -80,11 +80,13 @@ async function processMessage(message) {
 }
 
 client.on('messageCreate', async (message) => {
+    // Ignore messages sent by the bot
+    if (message.author.bot) return;
+
     if (!client.globalState.botActive) {
         console.log("Bot is inactive, not processing messages");
         return;
     }
-
 
     // Check if autoReply is enabled for this channel
     if (client.globalState.autoReply[message.channel.id]) {

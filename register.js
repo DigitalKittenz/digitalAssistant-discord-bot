@@ -24,7 +24,7 @@ const commands = [
         options: [
             {
                 name: 'message',
-                type: 4,
+                type: 4,  // 4 is for number type
                 description: 'validate server id',
                 required: false
             }

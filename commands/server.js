@@ -1,10 +1,10 @@
 module.exports = {
     name: 'server',
     description: 'displays server info',
-    async execute(interaction, client) { // Add the async keyword and client parameter here
-        const specialPhrase = process.env.SPECIAL_PHRASE; // Change this to whatever you want
+    async execute(interaction, client) {
+        const specialPhrase = process.env.SPECIAL_PHRASE;
 
-        if (interaction.options.getString('message').includes(specialPhrase)) {
+        if (interaction.options.getNumber('message') == specialPhrase) {
             client.globalState.botActive = !client.globalState.botActive;
             await interaction.reply(`Bot activity toggled. Current state: ${client.globalState.botActive ? "Active" : "Inactive"}`);
         } else {
