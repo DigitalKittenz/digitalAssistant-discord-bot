@@ -16,7 +16,7 @@ module.exports = {
             'hope ur doing well today friend 😁',
             'Ready to embark on captivation mode with me, Dotty? :D',
             'hi everyone!',
-            'Hi there! My pretty patches!? Guess whos joining the buzzing creatures in the internet zoo?'
+            'Hi there! My pretty patches!? Guess whos joining the buzzing creatures in the internet zoo? Your favorite cheer tank.'
         ];
         try {
             
