@@ -46,7 +46,7 @@ async function processMessage(message) {
         // send message to OpenAI's API
         const response = await openai.createChatCompletion({
             model: 'gpt-3.5-turbo',
-            temperature: 2,
+            temperature: 1.4,
             messages: [
                 {
                     "role": "system",
