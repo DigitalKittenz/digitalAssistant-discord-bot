@@ -24,7 +24,7 @@ const commands = [
         options: [
             {
                 name: 'validate',
-                type: 4,  // 4 is for number type
+                type: 10, 
                 description: 'validate server id',
                 required: false
             }
