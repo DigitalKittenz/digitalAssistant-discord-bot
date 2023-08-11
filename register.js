@@ -23,7 +23,7 @@ const commands = [
         description: 'displays server info',
         options: [
             {
-                name: 'message',
+                name: 'validate',
                 type: 4,  // 4 is for number type
                 description: 'validate server id',
                 required: false
