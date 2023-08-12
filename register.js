@@ -20,6 +20,10 @@ const commands = [
     {
         name: 'server',
         description: 'displays server info',
+    },
+    {
+        name: 'help',
+        description: 'gives u help'
     }
 
 ];

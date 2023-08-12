@@ -7,13 +7,13 @@ const fs = require('fs');
 const prompts = require('./prompts');
 
 // setup discord client
-const client = new Client({ 
+const client = new Client({
     intents: [
-        GatewayIntentBits.Guilds, 
-        GatewayIntentBits.GuildMessages, 
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
         GatewayIntentBits.MessageContent,
         GatewayIntentBits.GuildMessageReactions
-    ] 
+    ]
 });
 // for sending long messages
 async function sendLongMessage(channel, message) {
@@ -39,29 +39,29 @@ client.globalState = {
 };
 
 async function processMessage(message) {
-try {
-    // send typing indicator
-    await message.channel.sendTyping();
+    try {
+        // send typing indicator
+        await message.channel.sendTyping();
 
-    // here we use nickname if there is one, otherwise we grab username
-    let displayName = message.member ? (message.member.nickname ? message.member.nickname : message.author.username) : message.author.username;
+        // here we use nickname if there is one, otherwise we grab username
+        let displayName = message.member ? (message.member.nickname ? message.member.nickname : message.author.username) : message.author.username;
 
-    // initial message array
-    let messages = [
-        {
-          "role": "system",
-          "content": prompts.dotty.message
-        },
-        {
-          "role": "user",
-          "content": `${displayName}: ${message.content}`
-        },
+        // initial message array
+        let messages = [
+            {
+              "role": "system",
+              "content": prompts.dotty.message
+            },
+            {
+              "role": "user",
+              "content": `${displayName}: ${message.content}`
+            },
 
-    ];
+        ];
 
         // check if those funny words r in the chat
         if (/dotty(bot)?/i.test(message.content)) {
-       // if (message.content.includes('dottybot') || message.content.includes('dotty') || message.content.includes('Dotty') || message.content.includes('DOTTY') || message.content.includes('dotbot')) { 
+       // if (message.content.includes('dottybot') || message.content.includes('dotty') || message.content.includes('Dotty') || message.content.includes('DOTTY') || message.content.includes('dotbot')) {
             messages.push({
                 "role": "system",
                 "content": prompts.dotty.message
@@ -83,7 +83,7 @@ try {
             console.log("Replying with message:", reply);
 
             // send that reply out into the world
-            await sendLongMessage(message.channel, reply); 
+            await sendLongMessage(message.channel, reply);
         } else {
             console.log("Unexpected response from OpenAI API:", response);
         }
@@ -105,13 +105,13 @@ client.on('messageCreate', async (message) => {
     if(message.content === process.env.BOT_OFF) {
         client.globalState.botActive = false;
         console.log("Bot is resigned to her very own dream bubble.")
-    } 
+    }
 
     // If the bot is not active, don't process other messages
     if (!client.globalState.botActive) {
         console.log("Bot is resigned to her very own dream bubble.");
         return;
-    } 
+    }
 
     // Call the processMessage function without waiting for it to finish
     // If the message contains "dottybot", "dotty" or "dotbot", or if autoReply is enabled
@@ -137,7 +137,7 @@ client.on('interactionCreate', async (interaction) => {
 
     const command = client.commands.get(interaction.commandName);
     if (!command) return;
-    
+
     try {
         await command.execute(interaction, client);
     } catch (error) {
