@@ -96,7 +96,8 @@ async function processMessage(message) {
         ];
 
         // check if those funny words r in the chat
-        if (message.content.includes('dottybot') || message.content.includes('dotty') || message.content.includes('dotbot')) { 
+        if (/dotty(bot)?/i.test(message.content)) {
+        //if (message.content.includes('dottybot') || message.content.includes('dotty') || message.content.includes('Dotty') || message.content.includes('DOTTY') || message.content.includes('dotbot')) { 
             messages.push({
                 "role": "system",
                 "content": `###Context
