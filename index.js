@@ -93,15 +93,20 @@ client.on('messageCreate', async (message) => {
     // Ignore messages sent by the bot
     if (message.author.bot) return;
 
-    // If the message is 'digikitty', set botActive to true
-    if(message.content === 'digikitty') {
+    // If the message is bot_on, set botActive to true
+    if(message.content === process.env.BOT_ON) {
         client.globalState.botActive = true;
-        console.log("Bot is now active...let's do this, bishes!");
+        console.log("Bot is now active...let's do this!");
+    }
+    // if the message is bot_off, set botActive to false
+    if(message.content === process.env.BOT_OFF) {
+        client.globalState.botActive = false;
+        console.log("Bot is resigned to her very own dream bubble.")
     } 
 
     // If the bot is not active, don't process other messages
     if (!client.globalState.botActive) {
-        console.log("Bot is resigned to her very own dream bubble, y'all");
+        console.log("Bot is resigned to her very own dream bubble.");
         return;
     } 
 

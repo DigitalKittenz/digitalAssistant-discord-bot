@@ -20,14 +20,6 @@ const commands = [
     {
         name: 'server',
         description: 'displays server info',
-        options: [
-            {
-                name: 'validate',
-                type: 10, 
-                description: 'validate server id',
-                required: false
-            }
-        ]
     }
 
 ];
