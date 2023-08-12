@@ -39,22 +39,25 @@ client.globalState = {
 };
 
 async function processMessage(message) {
-    try {
-        // send typing indicator
-        await message.channel.sendTyping();
+try {
+    // send typing indicator
+    await message.channel.sendTyping();
 
-        // initial message array
-            let messages = [
-                {
-                  "role": "system",
-                  "content": prompts.dotty.message
-                },
-                {
-                  "role": "user",
-                  "content": `${message.author.username}: ${message.content}`
-                }, 
+    // here we use nickname if there is one, otherwise we grab username
+    let displayName = message.member ? (message.member.nickname ? message.member.nickname : message.author.username) : message.author.username;
 
-        ];
+    // initial message array
+    let messages = [
+        {
+          "role": "system",
+          "content": prompts.dotty.message
+        },
+        {
+          "role": "user",
+          "content": `${displayName}: ${message.content}`
+        },
+
+    ];
 
         // check if those funny words r in the chat
         if (/dotty(bot)?/i.test(message.content)) {
