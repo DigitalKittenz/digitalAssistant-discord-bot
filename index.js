@@ -59,7 +59,8 @@ async function processMessage(message) {
             },
         ];
     }
- // push new user message into the ongoing convo
+ // push new user message into the ongoing convo 
+ // btw this is how they remember
  client.globalState.conversations[message.channel.id].push({
     "role": "user",
     "content": `${displayName}: ${message.content}`
@@ -98,22 +99,6 @@ let messages = [...client.globalState.conversations[message.channel.id]];
         console.error("oops got some errors: ", error);
     }
 }
-
-        // does the response actually exist? let's check
-        /*if (response && response.data && response.data.choices && response.data.choices.length > 0) {
-            const reply = response.data.choices[0].message.content;
-            console.log("Replying with message:", reply);
-
-            // send that reply out into the world
-            await sendLongMessage(message.channel, reply);
-        } else {
-            console.log("Unexpected response from OpenAI API:", response);
-        }
-
-    } catch (error) {
-        console.error("Error while communicating with OpenAI API or Discord API:", error);
-    }
-}  */
 
 /////////////////////////////////////////////////////////////////
 client.on('messageCreate', async (message) => {
