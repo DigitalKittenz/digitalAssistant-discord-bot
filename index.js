@@ -3,7 +3,7 @@ require('dotenv').config();
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
 const { Configuration, OpenAIApi } = require('openai');
 const fs = require('fs');
-// here we load up that juicy file we just made
+// here we load up that juicy prompts file
 const prompts = require('./prompts');
 
 // setup discord client
@@ -15,6 +15,9 @@ const client = new Client({
         GatewayIntentBits.GuildMessageReactions
     ]
 });
+// just a cute offline message
+const botOffMessage = 'bot is resigned to her very own dream bubble.';
+
 // for sending long messages
 async function sendLongMessage(channel, message) {
     const parts = message.match(/[\s\S]{1,2000}/g) || [];
@@ -36,6 +39,7 @@ const openai = new OpenAIApi(configuration);
 client.globalState = {
     autoReply: {},
     botActive: true,  //bot's state
+    conversations: {} // object to store chat histories per channel
 };
 
 async function processMessage(message) {
@@ -46,18 +50,23 @@ async function processMessage(message) {
         // here we use nickname if there is one, otherwise we grab username
         let displayName = message.member ? (message.member.nickname ? message.member.nickname : message.author.username) : message.author.username;
 
-        // initial message array
-        let messages = [
+        // if there's no record for this channel, initialize it with the instruction message 
+        if (!client.globalState.conversations[message.channel.id]) {
+            client.globalState.conversations[message.channel.id] = [
             {
               "role": "system",
               "content": prompts.dotty.message
             },
-            {
-              "role": "user",
-              "content": `${displayName}: ${message.content}`
-            },
-
         ];
+    }
+ // push new user message into the ongoing convo
+ client.globalState.conversations[message.channel.id].push({
+    "role": "user",
+    "content": `${displayName}: ${message.content}`
+});
+
+// clone the array in the channel's history so we don't alter the original while adding the system message
+let messages = [...client.globalState.conversations[message.channel.id]];
 
         // check if those funny words r in the chat
         if (/dotty(bot)?/i.test(message.content)) {
@@ -71,14 +80,27 @@ async function processMessage(message) {
         // hit up openai's fancy api
         const response = await openai.createChatCompletion({
             model: 'gpt-3.5-turbo',
-            temperature: 1.5,
+            temperature: 1.45,
             messages: messages
         });
-
         console.log("OpenAI API response:", response);
 
+        // Ok then, let's send that message back to discord!
+        await message.channel.send(`${response.data.choices[0].message.content}`);
+        
+         // store the assistant's message in the channel's conversation history
+        client.globalState.conversations[message.channel.id].push({
+            "role": "assistant",
+            "content": `${response.data.choices[0].message.content}`
+        });
+
+    } catch (error) {
+        console.error("oops got some errors: ", error);
+    }
+}
+
         // does the response actually exist? let's check
-        if (response && response.data && response.data.choices && response.data.choices.length > 0) {
+        /*if (response && response.data && response.data.choices && response.data.choices.length > 0) {
             const reply = response.data.choices[0].message.content;
             console.log("Replying with message:", reply);
 
@@ -91,7 +113,9 @@ async function processMessage(message) {
     } catch (error) {
         console.error("Error while communicating with OpenAI API or Discord API:", error);
     }
-}
+}  */
+
+/////////////////////////////////////////////////////////////////
 client.on('messageCreate', async (message) => {
     // Ignore messages sent by the bot
     if (message.author.bot) return;
@@ -104,17 +128,17 @@ client.on('messageCreate', async (message) => {
     // if the message is bot_off, set botActive to false
     if(message.content === process.env.BOT_OFF) {
         client.globalState.botActive = false;
-        console.log("Bot is resigned to her very own dream bubble.")
+        console.log(botOffMessage)
     }
 
     // If the bot is not active, don't process other messages
     if (!client.globalState.botActive) {
-        console.log("Bot is resigned to her very own dream bubble.");
+        console.log(botOffMessage);
         return;
     }
 
     // Call the processMessage function without waiting for it to finish
-    // If the message contains "dottybot", "dotty" or "dotbot", or if autoReply is enabled
+    // If the message contains dotty or dottybot, or if autoReply is enabled
     if (/dotty(bot)?/i.test(message.content)  ||  client.globalState.autoReply[message.channel.id]) {
         processMessage(message);
     }
