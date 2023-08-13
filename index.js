@@ -50,7 +50,7 @@ async function processMessage(message) {
         // here we use nickname if there is one, otherwise we grab username
         let displayName = message.member ? (message.member.nickname ? message.member.nickname : message.author.username) : message.author.username;
 
-        // if there's no record for this channel, initialize it with the instruction message 
+        // if there's no record for this channel, initialize it with the instruction message
         if (!client.globalState.conversations[message.channel.id]) {
             client.globalState.conversations[message.channel.id] = [
             {
@@ -59,7 +59,7 @@ async function processMessage(message) {
             },
         ];
     }
- // push new user message into the ongoing convo 
+ // push new user message into the ongoing convo
  // btw this is how they remember
  client.globalState.conversations[message.channel.id].push({
     "role": "user",
@@ -71,7 +71,6 @@ let messages = [...client.globalState.conversations[message.channel.id]];
 
         // check if those funny words r in the chat
         if (/dotty(bot)?/i.test(message.content)) {
-       // if (message.content.includes('dottybot') || message.content.includes('dotty') || message.content.includes('Dotty') || message.content.includes('DOTTY') || message.content.includes('dotbot')) {
             messages.push({
                 "role": "system",
                 "content": prompts.dotty.message
@@ -88,7 +87,7 @@ let messages = [...client.globalState.conversations[message.channel.id]];
 
         // Ok then, let's send that message back to discord!
         await message.channel.send(`${response.data.choices[0].message.content}`);
-        
+
          // store the assistant's message in the channel's conversation history
         client.globalState.conversations[message.channel.id].push({
             "role": "assistant",
