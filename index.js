@@ -64,9 +64,8 @@ async function processMessage(message) {
  let userContent = `${displayName}: ${message.content}`
  client.globalState.conversations[message.channel.id].push({
     "role": "user",
-    "content": message.userContent
+    "content": userContent
     //`${displayName}: ${message.content}`
-    
 });
 
 
@@ -101,8 +100,8 @@ let messages = [...client.globalState.conversations[message.channel.id]];
         });
         let convoMaxLen = 4097; // max length of convo
         if (client.globalState.conversations[message.channel.id].length > convoMaxLen) {
-        client.globalState.conversations[message.channel.id] = client.globalState.conversations[message.channel.id].slice(-convoMaxLen);
-        }
+            client.globalState.conversations[message.channel.id] = client.globalState.conversations[message.channel.id].slice(-(convoMaxLen));
+            }
 
     } catch (error) {
         console.error("oops got some errors: ", error);
