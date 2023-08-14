@@ -64,10 +64,13 @@ async function processMessage(message) {
  client.globalState.conversations[message.channel.id].push({
     "role": "user",
     "content": `${displayName}: ${message.content}`
+    
 });
+
 
 // clone the array in the channel's history so we don't alter the original while adding the system message
 let messages = [...client.globalState.conversations[message.channel.id]];
+
 
         // check if those funny words r in the chat
         if (/dotty(bot)?/i.test(message.content)) {
@@ -75,12 +78,13 @@ let messages = [...client.globalState.conversations[message.channel.id]];
                 "role": "system",
                 "content": prompts.dotty.message
             });
+        
         }
 
         // hit up openai's fancy api
         const response = await openai.createChatCompletion({
             model: 'gpt-3.5-turbo',
-            temperature: 1.6,
+            temperature: 1.5,
             messages: messages
         });
         console.log("OpenAI API response:", response);
@@ -93,6 +97,10 @@ let messages = [...client.globalState.conversations[message.channel.id]];
             "role": "assistant",
             "content": `${response.data.choices[0].message.content}`
         });
+        let convoMaxLen = 4097; // max length of convo
+        if (client.globalState.conversations[message.channel.id].length > convoMaxLen) {
+        client.globalState.conversations[message.channel.id] = client.globalState.conversations[message.channel.id].slice(-convoMaxLen);
+        }
 
     } catch (error) {
         console.error("oops got some errors: ", error);
