@@ -61,9 +61,11 @@ async function processMessage(message) {
     }
  // push new user message into the ongoing convo
  // btw this is how they remember
+ let userContent = `${displayName}: ${message.content}`
  client.globalState.conversations[message.channel.id].push({
     "role": "user",
-    "content": `${displayName}: ${message.content}`
+    "content": message.userContent
+    //`${displayName}: ${message.content}`
     
 });
 
@@ -84,7 +86,7 @@ let messages = [...client.globalState.conversations[message.channel.id]];
         // hit up openai's fancy api
         const response = await openai.createChatCompletion({
             model: 'gpt-3.5-turbo',
-            temperature: 1.5,
+            temperature: 1.4,
             messages: messages
         });
         console.log("OpenAI API response:", response);
