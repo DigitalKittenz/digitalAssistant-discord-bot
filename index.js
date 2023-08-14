@@ -49,7 +49,6 @@ async function processMessage(message) {
 
         // here we use nickname if there is one, otherwise we grab username
         let displayName = message.member ? (message.member.nickname ? message.member.nickname : message.author.username) : message.author.username;
-
         // if there's no record for this channel, initialize it with the instruction message
         if (!client.globalState.conversations[message.channel.id]) {
             client.globalState.conversations[message.channel.id] = [
@@ -68,10 +67,8 @@ async function processMessage(message) {
     //`${displayName}: ${message.content}`
 });
 
-
 // clone the array in the channel's history so we don't alter the original while adding the system message
 let messages = [...client.globalState.conversations[message.channel.id]];
-
 
         // check if those funny words r in the chat
         if (/dotty(bot)?/i.test(message.content)) {
@@ -79,7 +76,6 @@ let messages = [...client.globalState.conversations[message.channel.id]];
                 "role": "system",
                 "content": prompts.dotty.message
             });
-        
         }
 
         // hit up openai's fancy api
@@ -93,15 +89,22 @@ let messages = [...client.globalState.conversations[message.channel.id]];
         // Ok then, let's send that message back to discord!
         await message.channel.send(`${response.data.choices[0].message.content}`);
 
-         // store the assistant's message in the channel's conversation history
+         // store the bots message in the channel's conversation history
         client.globalState.conversations[message.channel.id].push({
             "role": "assistant",
             "content": `${response.data.choices[0].message.content}`
         });
-        let convoMaxLen = 4097; // max length of convo
-        if (client.globalState.conversations[message.channel.id].length > convoMaxLen) {
-            client.globalState.conversations[message.channel.id] = client.globalState.conversations[message.channel.id].slice(-(convoMaxLen));
+
+        //max total tokens
+        let totalTokens = 0
+        for (let i = 0; i < client.globalState.conversations[message.channel.id].length; i++){
+            totalTokens += client.globalState.conversations[message.channel.id][i].content.length;
+            if (totalTokens > 4000) {
+                client.globalState.conversations[message.channel.id] = client.globalState.conversations[message.channel.id].slice(i);
+                break;
             }
+        }
+
 
     } catch (error) {
         console.error("oops got some errors: ", error);
