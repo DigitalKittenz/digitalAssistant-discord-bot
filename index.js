@@ -66,9 +66,13 @@ async function processMessage(message) {
     "content": `${displayName}: ${message.content}`
 });
 
+
 // clone the array in the channel's history so we don't alter the original while adding the system message
 let messages = [...client.globalState.conversations[message.channel.id]];
-
+    // trim messages and keep only the last 10 exchange if conversation is too long (for instance)
+    while (messages.map(m => m.content).join(" ").length > 2000) {
+        messages = messages.slice(2);
+    }
         // check if those funny words r in the chat
         if (/dotty(bot)?/i.test(message.content)) {
             messages.push({
@@ -89,7 +93,7 @@ let messages = [...client.globalState.conversations[message.channel.id]];
         await message.channel.send(`${response.data.choices[0].message.content}`);
 
          // store the assistant's message in the channel's conversation history
-        client.globalState.conversations[message.channel.id].push({
+         client.globalState.conversations[message.channel.id].push({
             "role": "assistant",
             "content": `${response.data.choices[0].message.content}`
         });
