@@ -1,12 +1,11 @@
-require('dotenv').config();
-
-const { Client, Collection, GatewayIntentBits } = require('discord.js');
-const { Configuration, OpenAIApi } = require('openai');
+require('dotenv').config(); // pulls in environmental variables
+const { Client, Collection, GatewayIntentBits } = require('discord.js'); // picks out the bits u need from discord.js
+const { Configuration, OpenAIApi } = require('openai'); // same goes for openai
 const fs = require('fs');
 // here we load up that juicy prompts file
-const prompts = require('./prompts');
+const prompts = require('./prompts'); // file system, for reading files
 
-// setup discord client
+// setting up the discord client with various permissions
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
@@ -14,42 +13,43 @@ const client = new Client({
         GatewayIntentBits.MessageContent,
         GatewayIntentBits.GuildMessageReactions
     ]
-});
+}); 
+
 // just a cute offline message
 const botOffMessage = 'bot is resigned to her very own dream bubble.';
 
-// for sending long messages
+// function for sending long messages coz discord has a character limit
 async function sendLongMessage(channel, message) {
     const parts = message.match(/[\s\S]{1,2000}/g) || [];
 
     for (const part of parts) {
         await channel.send(part);
         // wait a bit between message parts
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 1000)); // nice lil pause between parts
     }
 }
 
-// setup openai
+// setting up the openai api
 const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
 });
 const openai = new OpenAIApi(configuration);
 
-// handle message events
+// global state for the bot to keep track of various bits 
 client.globalState = {
     autoReply: {},
     botActive: true,  //bot's state
-    conversations: {} // object to store chat histories per channel
+    conversations: {} // store chat histories per channel so the bot can maintain context
 };
 
+//processing incoming messages 
 async function processMessage(message) {
     try {
-        // send typing indicator
-        await message.channel.sendTyping();
-
+        // send typing indicator, coz bot manners
+        await message.channel.sendTyping();  
         // here we use nickname if there is one, otherwise we grab username
         let displayName = message.member ? (message.member.nickname ? message.member.nickname : message.author.username) : message.author.username;
-        // if there's no record for this channel, initialize it with the instruction message
+        // if there's no convo history for this channel, start it off with the bot's instruction message
         if (!client.globalState.conversations[message.channel.id]) {
             client.globalState.conversations[message.channel.id] = [
             {
@@ -58,16 +58,15 @@ async function processMessage(message) {
             },
         ];
     }
- // push new user message into the ongoing convo
- // btw this is how they remember
+
+ // adding new user message into ongoing convo
  let userContent = `${displayName}: ${message.content}`
  client.globalState.conversations[message.channel.id].push({
     "role": "user",
     "content": userContent
-    //`${displayName}: ${message.content}`
 });
 
-// clone the array in the channel's history so we don't alter the original while adding the system message
+ // if the user says 'dotty' or 'dottybot', add the bot's instructions to the messages array
 let messages = [...client.globalState.conversations[message.channel.id]];
 
         // check if those funny words r in the chat
@@ -84,18 +83,19 @@ let messages = [...client.globalState.conversations[message.channel.id]];
             temperature: 1.4,
             messages: messages
         });
+        // logging the openai api response 4 errors n stuff
         console.log("OpenAI API response:", response);
 
         // Ok then, let's send that message back to discord!
         await message.channel.send(`${response.data.choices[0].message.content}`);
 
-         // store the bots message in the channel's conversation history
+         // saving the bot's response in this channel's conversation history
         client.globalState.conversations[message.channel.id].push({
             "role": "assistant",
             "content": `${response.data.choices[0].message.content}`
         });
 
-        //max total tokens
+        // we gotta keep count of total tokens too coz if we hit 4000 we start dropping the old ones
         let totalTokens = 0
         for (let i = 0; i < client.globalState.conversations[message.channel.id].length; i++){
             totalTokens += client.globalState.conversations[message.channel.id][i].content.length;
@@ -105,13 +105,12 @@ let messages = [...client.globalState.conversations[message.channel.id]];
             }
         }
 
-
     } catch (error) {
         console.error("oops got some errors: ", error);
     }
 }
 
-/////////////////////////////////////////////////////////////////
+// event handler for when a new message is sent in any discord server the bot is linked to
 client.on('messageCreate', async (message) => {
     // Ignore messages sent by the bot
     if (message.author.bot) return;
@@ -145,6 +144,7 @@ client.commands = new Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
+    // add the command to the client's collection of commands
     client.commands.set(command.name, command);
 }
 
@@ -165,4 +165,6 @@ client.on('interactionCreate', async (interaction) => {
         await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
     }
 });
+
+// start up the bot
 client.login(process.env.TOKEN);
