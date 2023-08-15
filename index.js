@@ -80,7 +80,7 @@ let messages = [...client.globalState.conversations[message.channel.id]];
         // hit up openai's fancy api
         const response = await openai.createChatCompletion({
             model: 'gpt-3.5-turbo',
-            temperature: 1.45,
+            temperature: 1.3,
             messages: messages
         });
         // logging the openai api response 4 errors n stuff
