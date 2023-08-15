@@ -17,7 +17,6 @@ module.exports = {
             'https://i.makeagif.com/media/5-18-2023/qexKFn.gif',
             'https://gifer.com/en/BJat',
             'https://gifer.com/en/BJao',
-            'https://gifer.com/en/7K5z',
             'https://media.tenor.com/images/40e3550fc57ad035277d94bb94bcaa3d/tenor.gif',
             'https://64.media.tumblr.com/f300cacd754e1eb4315a8ce9b7683314/tumblr_mmtj6dRV021resz13o1_250.gif',
             'https://66.media.tumblr.com/tumblr_m478k4fh701qisaxro1_250.gif',
