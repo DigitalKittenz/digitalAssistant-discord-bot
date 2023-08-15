@@ -80,20 +80,25 @@ let messages = [...client.globalState.conversations[message.channel.id]];
         // hit up openai's fancy api
         const response = await openai.createChatCompletion({
             model: 'gpt-3.5-turbo',
-            temperature: 1.4,
+            temperature: 1.45,
             messages: messages
         });
         // logging the openai api response 4 errors n stuff
         console.log("OpenAI API response:", response);
 
-        // Ok then, let's send that message back to discord!
-        await message.channel.send(`${response.data.choices[0].message.content}`);
+ // Ok then, let's send that message back to discord!
+const botResponse = response.data.choices[0].message.content;
+if (botResponse.length > 2000) {
+    await sendLongMessage(message.channel, botResponse);
+} else {
+    await message.channel.send(botResponse);
+}
 
-         // saving the bot's response in this channel's conversation history
-        client.globalState.conversations[message.channel.id].push({
-            "role": "assistant",
-            "content": `${response.data.choices[0].message.content}`
-        });
+// saving the bot's response in this channel's conversation history
+client.globalState.conversations[message.channel.id].push({
+    "role": "assistant",
+    "content": botResponse
+});
 
         // we gotta keep count of total tokens too coz if we hit 4000 we start dropping the old ones
         let totalTokens = 0
