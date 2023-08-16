@@ -105,6 +105,13 @@ client.globalState.conversations[message.channel.id].push({
 // we gotta keep count of total tokens too coz if we hit 4000 we start dropping the old ones
 // shoving the countTokens thing up here. 
 
+function countTokens(messageContent) {
+    // split the message content into words
+    const words = messageContent.split(' ');
+    // return the number of words as an approximation of the number of tokens
+    return words.length;
+}
+
 let totalTokens = 0;
 for (let i = 0; i < client.globalState.conversations[message.channel.id].length; i++){
     const messageContent = client.globalState.conversations[message.channel.id][i].content;
@@ -115,6 +122,11 @@ for (let i = 0; i < client.globalState.conversations[message.channel.id].length;
     if (totalTokens >= 2000) {
         client.globalState.conversations[message.channel.id] = client.globalState.conversations[message.channel.id].slice(i);
         break;
+    }
+}
+
+    } catch (error) {
+        console.error("oops got some errors: ", error);
     }
 }
 
