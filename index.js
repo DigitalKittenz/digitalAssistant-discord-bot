@@ -5,6 +5,7 @@ const fs = require('fs');
 // here we load up that juicy prompts file
 const prompts = require('./prompts'); // file system, for reading files
 
+
 // setting up the discord client with various permissions
 const client = new Client({
     intents: [
@@ -102,12 +103,14 @@ client.globalState.conversations[message.channel.id].push({
 });
 
 // we gotta keep count of total tokens too coz if we hit 4000 we start dropping the old ones
+// shoving the countTokens thing up here. 
+
+
 let totalTokens = 0;
 for (let i = 0; i < client.globalState.conversations[message.channel.id].length; i++){
-
+    const tokensInMessage = client.globalState.conversations[message.channel.id][i].content;
     // count tokens (attempt to)
-    const tokensInMessage = countTokens(client.globalState.conversations[message.channel.id][i].content);
-
+    
     totalTokens += tokensInMessage;
 
     // if the total token count exceeds the limit, cut the convo a bit
