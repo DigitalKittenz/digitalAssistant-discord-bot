@@ -79,7 +79,8 @@ let messages = [...client.globalState.conversations[message.channel.id]];
 
         // hit up openai's fancy api
         const response = await openai.createChatCompletion({
-            model: 'gpt-3.5-turbo',
+           // model: 'gpt-3.5-turbo',
+            model: 'gpt-3.5-turbo-0301',
             temperature: 1.3,
             messages: messages
         });
@@ -104,7 +105,7 @@ client.globalState.conversations[message.channel.id].push({
         let totalTokens = 0
         for (let i = 0; i < client.globalState.conversations[message.channel.id].length; i++){
             totalTokens += client.globalState.conversations[message.channel.id][i].content.length;
-            if (totalTokens > 4000) {
+            if (totalTokens >= 2000) {
                 client.globalState.conversations[message.channel.id] = client.globalState.conversations[message.channel.id].slice(i);
                 break;
             }
