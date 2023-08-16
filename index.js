@@ -59,6 +59,15 @@ async function processMessage(message) {
             },
         ];
     }
+// shoving the countTokens thing up here. 
+
+function countTokens(messageContent) {
+    // split the message content into words
+    const words = messageContent.split(' ');
+    // return the number of words as an approx of the number of tokens
+    return words.length;
+}
+
 
  // adding new user message into ongoing convo
  let userContent = `${displayName}: ${message.content}`
@@ -103,16 +112,22 @@ client.globalState.conversations[message.channel.id].push({
 });
 
 // we gotta keep count of total tokens too coz if we hit 4000 we start dropping the old ones
-// shoving the countTokens thing up here. 
 
-function countTokens(messageContent) {
-    // split the message content into words
-    const words = messageContent.split(' ');
-    // return the number of words as an approximation of the number of tokens
-    return words.length;
+let lastGoodIndex = 0;
+for (let i = 0; i < client.globalState.conversations[message.channel.id].length; i++){
+    const messageContent = client.globalState.conversations[message.channel.id][i].content;
+    // count tokens (attempt to)
+    const tokensInMessage = countTokens(messageContent); // hopefully defined up the top
+    // if the total token count exceeds the limit, remember the last good index
+    if (tokensInMessage >= 2000) {
+        client.globalState.conversations[message.channel.id] = client.globalState.conversations[message.channel.id].slice(lastGoodIndex);
+        break;
+    }
+    lastGoodIndex = i;
 }
 
-let totalTokens = 0;
+
+/*let totalTokens = 0;
 for (let i = 0; i < client.globalState.conversations[message.channel.id].length; i++){
     const messageContent = client.globalState.conversations[message.channel.id][i].content;
     // count tokens (attempt to)
@@ -123,7 +138,7 @@ for (let i = 0; i < client.globalState.conversations[message.channel.id].length;
         client.globalState.conversations[message.channel.id] = client.globalState.conversations[message.channel.id].slice(i);
         break;
     }
-}
+} */
 
     } catch (error) {
         console.error("oops got some errors: ", error);
