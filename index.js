@@ -105,23 +105,16 @@ client.globalState.conversations[message.channel.id].push({
 // we gotta keep count of total tokens too coz if we hit 4000 we start dropping the old ones
 // shoving the countTokens thing up here. 
 
-
 let totalTokens = 0;
 for (let i = 0; i < client.globalState.conversations[message.channel.id].length; i++){
-    const tokensInMessage = client.globalState.conversations[message.channel.id][i].content;
+    const messageContent = client.globalState.conversations[message.channel.id][i].content;
     // count tokens (attempt to)
-    
+    const tokensInMessage = countTokens(messageContent); // u need to define this function tho!
     totalTokens += tokensInMessage;
-
     // if the total token count exceeds the limit, cut the convo a bit
     if (totalTokens >= 2000) {
         client.globalState.conversations[message.channel.id] = client.globalState.conversations[message.channel.id].slice(i);
         break;
-    }
-}
-
-    } catch (error) {
-        console.error("oops got some errors: ", error);
     }
 }
 
