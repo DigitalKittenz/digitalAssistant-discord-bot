@@ -43,6 +43,16 @@ client.globalState = {
     conversations: {} // store chat histories per channel so the bot can maintain context
 };
 
+// shoving the countTokens thing up here. 
+
+function countTokens(messageContent) {
+    // split the message content into words
+    const words = messageContent.split(' ');
+    // return the number of words as an approx of the number of tokens
+    return words.length;
+}
+
+
 //processing incoming messages 
 async function processMessage(message) {
     try {
@@ -59,14 +69,6 @@ async function processMessage(message) {
             },
         ];
     }
-// shoving the countTokens thing up here. 
-
-function countTokens(messageContent) {
-    // split the message content into words
-    const words = messageContent.split(' ');
-    // return the number of words as an approx of the number of tokens
-    return words.length;
-}
 
 
  // adding new user message into ongoing convo
