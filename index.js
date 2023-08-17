@@ -112,20 +112,20 @@ client.globalState.conversations[message.channel.id].push({
 });
 
 // we gotta keep count of total tokens too coz if we hit 4000 we start dropping the old ones
-
-let lastGoodIndex = 0;
+// this is the problem guy
+let tokensInConversation = 0;
 for (let i = 0; i < client.globalState.conversations[message.channel.id].length; i++){
     const messageContent = client.globalState.conversations[message.channel.id][i].content;
     // count tokens (attempt to)
     const tokensInMessage = countTokens(messageContent); // hopefully defined up the top
-    // if the total token count exceeds the limit, remember the last good index
-    if (tokensInMessage >= 2000) {
-        client.globalState.conversations[message.channel.id] = client.globalState.conversations[message.channel.id].slice(lastGoodIndex);
-        break;
+    tokensInConversation += tokensInMessage;
+    // if the total token count exceeds the limit, slice the conversation from this index
+    if (tokensInConversation >= 2000) {
+        client.globalState.conversations[message.channel.id] = client.globalState.conversations[message.channel.id].slice(i);
+        // reset tokensInConversation count
+        tokensInConversation = tokensInMessage;
     }
-    lastGoodIndex = i;
 }
-
 
     } catch (error) {
         console.error("oops got some errors: ", error);
