@@ -50,11 +50,15 @@ function countTokens(messageContent) {
     return words.length;
 }
 
-// we gotta keep count of total tokens too coz if we hit 4000 we start dropping the old ones
-// this is the problem guy
 function cutTokens(channelID, newMessageTokens){
     let tokensInConversation = 0;
     let remainingTokens = 2000 - newMessageTokens;
+    
+    // check if conversation exists, if not initialize it
+    if (!client.globalState.conversations[channelID]) {
+        client.globalState.conversations[channelID] = [];
+    }
+    
     for (let i = 0; i < client.globalState.conversations[channelID].length; i++){
         const messageContent = client.globalState.conversations[channelID][i].content;
         const tokensInMessage = countTokens(messageContent);
@@ -74,7 +78,7 @@ async function processMessage(message) {
         // send typing indicator, coz bot manners
         await message.channel.sendTyping(); 
         let tokensInMessage = countTokens(message.content);
-        cutTokens(message.channel.id,message) ;
+        cutTokens(message.channel.id,tokensInMessage) ;
         // here we use nickname if there is one, otherwise we grab username
         // use their nickname if there is one, otherwise grab their username
 let displayName = message.member ? (message.member.nickname ? message.member.nickname : message.author.username) : message.author.username;
