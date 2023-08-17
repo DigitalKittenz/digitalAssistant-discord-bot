@@ -52,21 +52,20 @@ function countTokens(messageContent) {
 
 // we gotta keep count of total tokens too coz if we hit 4000 we start dropping the old ones
 // this is the problem guy
-function cutTokens(channelID, message){
+function cutTokens(channelID, newMessageTokens){
     let tokensInConversation = 0;
+    let remainingTokens = 2000 - newMessageTokens;
     for (let i = 0; i < client.globalState.conversations[channelID].length; i++){
         const messageContent = client.globalState.conversations[channelID][i].content;
-         // count tokens (attempt to)
-         const tokensInMessage = countTokens(messageContent); // hopefully defined up the top
-         tokensInConversation += tokensInMessage;
-          // if the total token count exceeds the limit, slice the conversation from this index
-          if (tokensInConversation >= 2000) {
-             client.globalState.conversations[channelID] = client.globalState.conversations[channelID].slice(i);
-             // reset tokensInConversation count
-             tokensInConversation = tokensInMessage;
-          }
+        const tokensInMessage = countTokens(messageContent);
+        tokensInConversation += tokensInMessage;
+        if (tokensInConversation >= remainingTokens) {
+            client.globalState.conversations[channelID] = client.globalState.conversations[channelID].slice(i);
+            tokensInConversation = tokensInMessage;
+            break;
         }
     }
+}
 
 
 //processing incoming messages 
@@ -77,17 +76,21 @@ async function processMessage(message) {
         let tokensInMessage = countTokens(message.content);
         cutTokens(message.channel.id,message) ;
         // here we use nickname if there is one, otherwise we grab username
-        let displayName = message.member ? (message.member.nickname ? message.member.nickname : message.author.username) : message.author.username;
-        // if there's no convo history for this channel, start it off with the bot's instruction message
-        if (!client.globalState.conversations[message.channel.id]) {
-            client.globalState.conversations[message.channel.id] = [
-            {
-              "role": "system",
-              "content": prompts.dotty.message
-            },
-        ];
-    }
+        // use their nickname if there is one, otherwise grab their username
+let displayName = message.member ? (message.member.nickname ? message.member.nickname : message.author.username) : message.author.username;
 
+// if there ain't no convo history for this channel, start it off with the bot's instruction message
+if (!client.globalState.conversations[message.channel.id]) {
+    client.globalState.conversations[message.channel.id] = [
+    {
+      "role": "system",
+      "content": prompts.dotty.message
+    },
+  ];
+}
+
+// cut tokens after making sure the convo exists for that channel
+cutTokens(message.channel.id, tokensInMessage);
 
  // adding new user message into ongoing convo
  let userContent = `${displayName}: ${message.content}`
