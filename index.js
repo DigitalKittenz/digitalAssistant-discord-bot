@@ -52,16 +52,16 @@ function countTokens(messageContent) {
 
 // we gotta keep count of total tokens too coz if we hit 4000 we start dropping the old ones
 // this is the problem guy
-function cutTokens(messageContent){
+function cutTokens(channelID, message){
     let tokensInConversation = 0;
-    for (let i = 0; i < client.globalState.conversations[message.channel.id].length; i++){
-        const messageContent = client.globalState.conversations[message.channel.id][i].content;
+    for (let i = 0; i < client.globalState.conversations[channelID].length; i++){
+        const messageContent = client.globalState.conversations[channelID][i].content;
          // count tokens (attempt to)
          const tokensInMessage = countTokens(messageContent); // hopefully defined up the top
          tokensInConversation += tokensInMessage;
           // if the total token count exceeds the limit, slice the conversation from this index
           if (tokensInConversation >= 2000) {
-             client.globalState.conversations[message.channel.id] = client.globalState.conversations[message.channel.id].slice(i);
+             client.globalState.conversations[channelID] = client.globalState.conversations[channelID].slice(i);
              // reset tokensInConversation count
              tokensInConversation = tokensInMessage;
           }
@@ -73,7 +73,9 @@ function cutTokens(messageContent){
 async function processMessage(message) {
     try {
         // send typing indicator, coz bot manners
-        await message.channel.sendTyping();  
+        await message.channel.sendTyping(); 
+        let tokensInMessage = countTokens(message.content);
+        cutTokens(message.channel.id,message) ;
         // here we use nickname if there is one, otherwise we grab username
         let displayName = message.member ? (message.member.nickname ? message.member.nickname : message.author.username) : message.author.username;
         // if there's no convo history for this channel, start it off with the bot's instruction message
