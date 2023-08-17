@@ -4,8 +4,6 @@ const { Configuration, OpenAIApi } = require('openai'); // same goes for openai
 const fs = require('fs');
 // here we load up that juicy prompts file
 const prompts = require('./prompts'); // file system, for reading files
-
-
 // setting up the discord client with various permissions
 const client = new Client({
     intents: [
@@ -51,6 +49,24 @@ function countTokens(messageContent) {
     // return the number of words as an approx of the number of tokens
     return words.length;
 }
+
+// we gotta keep count of total tokens too coz if we hit 4000 we start dropping the old ones
+// this is the problem guy
+function cutTokens(messageContent){
+    let tokensInConversation = 0;
+    for (let i = 0; i < client.globalState.conversations[message.channel.id].length; i++){
+        const messageContent = client.globalState.conversations[message.channel.id][i].content;
+         // count tokens (attempt to)
+         const tokensInMessage = countTokens(messageContent); // hopefully defined up the top
+         tokensInConversation += tokensInMessage;
+          // if the total token count exceeds the limit, slice the conversation from this index
+          if (tokensInConversation >= 2000) {
+             client.globalState.conversations[message.channel.id] = client.globalState.conversations[message.channel.id].slice(i);
+             // reset tokensInConversation count
+             tokensInConversation = tokensInMessage;
+          }
+        }
+    }
 
 
 //processing incoming messages 
@@ -112,22 +128,6 @@ client.globalState.conversations[message.channel.id].push({
     "role": "assistant",
     "content": botResponse
 });
-
-// we gotta keep count of total tokens too coz if we hit 4000 we start dropping the old ones
-// this is the problem guy
-let tokensInConversation = 0;
-for (let i = 0; i < client.globalState.conversations[message.channel.id].length; i++){
-    const messageContent = client.globalState.conversations[message.channel.id][i].content;
-    // count tokens (attempt to)
-    const tokensInMessage = countTokens(messageContent); // hopefully defined up the top
-    tokensInConversation += tokensInMessage;
-    // if the total token count exceeds the limit, slice the conversation from this index
-    if (tokensInConversation >= 2000) {
-        client.globalState.conversations[message.channel.id] = client.globalState.conversations[message.channel.id].slice(i);
-        // reset tokensInConversation count
-        tokensInConversation = tokensInMessage;
-    }
-}
 
     } catch (error) {
         console.error("oops got some errors: ", error);
