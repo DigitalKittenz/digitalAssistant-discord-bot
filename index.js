@@ -68,19 +68,35 @@ async function processMessage(message) {
             "content": `${displayName}: ${message.content}`
         });
         // counting the messages here (counting the array);
-        function cutLongMessage(messages) {
-            let totalWordCount = 0; // new variable to keep track of the total words
+        function cutLongMessage(messages, maxWords = 3000) {
+            let totalWordCount = 0; // keep track of the total words
             messages.forEach(message => {
                 let content = message.content;
                 let wordCount = content.split(" ").length;
                 totalWordCount += wordCount; // add the words in this message to the total
             });
-            return totalWordCount; // returning the total word count
+            // if we're over the limit, gotta trim it down
+            while (totalWordCount > maxWords) {
+                // let's not be hasty and chop off prompts, now
+                if (messages[0].role !== "system") {
+                    let content = messages[0].content;
+                    let wordCount = content.split(" ").length;
+                    totalWordCount -= wordCount; // we've snipped it out so subtract it from the total
+                    messages.shift(); // off with the first message's head!
+                } else {
+                    break; // hit a prompt, stop the trimming!
+                }
+            }
+        
+            // returning the cleaned up messages and the word count
+            return {messages, wordCount: totalWordCount}; 
         }
 
         // clone the array in the channel's history so we don't alter the original while adding the system message
         let messages = [...client.globalState.conversations[message.channel.id]];
-        let wordCount = cutLongMessage(messages);
+        let result = cutLongMessage(messages);
+        messages = result.messages;  // now we got our nice and trimmed messages
+        wordCount = result.wordCount; // and the final total. nice and tidy.
         console.log(wordCount);
         // hit up openai's fancy api
         const response = await openai.createChatCompletion({
@@ -89,13 +105,13 @@ async function processMessage(message) {
             messages: messages
         });
         // Ok then, let's send that message back to discord!
+        // Ok then, let's send that message back to discord!
         await message.channel.send(`${response.data.choices[0].message.content}`);
-        // store the assistant's message in the channel's conversation history
+// store the assistant's message in the channel's conversation history
         client.globalState.conversations[message.channel.id].push({
-            "role": "assistant",
-            "content": `${response.data.choices[0].message.content}`
-        });
-
+         "role": "assistant",
+         "content": `${response.data.choices[0].message.content}`
+    });
     } catch (error) {
         console.error("oops got some errors: ", error);
     }
