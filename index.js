@@ -63,16 +63,26 @@ async function processMessage(message) {
     "content": `${displayName}: ${message.content}`
 });
 
+function cutLongMessage(messages) {
+    messages.forEach(message => {
+        let content = message.content;
+        let wordCount = content.split(" ").length;
+    });
+}
+
 // clone the array in the channel's history so we don't alter the original while adding the system message
 let messages = [...client.globalState.conversations[message.channel.id]];
-        console.log(messages)
+    wordCount = cutLongMessage(messages);
+    console.log(wordsCount);
+
+
         // hit up openai's fancy api
         const response = await openai.createChatCompletion({
             model: 'gpt-3.5-turbo-0301',
             temperature: 1.25,
             messages: messages
         });
-        console.log("OpenAI API response:", response, "cool");
+       // console.log("OpenAI API response:", response, "cool");
 
         // Ok then, let's send that message back to discord!
         await message.channel.send(`${response.data.choices[0].message.content}`);
