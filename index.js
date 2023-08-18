@@ -1,7 +1,14 @@
 require('dotenv').config();
 
-const { Client, Collection, GatewayIntentBits } = require('discord.js');
-const { Configuration, OpenAIApi } = require('openai');
+const {
+    Client,
+    Collection,
+    GatewayIntentBits
+} = require('discord.js');
+const {
+    Configuration,
+    OpenAIApi
+} = require('openai');
 const fs = require('fs');
 // here we load up that juicy prompts file
 const prompts = require('./prompts');
@@ -38,7 +45,7 @@ const openai = new OpenAIApi(configuration);
 // handle message events
 client.globalState = {
     autoReply: {},
-    botActive: true,  //bot's state
+    botActive: true, //bot's state
     conversations: {} // object to store chat histories per channel
 };
 
@@ -50,43 +57,40 @@ async function processMessage(message) {
         let displayName = message.member ? (message.member.nickname ? message.member.nickname : message.author.username) : message.author.username;
         // if there's no record for this channel, initialize it with the instruction message 
         if (!client.globalState.conversations[message.channel.id]) {
-            client.globalState.conversations[message.channel.id] = [
-            {
-              "role": "system",
-              "content": prompts.dotty.message
-            },
-        ];
-    }
- // push new user message into the ongoing convo
- client.globalState.conversations[message.channel.id].push({
-    "role": "user",
-    "content": `${displayName}: ${message.content}`
-});
+            client.globalState.conversations[message.channel.id] = [{
+                "role": "system",
+                "content": prompts.dotty.message
+            }, ];
+        }
+        // push new user message into the ongoing convo
+        client.globalState.conversations[message.channel.id].push({
+            "role": "user",
+            "content": `${displayName}: ${message.content}`
+        });
+        // counting the messages here (counting the array);
+        function cutLongMessage(messages) {
+            let totalWordCount = 0; // new variable to keep track of the total words
+            messages.forEach(message => {
+                let content = message.content;
+                let wordCount = content.split(" ").length;
+                totalWordCount += wordCount; // add the words in this message to the total
+            });
+            return totalWordCount; // returning the total word count
+        }
 
-function cutLongMessage(messages) {
-    messages.forEach(message => {
-        let content = message.content;
-        let wordCount = content.split(" ").length;
-    });
-}
-
-// clone the array in the channel's history so we don't alter the original while adding the system message
-let messages = [...client.globalState.conversations[message.channel.id]];
-    wordCount = cutLongMessage(messages);
-    console.log(wordsCount);
-
-
+        // clone the array in the channel's history so we don't alter the original while adding the system message
+        let messages = [...client.globalState.conversations[message.channel.id]];
+        let wordCount = cutLongMessage(messages);
+        console.log(wordCount);
         // hit up openai's fancy api
         const response = await openai.createChatCompletion({
             model: 'gpt-3.5-turbo-0301',
             temperature: 1.25,
             messages: messages
         });
-       // console.log("OpenAI API response:", response, "cool");
-
         // Ok then, let's send that message back to discord!
         await message.channel.send(`${response.data.choices[0].message.content}`);
-         // store the assistant's message in the channel's conversation history
+        // store the assistant's message in the channel's conversation history
         client.globalState.conversations[message.channel.id].push({
             "role": "assistant",
             "content": `${response.data.choices[0].message.content}`
@@ -97,16 +101,16 @@ let messages = [...client.globalState.conversations[message.channel.id]];
     }
 }
 
-client.on('messageCreate', async (message) => {
+client.on('messageCreate', async(message) => {
     // Ignore messages sent by the bot
     if (message.author.bot) return;
     // If the message is bot_on, set botActive to true
-    if(message.content === process.env.BOT_ON) {
+    if (message.content === process.env.BOT_ON) {
         client.globalState.botActive = true;
         console.log("Bot is now active...let's do this!");
     }
     // if the message is bot_off, set botActive to false
-    if(message.content === process.env.BOT_OFF) {
+    if (message.content === process.env.BOT_OFF) {
         client.globalState.botActive = false;
         console.log(botOffMessage)
     }
@@ -118,7 +122,7 @@ client.on('messageCreate', async (message) => {
 
     // Call the processMessage function without waiting for it to finish
     // If the message contains dotty or dottybot, or if autoReply is enabled
-    if (/dotty(bot)?/i.test(message.content)  ||  client.globalState.autoReply[message.channel.id]) {
+    if (/dotty(bot)?/i.test(message.content) || client.globalState.autoReply[message.channel.id]) {
         processMessage(message);
     }
 });
@@ -135,7 +139,7 @@ client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
 });
 
-client.on('interactionCreate', async (interaction) => {
+client.on('interactionCreate', async(interaction) => {
     if (!interaction.isCommand()) return;
 
     const command = client.commands.get(interaction.commandName);
@@ -145,7 +149,10 @@ client.on('interactionCreate', async (interaction) => {
         await command.execute(interaction, client);
     } catch (error) {
         console.error(error);
-        await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+        await interaction.reply({
+            content: 'There was an error while executing this command!',
+            ephemeral: true
+        });
     }
 });
 client.login(process.env.TOKEN);
