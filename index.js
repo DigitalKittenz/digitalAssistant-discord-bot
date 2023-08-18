@@ -13,7 +13,7 @@ const client = new Client({
         GatewayIntentBits.GuildMessageReactions
     ]
 }); 
-
+//
 // just a cute offline message
 const botOffMessage = 'bot is resigned to her very own dream bubble.';
 
@@ -41,44 +41,12 @@ client.globalState = {
     conversations: {} // store chat histories per channel so the bot can maintain context
 };
 
-// shoving the countTokens thing up here. 
-
-function countTokens(messageContent) {
-    // split the message content into words
-    const words = messageContent.split(' ');
-    // return the number of words as an approx of the number of tokens
-    return words.length;
-}
-
-function cutTokens(channelID, newMessageTokens){
-    let tokensInConversation = 0;
-    let remainingTokens = 2000 - newMessageTokens;
-    
-    // check if conversation exists, if not initialize it
-    if (!client.globalState.conversations[channelID]) {
-        client.globalState.conversations[channelID] = [];
-    }
-    
-    for (let i = 0; i < client.globalState.conversations[channelID].length; i++){
-        const messageContent = client.globalState.conversations[channelID][i].content;
-        const tokensInMessage = countTokens(messageContent);
-        tokensInConversation += tokensInMessage;
-        if (tokensInConversation >= remainingTokens) {
-            client.globalState.conversations[channelID] = client.globalState.conversations[channelID].slice(i);
-            tokensInConversation = tokensInMessage;
-            break;
-        }
-    }
-}
-
-
 //processing incoming messages 
 async function processMessage(message) {
     try {
         // send typing indicator, coz bot manners
         await message.channel.sendTyping(); 
-        let tokensInMessage = countTokens(message.content);
-        cutTokens(message.channel.id,tokensInMessage) ;
+
         // here we use nickname if there is one, otherwise we grab username
         // use their nickname if there is one, otherwise grab their username
 let displayName = message.member ? (message.member.nickname ? message.member.nickname : message.author.username) : message.author.username;
@@ -93,19 +61,8 @@ if (!client.globalState.conversations[message.channel.id]) {
   ];
 }
 
-// cut tokens after making sure the convo exists for that channel
-cutTokens(message.channel.id, tokensInMessage);
-
- // adding new user message into ongoing convo
- let userContent = `${displayName}: ${message.content}`
- client.globalState.conversations[message.channel.id].push({
-    "role": "user",
-    "content": userContent
-});
-
  // if the user says 'dotty' or 'dottybot', add the bot's instructions to the messages array
 let messages = [...client.globalState.conversations[message.channel.id]];
-
         // check if those funny words r in the chat
         if (/dotty(bot)?/i.test(message.content)) {
             messages.push({
