@@ -119,7 +119,7 @@ const response = await openai.createChatCompletion({
     model: 'gpt-3.5-turbo-0301',
     temperature: 2,
     top_p: 0.9,
-    frequency_penalty: 0.7,
+    frequency_penalty: 1,
     presence_penalty: 0.6,
     messages: result.messages
 });
