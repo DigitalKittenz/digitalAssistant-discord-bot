@@ -49,6 +49,34 @@ client.globalState = {
     conversations: {} // object to store chat histories per channel
 };
 
+function cutLongMessage(messages, maxTokens = 3000) {
+    // this will very roughly estimate the token count
+    function countTokens(content) {
+        return content.split(/\s+/).length + content.length / 6;
+    }
+
+    let totalTokenCount = 0;
+    for (let message of messages) {
+        let tokenCount = countTokens(message.content);
+        totalTokenCount += tokenCount;
+    }
+
+    // if we're over the limit, remove the oldest user messages to get back in limit
+    while (totalTokenCount > maxTokens) {
+        if (messages[0].role !== "system") {
+            let tokenCount = countTokens(messages[0].content);
+            totalTokenCount -= tokenCount;
+            messages.shift();
+        } else {
+            break;
+        }
+    }
+    return {
+        messages,
+        tokenCount: totalTokenCount
+    };
+}
+
 async function processMessage(message) {
     try {
         // send typing indicator
@@ -62,64 +90,27 @@ async function processMessage(message) {
                 "content": prompts.dotty.message
             }];
         }
-        // push new user message into the ongoing convo
-        client.globalState.conversations[message.channel.id].push({
-            "role": "user",
-            "content": `${displayName}: ${message.content}`
-        });
-        // counting the messages here (counting the array);
-        function cutLongMessage(messages, maxTokens = 4096) {
-            // this will very roughly estimate the token count
-            function countTokens(content) {
-                return content.split(/\s+/).length + content.length / 6;
-            }
+// clone the array in the channel's history so we don't alter the original while adding the system message
+let messages = [...client.globalState.conversations[message.channel.id]];
 
-            let totalTokenCount = 0;
-            for (let message of messages) {
-                let tokenCount = countTokens(message.content);
-                totalTokenCount += tokenCount;
-            }
+// add new message
+messages.push({
+    "role": "user",
+    "content": `${displayName}: ${message.content}`
+});
 
-            // if we're over the limit, remove the oldest user messages to get back in limit
-            while (totalTokenCount > maxTokens) {
-                if (messages[0].role !== "system") {
-                    let tokenCount = countTokens(messages[0].content);
-                    totalTokenCount -= tokenCount;
-                    messages.shift();
-                } else {
-                    break;
-                }
-            }
+// trim down old convo before adding new message
+let result = cutLongMessage(messages, 3000); // leave some room for the assistant's message!
+console.log(result)
+// update the convos with trimmed messages and the new user message
+client.globalState.conversations[message.channel.id] = result.messages;
 
-            return {
-                messages,
-                tokenCount: totalTokenCount
-            };
-        }
-
-        // clone the array in the channel's history so we don't alter the original while adding the system message
-        let messages = [...client.globalState.conversations[message.channel.id]];
-
-        // trim down old convo before adding new message
-        let result = cutLongMessage(client.globalState.conversations[message.channel.id]);
-        client.globalState.conversations[message.channel.id] = result.messages;
-
-        // now add new message
-        client.globalState.conversations[message.channel.id].push({
-            "role": "user",
-            "content": `${displayName}: ${message.content}`
-        });
-
-        messages = result.messages; // now we got our nice and trimmed messages
-        wordCount = result.tokenCount; // and the final token.
-        console.log(wordCount);
-
-        // hit up openai's fancy api
-        const response = await openai.createChatCompletion({
-            model: 'gpt-3.5-turbo-0301',
-            temperature: 1.2,
-            messages: result.messages
-        });
+// hit up openai's fancy api
+const response = await openai.createChatCompletion({
+    model: 'gpt-3.5-turbo-0301',
+    temperature: 1.2,
+    messages: result.messages
+});
 
         // Ok then, let's send that message back to discord!
         await sendLongMessage(message.channel, `${response.data.choices[0].message.content}`);
