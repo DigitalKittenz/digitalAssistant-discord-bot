@@ -63,14 +63,21 @@ function cutLongMessage(messages, maxTokens = 3000) {
 
     // if we're over the limit, remove the oldest user messages to get back in limit
     while (totalTokenCount > maxTokens) {
-        if (messages[0].role !== "system") {
-            let tokenCount = countTokens(messages[0].content);
-            totalTokenCount -= tokenCount;
-            messages.shift();
-        } else {
+        let foundNonSystemMessage = false;
+        for (let i = 0; i < messages.length; i++) {
+            if (messages[i].role !== "system") {
+                let tokenCount = countTokens(messages[i].content);
+                totalTokenCount -= tokenCount;
+                messages.splice(i, 1);
+                foundNonSystemMessage = true;
+                break;
+            }
+        }
+        if (!foundNonSystemMessage) {
             break;
         }
     }
+    console.log('total tokens: ', totalTokenCount);
     return {
         messages,
         tokenCount: totalTokenCount
@@ -93,15 +100,17 @@ async function processMessage(message) {
 // clone the array in the channel's history so we don't alter the original while adding the system message
 let messages = [...client.globalState.conversations[message.channel.id]];
 
+// trim down old convo before adding new message
+let result = cutLongMessage(messages, 2000); // leave some room for the assistant's message!
+
 // add new message
-messages.push({
+result.messages.push({
     "role": "user",
     "content": `${displayName}: ${message.content}`
 });
 
-// trim down old convo before adding new message
-let result = cutLongMessage(messages, 3000); // leave some room for the assistant's message!
 console.log(result)
+
 // update the convos with trimmed messages and the new user message
 client.globalState.conversations[message.channel.id] = result.messages;
 
