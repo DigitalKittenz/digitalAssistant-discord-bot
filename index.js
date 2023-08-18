@@ -105,8 +105,7 @@ async function processMessage(message) {
             messages: messages
         });
         // Ok then, let's send that message back to discord!
-        // Ok then, let's send that message back to discord!
-        await message.channel.send(`${response.data.choices[0].message.content}`);
+        await sendLongMessage(message.channel, `${response.data.choices[0].message.content}`);
 // store the assistant's message in the channel's conversation history
         client.globalState.conversations[message.channel.id].push({
          "role": "assistant",
