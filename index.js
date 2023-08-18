@@ -60,7 +60,7 @@ async function processMessage(message) {
             client.globalState.conversations[message.channel.id] = [{
                 "role": "system",
                 "content": prompts.dotty.message
-            }, ];
+            }];
         }
         // push new user message into the ongoing convo
         client.globalState.conversations[message.channel.id].push({
@@ -68,55 +68,73 @@ async function processMessage(message) {
             "content": `${displayName}: ${message.content}`
         });
         // counting the messages here (counting the array);
-        function cutLongMessage(messages, maxWords = 3000) {
-            let totalWordCount = 0; // keep track of the total words
-            messages.forEach(message => {
-                let content = message.content;
-                let wordCount = content.split(" ").length;
-                totalWordCount += wordCount; // add the words in this message to the total
-            });
-            // if we're over the limit, gotta trim it down
-            while (totalWordCount > maxWords) {
-                // let's not be hasty and chop off prompts, now
+        function cutLongMessage(messages, maxTokens = 4096) {
+            // this will very roughly estimate the token count
+            function countTokens(content) {
+                return content.split(/\s+/).length + content.length / 6;
+            }
+
+            let totalTokenCount = 0;
+            for (let message of messages) {
+                let tokenCount = countTokens(message.content);
+                totalTokenCount += tokenCount;
+            }
+
+            // if we're over the limit, remove the oldest user messages to get back in limit
+            while (totalTokenCount > maxTokens) {
                 if (messages[0].role !== "system") {
-                    let content = messages[0].content;
-                    let wordCount = content.split(" ").length;
-                    totalWordCount -= wordCount; // we've snipped it out so subtract it from the total
-                    messages.shift(); // off with the first message's head!
+                    let tokenCount = countTokens(messages[0].content);
+                    totalTokenCount -= tokenCount;
+                    messages.shift();
                 } else {
-                    break; // hit a prompt, stop the trimming!
+                    break;
                 }
             }
-        
-            // returning the cleaned up messages and the word count
-            return {messages, wordCount: totalWordCount}; 
+
+            return {
+                messages,
+                tokenCount: totalTokenCount
+            };
         }
 
         // clone the array in the channel's history so we don't alter the original while adding the system message
         let messages = [...client.globalState.conversations[message.channel.id]];
-        let result = cutLongMessage(messages);
-        messages = result.messages;  // now we got our nice and trimmed messages
-        wordCount = result.wordCount; // and the final total. nice and tidy.
+
+        // trim down old convo before adding new message
+        let result = cutLongMessage(client.globalState.conversations[message.channel.id]);
+        client.globalState.conversations[message.channel.id] = result.messages;
+
+        // now add new message
+        client.globalState.conversations[message.channel.id].push({
+            "role": "user",
+            "content": `${displayName}: ${message.content}`
+        });
+
+        messages = result.messages; // now we got our nice and trimmed messages
+        wordCount = result.tokenCount; // and the final token.
         console.log(wordCount);
+
         // hit up openai's fancy api
         const response = await openai.createChatCompletion({
             model: 'gpt-3.5-turbo-0301',
-            temperature: 1.25,
-            messages: messages
+            temperature: 1.2,
+            messages: result.messages
         });
+
         // Ok then, let's send that message back to discord!
         await sendLongMessage(message.channel, `${response.data.choices[0].message.content}`);
-// store the assistant's message in the channel's conversation history
+
+        // store the assistant's message in the channel's conversation history
         client.globalState.conversations[message.channel.id].push({
-         "role": "assistant",
-         "content": `${response.data.choices[0].message.content}`
-    });
+            "role": "assistant",
+            "content": `${response.data.choices[0].message.content}`
+        });
     } catch (error) {
         console.error("oops got some errors: ", error);
     }
 }
 
-client.on('messageCreate', async(message) => {
+client.on('messageCreate', async (message) => {
     // Ignore messages sent by the bot
     if (message.author.bot) return;
     // If the message is bot_on, set botActive to true
@@ -154,7 +172,7 @@ client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
 });
 
-client.on('interactionCreate', async(interaction) => {
+client.on('interactionCreate', async (interaction) => {
     if (!interaction.isCommand()) return;
 
     const command = client.commands.get(interaction.commandName);
