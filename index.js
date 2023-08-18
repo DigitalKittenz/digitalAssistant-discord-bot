@@ -49,7 +49,7 @@ client.globalState = {
     conversations: {} // object to store chat histories per channel
 };
 
-function cutLongMessage(messages, maxTokens = 3000) {
+function cutLongMessage(messages, maxTokens = 3200) {
     // this will very roughly estimate the token count
     function countTokens(content) {
         return content.split(/\s+/).length + content.length / 6;
@@ -117,7 +117,10 @@ client.globalState.conversations[message.channel.id] = result.messages;
 // hit up openai's fancy api
 const response = await openai.createChatCompletion({
     model: 'gpt-3.5-turbo-0301',
-    temperature: 1.2,
+    temperature: 1.35,
+    top_p: 1, // considers all possible next words,
+    frequency_penalty: 0.7, // penalize common words
+    presence_penalty: 0.6,// penalize new concepts
     messages: result.messages
 });
 
