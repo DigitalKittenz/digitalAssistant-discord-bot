@@ -7,7 +7,8 @@ A discord bot that does stuff.
 - random facts!
 - basic server info
 - deletes duplicate urls
-- now chats 
+- now chats
+- some surprises ;)
 
 # Usage
 - /botfact: gives you a random fact
