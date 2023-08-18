@@ -101,7 +101,7 @@ async function processMessage(message) {
 let messages = [...client.globalState.conversations[message.channel.id]];
 
 // trim down old convo before adding new message
-let result = cutLongMessage(messages, 2000); // leave some room for the assistant's message!
+let result = cutLongMessage(messages, 3500); // leave some room for the assistant's message!
 
 // add new message
 result.messages.push({
