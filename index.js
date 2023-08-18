@@ -65,14 +65,6 @@ async function processMessage(message) {
 
 // clone the array in the channel's history so we don't alter the original while adding the system message
 let messages = [...client.globalState.conversations[message.channel.id]];
-        // check if those funny words r in the chat
-        if (/dotty(bot)?/i.test(message.content)) {
-       // if (message.content.includes('dottybot') || message.content.includes('dotty') || message.content.includes('Dotty') || message.content.includes('DOTTY') || message.content.includes('dotbot')) {
-            messages.push({
-                "role": "system",
-                "content": prompts.dotty.message
-            });
-        }
         console.log(messages)
         // hit up openai's fancy api
         const response = await openai.createChatCompletion({
