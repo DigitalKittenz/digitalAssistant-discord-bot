@@ -109,7 +109,7 @@ result.messages.push({
     "content": `${displayName}: ${message.content}`
 });
 
-console.log(result)
+//console.log(result)
 
 // update the convos with trimmed messages and the new user message
 client.globalState.conversations[message.channel.id] = result.messages;
@@ -117,12 +117,17 @@ client.globalState.conversations[message.channel.id] = result.messages;
 // hit up openai's fancy api
 const response = await openai.createChatCompletion({
     model: 'gpt-3.5-turbo-0301',
-    temperature: 1.35,
-    top_p: 1, // considers all possible next words,
-    frequency_penalty: 0.7, // penalize common words
-    presence_penalty: 0.6,// penalize new concepts
+    temperature: 2,
+    top_p: 0.9,
+    frequency_penalty: 0.7,
+    presence_penalty: 0.6,
     messages: result.messages
 });
+console.log(response);
+
+// log the response
+//console.log(response);
+
 
         // Ok then, let's send that message back to discord!
         await sendLongMessage(message.channel, `${response.data.choices[0].message.content}`);
