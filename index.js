@@ -116,10 +116,10 @@ client.globalState.conversations[message.channel.id] = result.messages;
 // hit up openai's fancy api
 const response = await openai.createChatCompletion({
     model: 'gpt-3.5-turbo-0301',
-    temperature: 2,
-    top_p: 0.9,
-    frequency_penalty: 1,
-    presence_penalty: 0.6,
+    temperature: 2, //randomness
+    top_p: 0.95, // output filter! only lets % of whats considered out!
+    frequency_penalty: 1, // penalizes common responses
+    presence_penalty: 0.85, // penalizes irrelevant responses (to the topic ykno)
     messages: result.messages
 });
 console.log(response);
