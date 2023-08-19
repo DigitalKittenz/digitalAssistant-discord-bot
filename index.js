@@ -129,8 +129,8 @@ const response = await openai.createChatCompletion({
     model: 'gpt-3.5-turbo-0301',
     temperature: 2, //randomness
     top_p: 0.95, // output filter! only lets % of whats considered out!
-    frequency_penalty: 1, // penalizes common responses
-    presence_penalty: 0.8,//0.85, // penalizes irrelevant responses (to the topic ykno)
+    frequency_penalty: 1.02, // penalizes common responses
+    presence_penalty: 0.7,//0.85, // penalizes irrelevant responses (to the topic ykno)
     messages: result.messages
 });
 
