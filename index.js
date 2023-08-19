@@ -109,7 +109,6 @@ result.messages.push({
     "content": `${displayName}: ${message.content}`
 });
 
-//console.log(result)
 
 // update the convos with trimmed messages and the new user message
 client.globalState.conversations[message.channel.id] = result.messages;
@@ -124,10 +123,6 @@ const response = await openai.createChatCompletion({
     messages: result.messages
 });
 console.log(response);
-
-// log the response
-//console.log(response);
-
 
         // Ok then, let's send that message back to discord!
         await sendLongMessage(message.channel, `${response.data.choices[0].message.content}`);
@@ -161,8 +156,8 @@ client.on('messageCreate', async (message) => {
         return;
     }
 
-    // Call the processMessage function without waiting for it to finish
-    // If the message contains dotty or dottybot, or if autoReply is enabled
+    // call the processMessage function without waiting for it to finish
+    // so like if the message contains dotty or dottybot, or if autoReply is enabled
     if (/dotty(bot)?/i.test(message.content) || client.globalState.autoReply[message.channel.id]) {
         processMessage(message);
     }
