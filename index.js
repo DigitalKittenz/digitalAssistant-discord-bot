@@ -46,7 +46,7 @@ const openai = new OpenAIApi(configuration);
 client.globalState = {
     autoReply: {},
     botActive: true, //bot's state
-    conversations: {} // object to store chat histories per channel
+    conversations: {} /* object to store chat histories per channel*/,
 };
 
 function cutLongMessage(messages, maxTokens = 3200) {
@@ -83,6 +83,18 @@ function cutLongMessage(messages, maxTokens = 3200) {
         tokenCount: totalTokenCount
     };
 }
+function sanitizeMessage(message){
+     // message = here. 
+    //use a regex here // if nonconforming characters are in the message
+          //global uncleanMessage: true;
+         // remove the noncomforming message, use a for loop??? 
+        // newmessage = here instead
+        // return cleanedmessage
+         
+    //else:
+        // do nothing ie return; 
+
+}
 
 async function processMessage(message) {
     try {
@@ -109,7 +121,6 @@ result.messages.push({
     "content": `${displayName}: ${message.content}`
 });
 
-
 // update the convos with trimmed messages and the new user message
 client.globalState.conversations[message.channel.id] = result.messages;
 
@@ -118,10 +129,11 @@ const response = await openai.createChatCompletion({
     model: 'gpt-3.5-turbo-0301',
     temperature: 2, //randomness
     top_p: 0.95, // output filter! only lets % of whats considered out!
-    frequency_penalty: 1.5, // penalizes common responses
-    presence_penalty: 0.85, // penalizes irrelevant responses (to the topic ykno)
+    frequency_penalty: 1, // penalizes common responses
+    presence_penalty: 0.8,//0.85, // penalizes irrelevant responses (to the topic ykno)
     messages: result.messages
 });
+
 console.log(response);
 
         // Ok then, let's send that message back to discord!
@@ -156,8 +168,8 @@ client.on('messageCreate', async (message) => {
         return;
     }
 
-    // call the processMessage function without waiting for it to finish
-    // so like if the message contains dotty or dottybot, or if autoReply is enabled
+    // Call the processMessage function without waiting for it to finish
+    // If the message contains dotty or dottybot, or if autoReply is enabled
     if (/dotty(bot)?/i.test(message.content) || client.globalState.autoReply[message.channel.id]) {
         processMessage(message);
     }

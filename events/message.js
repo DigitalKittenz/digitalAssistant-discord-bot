@@ -1,6 +1,6 @@
 module.exports = {
     name: 'messageCreate', // name of our event
-    messageMap: new Map(), // we're gonna use this map to keep track of messages
+    messageMap: new Map(), // use the map to keep track of messages
     urlMap: new Map(), // and this one to keep track of urls
     channels: process.env.CHANNEL_IDS.split(','), // here's a list of channels we care about
     
