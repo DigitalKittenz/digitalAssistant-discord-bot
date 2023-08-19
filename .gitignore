@@ -6,3 +6,5 @@ node_modules
 *.map
 node_modules/discord-api-types/payloads/v9/gateway.d.ts.map
 node_modules/.package-lock.json
+*.odt
+*.~lock*
