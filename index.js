@@ -32,7 +32,7 @@ async function sendLongMessage(channel, message) {
     for (const part of parts) {
         await channel.send(part);
         // wait a bit between message parts
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 500));
     }
 }
 
@@ -83,18 +83,6 @@ function cutLongMessage(messages, maxTokens = 3200) {
         tokenCount: totalTokenCount
     };
 }
-function sanitizeMessage(message){
-     // message = here. 
-    //use a regex here // if nonconforming characters are in the message
-          //global uncleanMessage: true;
-         // remove the noncomforming message, use a for loop??? 
-        // newmessage = here instead
-        // return cleanedmessage
-         
-    //else:
-        // do nothing ie return; 
-
-}
 
 async function processMessage(message) {
     try {
@@ -109,6 +97,24 @@ async function processMessage(message) {
                 "content": prompts.dotty.message
             }];
         }
+
+function sanitizeMessages(messages) {
+    // regex to match any character that's NOT a normal alphanumeric, common symbol, or emoji
+    const nonconformingRegex = /[^\u0020-\u007F\u00A0-\u00FF\u1F300-\u1F9FF]/g;
+
+    let cleanedMessages = [];
+
+    for (let message of messages) {
+        // if the message content matches the nonconforming regex, ignore it
+        if (!nonconformingRegex.test(message.content)) {
+            // add it to the cleanedMessages array
+            cleanedMessages.push(message);
+        }
+    }
+
+    return cleanedMessages;
+}
+
 // clone the array in the channel's history so we don't alter the original while adding the system message
 let messages = [...client.globalState.conversations[message.channel.id]];
 
@@ -126,11 +132,12 @@ client.globalState.conversations[message.channel.id] = result.messages;
 
 // hit up openai's fancy api
 const response = await openai.createChatCompletion({
+  //  model: 'gpt-3.5-turbo',
     model: 'gpt-3.5-turbo-0301',
     temperature: 2, //randomness
-    top_p: 0.95, // output filter! only lets % of whats considered out!
-    frequency_penalty: 1.02, // penalizes common responses
-    presence_penalty: 0.7,//0.85, // penalizes irrelevant responses (to the topic ykno)
+    top_p: 0.957, // output filter! only lets % of whats considered out!
+    frequency_penalty: 2, // penalizes common responses
+    presence_penalty: 0.9, // penalizes irrelevant responses (to the topic ykno)
     messages: result.messages
 });
 
