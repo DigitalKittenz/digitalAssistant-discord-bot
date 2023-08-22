@@ -100,9 +100,7 @@ async function processMessage(message) {
             }];
         }
 
-// regex to catch unclean input
-const conformingRegex = /[\u0020-\u007F\u00A0-\u00FF\u1F300-\u1F9FF]/g;
-        
+// function to catch unclean input
 function sanitizeMessage(message) {
     // match all emojis
     let emojis = message.match(emojiRegex());
@@ -111,7 +109,7 @@ function sanitizeMessage(message) {
     // add the emojis back in
     if (emojis) {
         for (let emoji of emojis) {
-            sanitized = sanitized.replace(emoji, '');
+            sanitized = sanitized + ' ' + emoji;
         }
     }
     return sanitized;
@@ -125,7 +123,7 @@ let sanitizedContent = sanitizeMessage(`${displayName}: ${message.content}`);
 
 
 // trim down old convo before adding new message
-let result = cutLongMessage(messages, 3500); // leave some room for the assistant's message!
+let result = cutLongMessage(messages, 3500); // leave some room for the bots message!
 
 // add new message
 result.messages.push({
@@ -140,9 +138,9 @@ client.globalState.conversations[message.channel.id] = result.messages;
 const response = await openai.createChatCompletion({
     model: 'gpt-3.5-turbo-0301',
   //  model: 'gpt-3.5-turbo',
-    temperature: 1.962, //randomness
+    temperature: 1.96, //randomness
     top_p: 0.961, // output filter! only lets % of whats considered out!
-    frequency_penalty: 1.75, // penalizes common responses
+    frequency_penalty: 1.7, // penalizes common responses
     presence_penalty: 0.82, // penalizes irrelevant responses (to the topic ykno)
     messages: result.messages
 });
@@ -152,7 +150,7 @@ console.log(response);
 // Ok then, let's send that message back to discord!
     await sendLongMessage(message.channel, `${response.data.choices[0].message.content}`);
 
-        // store the assistant's message in the channel's conversation history
+        // store the bots message in the channel's conversation history
         client.globalState.conversations[message.channel.id].push({
             "role": "assistant",
             "content": `${response.data.choices[0].message.content}`
@@ -182,7 +180,7 @@ client.on('messageCreate', async (message) => {
     }
 
     // Call the processMessage function without waiting for it to finish
-    // If the message contains dotty or dottybot, or if autoReply is enabled
+    // If the message contains dotty or dottybot, or if autoReply is enabled!
     if (/dotty(bot)?/i.test(message.content) || client.globalState.autoReply[message.channel.id]) {
         processMessage(message);
     }
