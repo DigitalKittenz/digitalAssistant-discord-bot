@@ -1,4 +1,5 @@
 require('dotenv').config();
+const emojiRegex = require('emoji-regex');
 
 const {
     Client,
@@ -102,52 +103,51 @@ async function processMessage(message) {
 // regex to catch unclean input
 const conformingRegex = /[\u0020-\u007F\u00A0-\u00FF\u1F300-\u1F9FF]/g;
         
-function sanitizeMessages(messages) {
-    let cleanedMessages = [];
-    for (let msg of messages) {
-        // if every character in the msg content matches the regex, add it to the cleanedMessages array
-        let matches = msg.content.match(conformingRegex);
-        if (matches && matches.length === msg.content.length) {
-            cleanedMessages.push(msg);
+function sanitizeMessage(message) {
+    // match all emojis
+    let emojis = message.match(emojiRegex());
+    // remove anything that ain't an emoji or a regular text character
+    let sanitized = message.replace(/[^a-zA-Z0-9\s\.\,\!\?\:\;\-\_\+\=\*\(\)\[\]\{\}\"\'\#\$\%\&\<\>\@\~\`\^\|\\\/]+/g, '');
+    // add the emojis back in
+    if (emojis) {
+        for (let emoji of emojis) {
+            sanitized = sanitized.replace(emoji, '');
         }
     }
-    return cleanedMessages;
+    return sanitized;
 }
 // clone the array in the channel's history so we don't alter the original while adding the system message
 
 let messages = [...client.globalState.conversations[message.channel.id]];
-console.log(messages, 'msgs');
+
+// add new message
+let sanitizedContent = sanitizeMessage(`${displayName}: ${message.content}`);
+
 
 // trim down old convo before adding new message
 let result = cutLongMessage(messages, 3500); // leave some room for the assistant's message!
-console.log(result, 'long');
-// sanitize the messages after they've been trimmed
-let cleanedMessages = sanitizeMessages(result.messages);
-console.log(cleanedMessages, 'clean');
-
 
 // add new message
-cleanedMessages.push({
+result.messages.push({
     "role": "user",
-    "content": `${displayName}: ${message.content}`
+    "content": sanitizedContent
 });
 
-
 // update the convos with trimmed messages and the new user message
-client.globalState.conversations[message.channel.id] = cleanedMessages;
+client.globalState.conversations[message.channel.id] = result.messages;
 
 // hit up openai's fancy api
 const response = await openai.createChatCompletion({
-    //  model: 'gpt-3.5-turbo',
     model: 'gpt-3.5-turbo-0301',
-    temperature: 2, //randomness
-    top_p: 0.957, // output filter! only lets % of whats considered out!
-    frequency_penalty: 2, // penalizes common responses
-    presence_penalty: 0.9, // penalizes irrelevant responses (to the topic ykno)
-    messages: cleanedMessages
+  //  model: 'gpt-3.5-turbo',
+    temperature: 1.962, //randomness
+    top_p: 0.961, // output filter! only lets % of whats considered out!
+    frequency_penalty: 1.75, // penalizes common responses
+    presence_penalty: 0.82, // penalizes irrelevant responses (to the topic ykno)
+    messages: result.messages
 });
 
-//console.log(response);
+console.log(response);
 
 // Ok then, let's send that message back to discord!
     await sendLongMessage(message.channel, `${response.data.choices[0].message.content}`);
