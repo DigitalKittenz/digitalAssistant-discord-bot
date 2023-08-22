@@ -32,7 +32,7 @@ async function sendLongMessage(channel, message) {
     for (const part of parts) {
         await channel.send(part);
         // wait a bit between message parts
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 800));
     }
 }
 
@@ -84,6 +84,7 @@ function cutLongMessage(messages, maxTokens = 3200) {
     };
 }
 
+
 async function processMessage(message) {
     try {
         // send typing indicator
@@ -98,53 +99,58 @@ async function processMessage(message) {
             }];
         }
 
+// regex to catch unclean input
+const conformingRegex = /[\u0020-\u007F\u00A0-\u00FF\u1F300-\u1F9FF]/g;
+        
 function sanitizeMessages(messages) {
-    // regex to match any character that's NOT a normal alphanumeric, common symbol, or emoji
-    const nonconformingRegex = /[^\u0020-\u007F\u00A0-\u00FF\u1F300-\u1F9FF]/g;
-
     let cleanedMessages = [];
-
-    for (let message of messages) {
-        // if the message content matches the nonconforming regex, ignore it
-        if (!nonconformingRegex.test(message.content)) {
-            // add it to the cleanedMessages array
-            cleanedMessages.push(message);
+    for (let msg of messages) {
+        // if every character in the msg content matches the regex, add it to the cleanedMessages array
+        let matches = msg.content.match(conformingRegex);
+        if (matches && matches.length === msg.content.length) {
+            cleanedMessages.push(msg);
         }
     }
-
     return cleanedMessages;
 }
-
 // clone the array in the channel's history so we don't alter the original while adding the system message
+
 let messages = [...client.globalState.conversations[message.channel.id]];
+console.log(messages, 'msgs');
 
 // trim down old convo before adding new message
 let result = cutLongMessage(messages, 3500); // leave some room for the assistant's message!
+console.log(result, 'long');
+// sanitize the messages after they've been trimmed
+let cleanedMessages = sanitizeMessages(result.messages);
+console.log(cleanedMessages, 'clean');
+
 
 // add new message
-result.messages.push({
+cleanedMessages.push({
     "role": "user",
     "content": `${displayName}: ${message.content}`
 });
 
+
 // update the convos with trimmed messages and the new user message
-client.globalState.conversations[message.channel.id] = result.messages;
+client.globalState.conversations[message.channel.id] = cleanedMessages;
 
 // hit up openai's fancy api
 const response = await openai.createChatCompletion({
-  //  model: 'gpt-3.5-turbo',
+    //  model: 'gpt-3.5-turbo',
     model: 'gpt-3.5-turbo-0301',
     temperature: 2, //randomness
     top_p: 0.957, // output filter! only lets % of whats considered out!
     frequency_penalty: 2, // penalizes common responses
     presence_penalty: 0.9, // penalizes irrelevant responses (to the topic ykno)
-    messages: result.messages
+    messages: cleanedMessages
 });
 
-console.log(response);
+//console.log(response);
 
-        // Ok then, let's send that message back to discord!
-        await sendLongMessage(message.channel, `${response.data.choices[0].message.content}`);
+// Ok then, let's send that message back to discord!
+    await sendLongMessage(message.channel, `${response.data.choices[0].message.content}`);
 
         // store the assistant's message in the channel's conversation history
         client.globalState.conversations[message.channel.id].push({
