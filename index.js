@@ -33,7 +33,7 @@ async function sendLongMessage(channel, message) {
     for (const part of parts) {
         await channel.send(part);
         // wait a bit between message parts
-        await new Promise(resolve => setTimeout(resolve, 800));
+        await new Promise(resolve => setTimeout(resolve, 1000));
     }
 }
 
