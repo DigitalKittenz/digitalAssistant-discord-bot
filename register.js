@@ -19,6 +19,10 @@ name: 'manul',
 description: 'Shows a manul pic',
 },
 {
+name: 'clearConvo',
+description: 'Clears the convo history',
+},
+{
 name: 'botfact',
 description: 'Tells a random fact!'
 },

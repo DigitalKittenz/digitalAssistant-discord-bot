@@ -178,13 +178,13 @@ client.on('messageCreate', async (message) => {
         console.log(botOffMessage);
         return;
     }
-
     // Call the processMessage function without waiting for it to finish
     // If the message contains dotty or dottybot, or if autoReply is enabled!
-    if (/dotty(bot)?/i.test(message.content) || client.globalState.autoReply[message.channel.id]) {
+    if (/dotty(bot)?/i.test(message.content) || client.globalState.autoReply[message.channel.id] || /doty(bot)?/i.test(message.content)) {
         processMessage(message);
     }
 });
+
 
 // load commands
 client.commands = new Collection();
