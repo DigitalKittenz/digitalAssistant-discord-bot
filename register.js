@@ -34,28 +34,26 @@ description: 'gives u help'
 name: 'clearconvo',
 description: 'wipes the convo history off the face of the earth... or at least this channel lol'
 }
-
 ];
 
-// new REST object! we're telling it to use version '9' and we're giving it our bot's secret token
-const rest = new REST({ version: '9' }).setToken(process.env.TOKEN);
+// our shiny new discord rest api! we're cool with version '9' and we're passing it our bot's super secret token
+const discordRestPal = new REST({ version: '9' }).setToken(process.env.TOKEN);
 
-
-// this function that doesn't wait around, it gets to work as soon as it's defined
+// this function isn't gonna wait around for an invitation, it's gonna get the party started asap!
 (async () => {
     try {
-        // let's tell the world we're gettin started with reloadin slash commands
-        console.log('Started reloading slash commands.');
+        // let everyone know we're starting with a slash command reload
+        console.log('getting this slash command reload party started!');
 
-        // knocking on discord's door and handin over our commands
-        await rest.put(Routes.applicationCommands(process.env.APP_ID), {
+        // time to knock on discord's door and hand over our fresh batch of commands
+        await discordRestPal.put(Routes.applicationCommands(process.env.APP_ID), {
             body: commands,
         });
 
-        // if everything went well, we'll print a lil success message
-        console.log('Successfully reloaded slash commands');
+        // if all went well, success message!
+        console.log('woohoo! slash commands reloaded successfully!');
     } catch (error) {
-        // oh no! if something went wrong, we'll print the error so we can figure out what it is
+        // dang, something went wrong!
         console.error(error);
     }
 })();

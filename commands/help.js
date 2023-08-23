@@ -5,7 +5,7 @@ module.exports = {
         try {
             await interaction.reply(`
     
-    **Commands**
+    **====Commands====**
     \`/help\` - shows u this help menu lmao
     \`/hello\` - start a conversation! this turns on AUTOREPLY!
     \`/goodbye\` - ends a conversation, turns off autoreplying
