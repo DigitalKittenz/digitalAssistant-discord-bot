@@ -4,10 +4,12 @@ module.exports = {
     async execute(interaction, client) {
         try {
             await interaction.reply(`
+    
     **Commands**
     \`/help\` - shows u this help menu lmao
     \`/hello\` - start a conversation! this turns on AUTOREPLY!
-    \`/goodbye\` - ends a conversation, turns off autoreplyin
+    \`/goodbye\` - ends a conversation, turns off autoreplying
+    \`clearconvo\` - wipes the convo history off the face of the earth... or at least this channel lol
     \`/botfact\` - cool fact of the day ;)
     \`/manul\` - sends manul gifs
    

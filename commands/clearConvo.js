@@ -8,9 +8,13 @@ module.exports = {
     description: 'wipes the convo history off the face of the earth... or at least this channel lol',
     async execute(interaction, client) {
 
-
         // snatching the channel id from the interaction
         const channelId = interaction.channelId;
+        
+        // making sure client.globalState.conversations is defined
+        if (!client.globalState.conversations) {
+            client.globalState.conversations = {};
+        }
         
         // doing a lil check to see if there's any convo history for this channel
         if (!client.globalState.conversations[channelId]) {
