@@ -54,15 +54,22 @@ client.globalState = {
 function cutLongMessage(messages, maxTokens = 3200) {
     // this will very roughly estimate the token count
     function countTokens(content) {
+        if (content === undefined) {
+            console.log('content is undefined!');
+            return 0;
+        }
         return content.split(/\s+/).length + content.length / 6;
     }
 
     let totalTokenCount = 0;
     for (let message of messages) {
+        if (message.content === undefined) {
+            console.log('message without content: ', message);
+            continue;
+        }
         let tokenCount = countTokens(message.content);
         totalTokenCount += tokenCount;
     }
-
     // if we're over the limit, remove the oldest user messages to get back in limit
     while (totalTokenCount > maxTokens) {
         let foundNonSystemMessage = false;
@@ -98,7 +105,7 @@ async function processMessage(message) {
                 "role": "system",
                 "content": prompts.dotty.message
             },
-            {...exampleConvo}];
+            ...exampleConvo.exampleConvo];
         }
 
 // function to catch unclean input -- api can't handle spamming nonconforming characters!

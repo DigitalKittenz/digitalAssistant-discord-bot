@@ -14,7 +14,7 @@ module.exports = {
         
         // doing a lil check to see if there's any convo history for this channel
         if (!client.globalState.conversations[channelId]) {
-            await interaction.reply('nothing to clear here, this channel is as clean as a whistle!');
+            await interaction.reply('nothing to clear here, this channel is as clean as a whistle!🎶');
             return;
         }
 
@@ -26,7 +26,7 @@ module.exports = {
             "role": "system",
             "content": prompts.dotty.message
         },
-        {...exampleConvo}]
+        ...exampleConvo.exampleConvo]
 
         // sending a lil confirmation message to let u know it's done
         await interaction.reply('poof! convo history is gone!');
