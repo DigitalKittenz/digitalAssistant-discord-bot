@@ -19,10 +19,6 @@ name: 'manul',
 description: 'Shows a manul pic',
 },
 {
-name: 'clearConvo',
-description: 'wipes the convo history off the face of the earth... or at least this channel lol'
-},
-{
 name: 'botfact',
 description: 'Tells a random fact!'
 },
@@ -33,6 +29,10 @@ description: 'displays server info',
 {
 name: 'help',
 description: 'gives u help'
+},
+{
+name: 'clearconvo',
+description: 'wipes the convo history off the face of the earth... or at least this channel lol'
 }
 
 ];

@@ -11,8 +11,9 @@ const {
     OpenAIApi
 } = require('openai');
 const fs = require('fs');
-// here we load up that juicy prompts file
-const prompts = require('./prompts');
+// here we load up those juicy prompts files
+const prompts = require('./prompts/prompts');
+const  exampleConvo  = require('./prompts/ConvoPrompt');
 
 // setup discord client
 const client = new Client({
@@ -85,7 +86,6 @@ function cutLongMessage(messages, maxTokens = 3200) {
     };
 }
 
-
 async function processMessage(message) {
     try {
         // send typing indicator
@@ -97,10 +97,11 @@ async function processMessage(message) {
             client.globalState.conversations[message.channel.id] = [{
                 "role": "system",
                 "content": prompts.dotty.message
-            }];
+            },
+            {...exampleConvo}];
         }
 
-// function to catch unclean input
+// function to catch unclean input -- api can't handle spamming nonconforming characters!
 function sanitizeMessage(message) {
     // match all emojis
     let emojis = message.match(emojiRegex());
@@ -114,13 +115,13 @@ function sanitizeMessage(message) {
     }
     return sanitized;
 }
+
 // clone the array in the channel's history so we don't alter the original while adding the system message
 
 let messages = [...client.globalState.conversations[message.channel.id]];
 
 // add new message
 let sanitizedContent = sanitizeMessage(`${displayName}: ${message.content}`);
-
 
 // trim down old convo before adding new message
 let result = cutLongMessage(messages, 3500); // leave some room for the bots message!
