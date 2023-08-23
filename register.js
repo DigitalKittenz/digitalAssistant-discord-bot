@@ -20,7 +20,7 @@ description: 'Shows a manul pic',
 },
 {
 name: 'clearConvo',
-description: 'Clears the convo history',
+description: 'wipes the convo history off the face of the earth... or at least this channel lol'
 },
 {
 name: 'botfact',
@@ -37,10 +37,10 @@ description: 'gives u help'
 
 ];
 
-// new REST object! we're tellin it to use version '9' and we're givin it our bot's secret token
+// new REST object! we're telling it to use version '9' and we're giving it our bot's secret token
 const rest = new REST({ version: '9' }).setToken(process.env.TOKEN);
 
-// here's a fancy thing called an immediately invoked function expression (IIFE)
+
 // this function that doesn't wait around, it gets to work as soon as it's defined
 (async () => {
     try {
