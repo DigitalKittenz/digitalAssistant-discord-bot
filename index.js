@@ -26,7 +26,7 @@ const client = new Client({
 });
 // just a cute offline message
 const botOffMessage = 'bot is resigned to her very own dream bubble.';
-
+const botOnMessage = "Bot is now active...let's do this!"
 // for sending long messages
 async function sendLongMessage(channel, message) {
     const parts = message.match(/[\s\S]{1,2000}/g) || [];
@@ -176,16 +176,20 @@ client.on('messageCreate', async (message) => {
     // If the message is bot_on, set botActive to true
     if (message.content === process.env.BOT_ON) {
         client.globalState.botActive = true;
-        console.log("Bot is now active...let's do this!");
+        console.log(botOnMessage);
+        await message.reply(botOnMessage);
+
     }
     // if the message is bot_off, set botActive to false
     if (message.content === process.env.BOT_OFF) {
         client.globalState.botActive = false;
-        console.log(botOffMessage)
+        console.log(botOffMessage);
+        await message.reply(botOffMessage);
+ 
+       
     }
     // If the bot is not active, don't process other messages
     if (!client.globalState.botActive) {
-        console.log(botOffMessage);
         return;
     }
     // Call the processMessage function without waiting for it to finish
