@@ -43,7 +43,7 @@ module.exports = { biases :
         11423 : -100, //specific
         39239 : -100, //certain
         8818 : -100, //function
-        
+        18049 : -100 //important
     }
 };
 

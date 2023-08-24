@@ -48,7 +48,7 @@ const openai = new OpenAIApi(configuration);
 client.globalState = {
     autoReply: {},
     botActive: true, //bot's state
-    botReset: false,
+    newConvo: false,
     conversations: {} /* object to store chat histories per channel*/,
 };
 
@@ -193,18 +193,6 @@ client.on('messageCreate', async (message) => {
     // If the message contains dotty or dottybot, or if autoReply is enabled!
     if (/dotty(bot)?/i.test(message.content) || client.globalState.autoReply[message.channel.id] || /doty(bot)?/i.test(message.content)) {
         processMessage(message);
-    }
-    if (message.content === '!clear' || client.globalState.botReset === true) {
-        if (message.content === '!clear') {
-            message.reply('poof! convo history is gone!');
-        }
-        client.globalState.conversations[message.channel.id] = [{
-            "role": "system",
-            "content": prompts.dotty.message
-        },
-        ...exampleConvo.exampleConvo];
-        client.globalState.botReset = false;
-        return;
     }
 
 });
