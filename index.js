@@ -142,18 +142,20 @@ result.messages.push({
 // update the convos with trimmed messages and the new user message
 client.globalState.conversations[message.channel.id] = result.messages;
 
+//requiring the logits file
+const logits = require('./logits');
 // hit up openai's fancy api
 const response = await openai.createChatCompletion({
     model: 'gpt-3.5-turbo-0301',
-  //  model: 'gpt-3.5-turbo',
     temperature: 1.95, //randomness
     top_p: 0.90, // output filter! only lets % of whats considered out!
     frequency_penalty: 1.73, // penalizes common responses
     presence_penalty: 0.82, /* penalizes irrelevant responses (to the topic ykno)*/
+    logit_bias: logits.biases, // token bias
     messages: result.messages
 });
 
-console.log(response);
+//console.log(response);
 
 // Ok then, let's send that message back to discord!
     await sendLongMessage(message.channel, `${response.data.choices[0].message.content}`);
@@ -203,7 +205,7 @@ for (const file of commandFiles) {
 }
 
 client.on('ready', () => {
-    console.log(`Logged in as ${client.user.tag}!`);
+    console.log(`logged into discord as ${client.user.tag}!`);
 });
 
 client.on('interactionCreate', async (interaction) => {
