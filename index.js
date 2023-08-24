@@ -123,8 +123,13 @@ function sanitizeMessage(message) {
     return sanitized;
 }
 
-// clone the array in the channel's history so we don't alter the original while adding the system message
 
+
+
+
+
+
+// clone the array in the channel's history so we don't alter the original while adding the system message
 let messages = [...client.globalState.conversations[message.channel.id]];
 
 // add new message
@@ -155,11 +160,8 @@ const response = await openai.createChatCompletion({
     messages: result.messages
 });
 
-//console.log(response);
-
 // Ok then, let's send that message back to discord!
     await sendLongMessage(message.channel, `${response.data.choices[0].message.content}`);
-
         // store the bots message in the channel's conversation history
         client.globalState.conversations[message.channel.id].push({
             "role": "assistant",
@@ -177,16 +179,15 @@ client.on('messageCreate', async (message) => {
     if (message.content === process.env.BOT_ON) {
         client.globalState.botActive = true;
         console.log(botOnMessage);
+        // reply with bot on message!
         await message.reply(botOnMessage);
-
     }
     // if the message is bot_off, set botActive to false
     if (message.content === process.env.BOT_OFF) {
         client.globalState.botActive = false;
         console.log(botOffMessage);
+        // reply with bot off message!
         await message.reply(botOffMessage);
- 
-       
     }
     // If the bot is not active, don't process other messages
     if (!client.globalState.botActive) {

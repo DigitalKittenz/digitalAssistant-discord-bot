@@ -1,6 +1,6 @@
 // referencing the prompts files
 const prompts = require('../prompts/prompts');
-const  exampleConvo  = require('../prompts/ConvoPrompt');
+const  ConvoPrompt  = require('../prompts/ConvoPrompt');
 
 module.exports = {
     name: 'clearconvo',
@@ -14,7 +14,7 @@ module.exports = {
         if (!client.globalState.conversations) {
             client.globalState.conversations = {};
         }
-        
+
         // doing a lil check to see if there's any convo history for this channel
         if (!client.globalState.conversations[channelId]) {
             await interaction.reply('nothing to clear here, this channel is as clean as a whistle!🎶');
@@ -25,13 +25,16 @@ module.exports = {
         client.globalState.conversations[channelId] = [];
 
         //add prompt back in!
-        client.globalState.conversations[channelId] = [{
+    /*    client.globalState.conversations[channelId] = [{
             "role": "system",
             "content": prompts.dotty.message
         },
-        ...exampleConvo.exampleConvo]
+        ...ConvoPrompt.exampleConvo]
 
+        // logging
+        console.log(...ConvoPrompt.exampleConvo), "hiiiiiiiiiiii"; */
         // sending a lil confirmation message to let u know it's done
         await interaction.reply('poof! convo history is gone!');
+
     },
 };
