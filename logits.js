@@ -35,7 +35,6 @@ module.exports = { biases :
         38947 : -100, //remember
         10215 : -80, //corr
         29872 : -100, //este
-        388 : 11, //um
         19532 : -100, //Sure
         88292 : -100, // yas
         676 : -100, //d'
@@ -45,6 +44,8 @@ module.exports = { biases :
         8818 : -100, //function
         18049 : -100, //important
         364 : -50, //ers
+        17720 : -70,//sers
+
     }
 };
 

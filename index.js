@@ -52,7 +52,7 @@ client.globalState = {
     conversations: {} /* object to store chat histories per channel*/,
 };
 
-function cutLongMessage(messages, maxTokens = 4096) {
+function cutLongMessage(messages, maxTokens = 5000) {
     // this will very roughly estimate the token count
     function countTokens(content) {
         if (content === undefined) {
@@ -118,12 +118,11 @@ function sanitizeMessage(message) {
     // add the emojis back in
     if (emojis) {
         for (let emoji of emojis) {
-            sanitized = sanitized + ' ' + emoji;
+            sanitized += ' ' + emoji;
         }
     }
     return sanitized;
 }
-
 
 // clone the array in the channel's history so we don't alter the original while adding the system message
 let messages = [...client.globalState.conversations[message.channel.id]];

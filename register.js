@@ -29,13 +29,21 @@ description: 'says goodbye!'
             value: 'manul',
           },
           {
-            name: 'All',
-            value: 'all',
+            name: 'cartoon',
+            value: 'shows some illustrated kittys'
           },
           {
-            name: 'Choose another cat',
-            value: 'another',
+           name: 'wizard',
+           value: 'shows some wizard kittys'
           },
+          {
+            name: 'spotty kitty',
+            value: 'shows some rusted spotted cats'
+          },
+          {
+            name: 'meow',
+            value: 'meows at u'
+          }
         ],
       },
     ],
