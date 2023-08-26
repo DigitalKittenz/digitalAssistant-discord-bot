@@ -15,9 +15,31 @@ name: 'goodbye',
 description: 'says goodbye!'
 },
 {
-name: 'manul',
-description: 'Shows a manul pic',
-},
+    name: 'kitty',
+    description: 'Shows a kitty pic',
+    options: [
+      {
+        name: 'type',
+        description: 'The type of kitty u want',
+        type: 3,
+        required: false,
+        choices: [
+          {
+            name: 'Manul',
+            value: 'manul',
+          },
+          {
+            name: 'All',
+            value: 'all',
+          },
+          {
+            name: 'Choose another cat',
+            value: 'another',
+          },
+        ],
+      },
+    ],
+  },
 {
 name: 'botfact',
 description: 'Tells a random fact!'
@@ -57,3 +79,17 @@ const discordRestPal = new REST({ version: '9' }).setToken(process.env.TOKEN);
         console.error(error);
     }
 })();
+
+/*
+SUB_COMMAND 1   
+SUB_COMMAND_GROUP 2 
+STRING 3    
+INTEGER 4
+BOOLEAN 5   
+USER 6  
+CHANNEL 7
+ROLE 8  
+MENTIONABLE 9
+NUMBER 10
+ATTACHMENT 11
+*/

@@ -149,7 +149,7 @@ const logits = require('./logits');
 const response = await openai.createChatCompletion({
     model: 'gpt-3.5-turbo-0301',
     temperature: 1.96, //randomness
-    top_p: 0.91, // output filter! only lets % of whats considered out!
+    top_p: 0.90, // output filter! only lets % of whats considered out!
     frequency_penalty: 1.73, // penalizes common responses
     presence_penalty: 0.82, /* penalizes irrelevant responses (to the topic ykno)*/
     logit_bias: logits.biases, // token bias
