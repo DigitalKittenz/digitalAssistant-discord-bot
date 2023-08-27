@@ -47,6 +47,13 @@ module.exports = { biases :
         "3358" : -100, //timately
         "4421" : -100, //wide
         "11850" : -100, //ateful
+        "17319" : -100, //course
+        "15410" : -100, //disc
+        "12998" : -100, //inately
+        "21109" : -100, //pleasant
+        "23100" : -100, //exper
+        "876" : -100, //ative,
+        "653" : -100, //ition
 
 
     }
