@@ -166,7 +166,6 @@ const logits = require('./logits');
 let response;
 //console.log(response, "first");
 
-
 // getting a bunch of banned words. 
 const bannedWords =   new RegExp([
     "as an ai language model",
@@ -257,12 +256,12 @@ do {
             // get bot's response after restart
     response = await openai.createChatCompletion({
         model: 'gpt-3.5-turbo-0301',
-        temperature: 1.95,
-        top_p: 0.9613,
-        frequency_penalty: 1.8,
-        n : 1,
-        presence_penalty: 0.79,
-        logit_bias: logits.biases,
+        temperature: 1.96, //randomness
+        top_p: 0.9632, // output filter! only lets % of whats considered out! do NOT go under 9.6
+        frequency_penalty: 1.8, // penalizes common responses
+        n : 1, // number of responses
+        presence_penalty: 0.79, /* penalizes irrelevant responses (to the topic ykno) - do NOT go over 0.8*/
+        logit_bias: logits.biases, // token bias
         messages: result.messages
     });
     // add bot's response to the array
@@ -274,8 +273,6 @@ do {
         attempts = 0; // reset attempts count as well
     }
 } while ((response.data.choices[0].message.content.match(bannedWords)) && attempts < 10);
-
-
 console.log(attempts);
 
 
