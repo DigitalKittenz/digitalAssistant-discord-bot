@@ -28,6 +28,8 @@ const client = new Client({
 const botOffMessage = 'bot is resigned to her very own dream bubble.';
 const botOnMessage = "Bot is now active...let's do this!"
 
+
+
 // for sending long messages
 async function sendLongMessage(channel, message) {
     const parts = message.match(/[\s\S]{1,2000}/g) || [];
@@ -163,11 +165,52 @@ const logits = require('./logits');
 
 let response;
 //console.log(response, "first");
+
+
+// getting a bunch of banned words. 
+const bannedWords =   new RegExp([
+    "as an ai language model",
+    'furthermore',
+    "nonetheless",
+    "remember",
+    "it's important to",
+    "thus",
+    "let me know",
+    "note",
+    "moreover",
+    "hence",
+    "correspondingly",
+    "retrospect",
+    "assist",
+    "accordingly",
+    "additionally",
+    "subsequently",
+    "in addition",
+    "cannot",
+    "apologize",
+    "feel free",
+    "however",
+    "certainly",
+    "unfortunately",
+    "employ",
+    "in addition",
+    "apologies for the confusion",
+    "certainly",
+    "ultimately",
+    "overall",
+    "seems",
+    "Let's",
+    "summary",
+    "essentially",
+    "i don't have feelings"
+].join('|'), 'i'); // join with | OR and make case insensitive with i. 
+
+// hit up openais fancy api
 let attempts = 0;
 do {
     response = await openai.createChatCompletion({
         model: 'gpt-3.5-turbo-0301',
-        temperature: 2,
+        temperature: 1.97,
         top_p: 0.96,
         frequency_penalty: 1.8,
         presence_penalty: 0.8,
@@ -177,19 +220,21 @@ do {
     });
     attempts++;
     // if after 10 attempts we're still not getting what we want, reset the messages array!!!!
-    if ((response.data.choices[0].message.content.match(/as an ai language model|assist|apologize|certainly|i don't have feelings/i)) && attempts >= 10) {
+    if ((response.data.choices[0].message.content.match(bannedWords)) && attempts >= 10) {
         console.log("resetting messages...");
+        //restarting message!!
+        await message.reply("Glitch!!! Restarting");
         result.messages = [{
             "role": "system",
             "content": prompts.dotty.message
         }, ...exampleConvo.exampleConvo,
         {
-            "role" : "user",
-            "content" :"im rlly sorry dotty but u malfunctioned n restarted due to a glitch :("
+            "role" : "system",
+            "content" :"im rlly sorry dotty but u malfunctioned and u have restarted due to a glitch. ur back now tho so say hi! *the system turns dotty back on* :( NEW CONVERSATION started!:"
         }];
         attempts = 0; // reset attempts count as well
     }
-} while ((response.data.choices[0].message.content.match(/as an ai language model|assist|apologize|certainly|i don't have feelings/i)) && attempts < 10);
+} while ((response.data.choices[0].message.content.match(bannedWords)) && attempts < 10);
 
 
 console.log(attempts);
