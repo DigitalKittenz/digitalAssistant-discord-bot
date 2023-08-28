@@ -167,17 +167,31 @@ let attempts = 0;
 do {
     response = await openai.createChatCompletion({
         model: 'gpt-3.5-turbo-0301',
-        temperature: 2, //randomness
-        top_p: 0.96, // output filter! only lets % of whats considered out!
-        frequency_penalty: 1.8, // penalizes common responses
-        presence_penalty: 0.8, /* penalizes irrelevant responses (to the topic ykno)*/
+        temperature: 2,
+        top_p: 0.96,
+        frequency_penalty: 1.8,
+        presence_penalty: 0.8,
         n : 1,
-        logit_bias: logits.biases, // token bias
+        logit_bias: logits.biases,
         messages: result.messages
     });
     attempts++;
-    // so that unwanted words are cut out. 
-} while ((response.data.choices[0].message.content.match(/as an ai language model|assist|i don't have feelings/i)) && attempts < 10);
+    // if after 10 attempts we're still not getting what we want, reset the messages array!!!!
+    if ((response.data.choices[0].message.content.match(/as an ai language model|assist|apologize|certainly|i don't have feelings/i)) && attempts >= 10) {
+        console.log("resetting messages...");
+        result.messages = [{
+            "role": "system",
+            "content": prompts.dotty.message
+        }, ...exampleConvo.exampleConvo,
+        {
+            "role" : "user",
+            "content" :"im rlly sorry dotty but u malfunctioned n restarted due to a glitch :("
+        }];
+        attempts = 0; // reset attempts count as well
+    }
+} while ((response.data.choices[0].message.content.match(/as an ai language model|assist|apologize|certainly|i don't have feelings/i)) && attempts < 10);
+
+
 console.log(attempts);
 
 
@@ -219,10 +233,12 @@ client.on('messageCreate', async (message) => {
 if (/dotty(bot)?/i.test(message.content) || client.globalState.autoReply[message.channel.id] || /doty(bot)?/i.test(message.content)) {
     processMessage(message);
 }
+// clear with the !clear command and if botReset is true!!!
     if (message.content === '!clear' || client.globalState.botReset === true) {
         if (message.content === '!clear') {
             message.reply('poof! convo history is gone!');
         }
+        // clear convo and resend the prompts!
         client.globalState.conversations[message.channel.id] = [{
             "role": "system",
             "content": prompts.dotty.message
