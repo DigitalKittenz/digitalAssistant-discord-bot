@@ -188,12 +188,14 @@ const bannedWords =   new RegExp([
     "in addition",
     "cannot",
     "apologize",
+    "simply",
     "feel free",
     "however",
     "certainly",
     "unfortunately",
     "employ",
     "in addition",
+    "apologies",
     "apologies for the confusion",
     "certainly",
     "ultimately",
@@ -203,19 +205,19 @@ const bannedWords =   new RegExp([
     "summary",
     "essentially",
     "i don't have feelings"
-].join('|'), 'i'); // join with | OR and make case insensitive with i. 
+].join('|'), 'i'); // join with | and make case insensitive with i. 
 
 // hit up openais fancy api
 let attempts = 0;
 do {
     response = await openai.createChatCompletion({
         model: 'gpt-3.5-turbo-0301',
-        temperature: 1.97,
-        top_p: 0.96,
-        frequency_penalty: 1.8,
-        presence_penalty: 0.8,
-        n : 1,
-        logit_bias: logits.biases,
+        temperature: 2, //randomness
+        top_p: 0.96, // output filter! only lets % of whats considered out!
+        frequency_penalty: 1.8, // penalizes common responses
+        n : 1, // number of responses
+        presence_penalty: 0.8, /* penalizes irrelevant responses (to the topic ykno)*/
+        logit_bias: logits.biases, // token bias
         messages: result.messages
     });
     attempts++;
@@ -230,7 +232,7 @@ do {
         }, ...exampleConvo.exampleConvo,
         {
             "role" : "system",
-            "content" :"im rlly sorry dotty but u malfunctioned and u have restarted due to a glitch. ur back now tho so say hi! *the system turns dotty back on* :( NEW CONVERSATION started!:"
+            "content" :"im rlly sorry dotty this is the system talkin but u malfunctioned and u have restarted due to a p sad glitch!!!! :("
         }];
         attempts = 0; // reset attempts count as well
     }
