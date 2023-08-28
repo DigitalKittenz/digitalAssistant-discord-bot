@@ -27,6 +27,7 @@ const client = new Client({
 // just a cute offline message
 const botOffMessage = 'bot is resigned to her very own dream bubble.';
 const botOnMessage = "Bot is now active...let's do this!"
+
 // for sending long messages
 async function sendLongMessage(channel, message) {
     const parts = message.match(/[\s\S]{1,2000}/g) || [];
@@ -52,7 +53,7 @@ client.globalState = {
     conversations: {} /* object to store chat histories per channel*/,
 };
 
-function cutLongMessage(messages, maxTokens = 5000) {
+function cutLongMessage(messages, maxTokens = 4700) {
     // this will very roughly estimate the token count
     function countTokens(content) {
         if (content === undefined) {
@@ -74,7 +75,7 @@ function cutLongMessage(messages, maxTokens = 5000) {
     // if we're over the limit, remove the oldest user messages to get back in limit
     while (totalTokenCount > maxTokens) {
         let foundNonSystemMessage = false;
-        for (let i = 0; i < messages.length; i++) {
+        for (let i = 6; i < messages.length; i++) {
             if (messages[i].role !== "system") {
                 let tokenCount = countTokens(messages[i].content);
                 totalTokenCount -= tokenCount;
@@ -88,9 +89,11 @@ function cutLongMessage(messages, maxTokens = 5000) {
         }
     }
     console.log('total tokens: ', totalTokenCount);
+    console.log(messages);
     return {
         messages,
         tokenCount: totalTokenCount
+        
     };
 }
 
@@ -141,15 +144,16 @@ result.messages.push({
 
 // update the convos with trimmed messages and the new user message
 client.globalState.conversations[message.channel.id] = result.messages;
+console.log(result.messages);
 
 //requiring the logits file
 const logits = require('./logits');
 // hit up openai's fancy api
 const response = await openai.createChatCompletion({
     model: 'gpt-3.5-turbo-0301',
-    temperature: 1.96, //randomness
-    top_p: 0.93, // output filter! only lets % of whats considered out!
-    frequency_penalty: 1.73, // penalizes common responses
+    temperature: 1.97, //randomness
+    top_p: 0.95, // output filter! only lets % of whats considered out!
+    frequency_penalty: 1.8, // penalizes common responses
     presence_penalty: 0.8, /* penalizes irrelevant responses (to the topic ykno)*/
     logit_bias: logits.biases, // token bias
     messages: result.messages
