@@ -185,7 +185,11 @@ const bannedWords =   new RegExp([
     "accordingly",
     "additionally",
     "subsequently",
+    "help",
+    "absolutely",
     "in addition",
+    "mentioned",
+    "additional",
     "cannot",
     "apologize",
     "simply",
@@ -193,6 +197,20 @@ const bannedWords =   new RegExp([
     "however",
     "certainly",
     "unfortunately",
+    "regarding",
+    "proceed",
+    "cannot",
+    "tapestry",
+    "wouldn't have it any other way",
+    "remember",
+    "esteemed",
+    "language model",
+    "confusion",
+    "assure",
+    "it's important to note",
+    "please",
+    "but I can't help",
+    "crucial",
     "employ",
     "in addition",
     "apologies",
@@ -201,9 +219,11 @@ const bannedWords =   new RegExp([
     "ultimately",
     "overall",
     "seems",
-    "Let's",
+    "is there anything else you’d like to talk about",
+    "let's",
     "summary",
     "essentially",
+    "ah",
     "i don't have feelings"
 ].join('|'), 'i'); // join with | and make case insensitive with i. 
 
@@ -212,11 +232,11 @@ let attempts = 0;
 do {
     response = await openai.createChatCompletion({
         model: 'gpt-3.5-turbo-0301',
-        temperature: 2, //randomness
-        top_p: 0.96, // output filter! only lets % of whats considered out!
+        temperature: 1.96, //randomness
+        top_p: 0.9632, // output filter! only lets % of whats considered out! do NOT go under 9.6
         frequency_penalty: 1.8, // penalizes common responses
         n : 1, // number of responses
-        presence_penalty: 0.8, /* penalizes irrelevant responses (to the topic ykno)*/
+        presence_penalty: 0.79, /* penalizes irrelevant responses (to the topic ykno) - do NOT go over 0.8*/
         logit_bias: logits.biases, // token bias
         messages: result.messages
     });
@@ -225,7 +245,7 @@ do {
     if ((response.data.choices[0].message.content.match(bannedWords)) && attempts >= 10) {
         console.log("resetting messages...");
         //restarting message!!
-        await message.reply("Glitch!!! Restarting");
+        await message.reply("Glitch!!! Restarting!!");
         result.messages = [{
             "role": "system",
             "content": prompts.dotty.message
@@ -234,6 +254,23 @@ do {
             "role" : "system",
             "content" :"im rlly sorry dotty this is the system talkin but u malfunctioned and u have restarted due to a p sad glitch!!!! :("
         }];
+            // get bot's response after restart
+    response = await openai.createChatCompletion({
+        model: 'gpt-3.5-turbo-0301',
+        temperature: 1.95,
+        top_p: 0.9613,
+        frequency_penalty: 1.8,
+        n : 1,
+        presence_penalty: 0.79,
+        logit_bias: logits.biases,
+        messages: result.messages
+    });
+    // add bot's response to the array
+    result.messages.push({
+        "role" : "assistant",
+        "content" : response.data.choices[0].message.content
+    });
+    console.log(result.messages);
         attempts = 0; // reset attempts count as well
     }
 } while ((response.data.choices[0].message.content.match(bannedWords)) && attempts < 10);
