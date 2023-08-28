@@ -44,7 +44,6 @@ const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
 });
 const openai = new OpenAIApi(configuration);
-
 // handle message events
 client.globalState = {
     autoReply: {},
@@ -89,15 +88,26 @@ function cutLongMessage(messages, maxTokens = 4700) {
         }
     }
     console.log('total tokens: ', totalTokenCount);
-    console.log(messages);
+    //console.log(messages);
     return {
         messages,
         tokenCount: totalTokenCount
         
     };
 }
+// for sending long messages
+async function sendLongMessage(channel, message) {
+    const parts = message.match(/[\s\S]{1,2000}/g) || [];
+
+    for (const part of parts) {
+        await channel.send(part);
+        // wait a bit between message parts
+        await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+}
 
 async function processMessage(message) {
+    console.log("message is processing!", message.content);
     try {
         // send typing indicator
         await message.channel.sendTyping();
@@ -144,20 +154,32 @@ result.messages.push({
 
 // update the convos with trimmed messages and the new user message
 client.globalState.conversations[message.channel.id] = result.messages;
-console.log(result.messages);
+//console.log(result.messages);
 
 //requiring the logits file
 const logits = require('./logits');
+
 // hit up openai's fancy api
-const response = await openai.createChatCompletion({
-    model: 'gpt-3.5-turbo-0301',
-    temperature: 1.97, //randomness
-    top_p: 0.95, // output filter! only lets % of whats considered out!
-    frequency_penalty: 1.8, // penalizes common responses
-    presence_penalty: 0.8, /* penalizes irrelevant responses (to the topic ykno)*/
-    logit_bias: logits.biases, // token bias
-    messages: result.messages
-});
+
+let response;
+//console.log(response, "first");
+let attempts = 0;
+do {
+    response = await openai.createChatCompletion({
+        model: 'gpt-3.5-turbo-0301',
+        temperature: 2, //randomness
+        top_p: 0.96, // output filter! only lets % of whats considered out!
+        frequency_penalty: 1.8, // penalizes common responses
+        presence_penalty: 0.8, /* penalizes irrelevant responses (to the topic ykno)*/
+        n : 1,
+        logit_bias: logits.biases, // token bias
+        messages: result.messages
+    });
+    attempts++;
+    // so that unwanted words are cut out. 
+} while ((response.data.choices[0].message.content.match(/as an ai language model|assist|i don't have feelings/i)) && attempts < 10);
+console.log(attempts);
+
 
 // Ok then, let's send that message back to discord!
     await sendLongMessage(message.channel, `${response.data.choices[0].message.content}`);
@@ -192,11 +214,11 @@ client.on('messageCreate', async (message) => {
     if (!client.globalState.botActive) {
         return;
     }
-    // Call the processMessage function without waiting for it to finish
-    // If the message contains dotty or dottybot, or if autoReply is enabled!
-    if (/dotty(bot)?/i.test(message.content) || client.globalState.autoReply[message.channel.id] || /doty(bot)?/i.test(message.content)) {
-        processMessage(message);
-    }
+  
+// if the message contains 'dotty'/'dottybot' OR if autoReply is enabled, call processMessage
+if (/dotty(bot)?/i.test(message.content) || client.globalState.autoReply[message.channel.id] || /doty(bot)?/i.test(message.content)) {
+    processMessage(message);
+}
     if (message.content === '!clear' || client.globalState.botReset === true) {
         if (message.content === '!clear') {
             message.reply('poof! convo history is gone!');
