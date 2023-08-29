@@ -312,7 +312,6 @@ module.exports = {
                 "https://giphy.com/gifs/cat-kitty-kitten-kkEmNte4tRmZ0fgBhE",
                 "https://giphy.com/gifs/cat-laugh-funny-q1MeAPDDMb43K",
                 "https://giphy.com/gifs/hallmarkecards-cute-hallmark-shoebox-BzyTuYCmvSORqs1ABM",
-                "https://giphy.com/stickers/box-katze-catshome-00zfNRrxYbRpBuTnio",
                 "https://giphy.com/stickers/S86b5qZE7fHWXOyy0P",
                 "https://giphy.com/stickers/justin-transparent-iemwpbriqGa52BAAu1",
                 "https://giphy.com/gifs/viralhog-viral-hog-bengal-kitten-wants-a-taste-of-sushi-KFaPIpOY3QPeudhfJw",

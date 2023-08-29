@@ -16,20 +16,11 @@ const prompts = require('./prompts/prompts');
 const  exampleConvo  = require('./prompts/ConvoPrompt');
 
 //commands folder
-// make a new collection to store them. 
-client.commands = new Collection();
-
 const kitty = require('./commands/kitty');
 const botFact = require('./commands/botfact');
 const goodbye = require('./commands/goodbye');
 const hello = require('./commands/hello');
 const help = require('./commands/help');
-
-client.commands.set('kitty', kitty);
-client.commands.set('botfact', botFact);
-client.commands.set('goodbye', goodbye);
-client.commands.set('hello', hello);
-client.commands.set('help', help);
 
 // setup discord client
 const client = new Client({
@@ -249,6 +240,7 @@ const bannedWords =   new RegExp([
     "i don't have feelings"
 ].join('|'), 'i'); // join with | and make case insensitive with i. 
 
+
 // hit up openais fancy api
 let attempts = 0;
 do {
@@ -331,22 +323,6 @@ client.on('messageCreate', async (message) => {
     if (!client.globalState.botActive) {
         return;
     }
-        const prefix = '!';
-        if (!message.content.startsWith(prefix) || message.author.bot) return;
-    
-        const args = message.content.slice(prefix.length).trim().split(/ +/);
-        const command = args.shift().toLowerCase();
-    
-        if (!client.commands.has(command)) return;
-    
-        try {
-            client.commands.get(command).execute(message, args);
-        } catch (error) {
-            console.error(error);
-            message.reply('there was an error tryin to execute that command!');
-        }
-    });
-
   
 // if the message contains 'dotty'/'dottybot' OR if autoReply is enabled, call processMessage
 if (/dot(y|ty)(bot)?/i.test(message.content) || client.globalState.autoReply[message.channel.id]) {
@@ -367,7 +343,7 @@ if (message.content === '!clear' || client.globalState.botReset === true) {
         client.globalState.botReset = false;
         return;
 }
-
+});
 
 // load commands
 client.commands = new Collection();
@@ -376,6 +352,11 @@ for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
     client.commands.set(command.name, command);
 }
+
+
+
+
+
 
 client.on('ready', () => {
     console.log(`logged into discord as ${client.user.tag}!`);
@@ -399,6 +380,22 @@ client.on('interactionCreate', async (interaction) => {
 });
 
 
+client.on('messageCreate', async (message) => {
+    if (!message.content.startsWith('!') || message.author.bot) return;
+
+    const args = message.content.slice(1).trim().split(/ +/);
+    const commandName = args.shift().toLowerCase();
+
+    const command = client.commands.get(commandName);
+    if (!command) return;
+
+    try {
+        await command.execute(message, args);
+    } catch (error) {
+        console.error(error);
+        await message.reply('there was an error tryin to execute that command!');
+    }
+});
 
 
 
