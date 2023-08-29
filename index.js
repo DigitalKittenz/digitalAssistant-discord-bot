@@ -15,6 +15,22 @@ const fs = require('fs');
 const prompts = require('./prompts/prompts');
 const  exampleConvo  = require('./prompts/ConvoPrompt');
 
+//commands folder
+// make a new collection to store them. 
+client.commands = new Collection();
+
+const kitty = require('./commands/kitty');
+const botFact = require('./commands/botfact');
+const goodbye = require('./commands/goodbye');
+const hello = require('./commands/hello');
+const help = require('./commands/help');
+
+client.commands.set('kitty', kitty);
+client.commands.set('botfact', botFact);
+client.commands.set('goodbye', goodbye);
+client.commands.set('hello', hello);
+client.commands.set('help', help);
+
 // setup discord client
 const client = new Client({
     intents: [
@@ -315,26 +331,43 @@ client.on('messageCreate', async (message) => {
     if (!client.globalState.botActive) {
         return;
     }
+        const prefix = '!';
+        if (!message.content.startsWith(prefix) || message.author.bot) return;
+    
+        const args = message.content.slice(prefix.length).trim().split(/ +/);
+        const command = args.shift().toLowerCase();
+    
+        if (!client.commands.has(command)) return;
+    
+        try {
+            client.commands.get(command).execute(message, args);
+        } catch (error) {
+            console.error(error);
+            message.reply('there was an error tryin to execute that command!');
+        }
+    });
+
   
 // if the message contains 'dotty'/'dottybot' OR if autoReply is enabled, call processMessage
 if (/dot(y|ty)(bot)?/i.test(message.content) || client.globalState.autoReply[message.channel.id]) {
     processMessage(message);
 }
+
 // clear with the !clear command and if botReset is true!!!
-    if (message.content === '!clear' || client.globalState.botReset === true) {
-        if (message.content === '!clear') {
-            message.reply('poof! convo history is gone!');
-        }
-        // clear convo and resend the prompts!
-        client.globalState.conversations[message.channel.id] = [{
-            "role": "system",
-            "content": prompts.dotty.message
+if (message.content === '!clear' || client.globalState.botReset === true) {
+    if (message.content === '!clear') {
+        message.reply('poof! convo history is gone!');
+    }
+    // clear convo and resend the prompts!
+    client.globalState.conversations[message.channel.id] = [{
+        "role": "system",
+        "content": prompts.dotty.message
         },
         ...exampleConvo.exampleConvo];
         client.globalState.botReset = false;
         return;
-    }
-});
+}
+
 
 // load commands
 client.commands = new Collection();
@@ -364,4 +397,9 @@ client.on('interactionCreate', async (interaction) => {
         });
     }
 });
+
+
+
+
+
 client.login(process.env.TOKEN);

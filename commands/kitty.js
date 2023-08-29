@@ -109,6 +109,7 @@ module.exports = {
                 "https://giphy.com/gifs/nehumanesociety-funny-cat-3o6fJbwYFe3SmVVQ4M",
                 "https://tenor.com/view/love-mochi-gif-23257331",
                 "https://tenor.com/view/black-cat-dance-gif-24807224",
+                "https://giphy.com/gifs/hello-kitty-12WoP3M6zYupUs",
                 "https://64.media.tumblr.com/tumblr_m8oroyA0cI1rdovqzo1_500.gif",
                 "https://pa1.aminoapps.com/6366/e93ece89552a8c4a06d6e036518bf202ad205d25_00.gif",
                 "https://giphy.com/gifs/hmm-listen-eye-on-you-gBEOMfhTJsPxko30hU",
@@ -175,6 +176,8 @@ module.exports = {
                 "https://tenor.com/view/floating-magic-cat-greenscreen-gif-20012768",
                 "https://tenor.com/view/google-take-look-gif-7283802",
                 "https://tenor.com/view/googlecat-gif-7283795",
+                "https://giphy.com/gifs/halloween-kristyglas-hyper-cats-r6kVlVyXJiKCvAMsMQ",
+                "https://giphy.com/gifs/cat-night-forest-FB46EwMR6wNwwIF7cK",
                 "https://tenor.com/view/wizard-cat-magus-cat-witch-cat-wicca-wiccan-gif-26941843",
                 "https://tenor.com/view/wizard-magic-cat-spell-gif-5452899",
                 "https://giphy.com/gifs/halloween-spooky-monster-kTS1UEAmyhkZF1yCxh",
@@ -192,6 +195,7 @@ module.exports = {
                 "https://tenor.com/view/cat-wizard-shocked-wtf-huh-gif-3644778",
                 "https://tenor.com/view/halloween-kitty-witch-gif-12798035",
                 "https://tenor.com/view/cat-witch-gif-20217934",
+                "https://giphy.com/gifs/h-c-halowen-Z7skPQNucBB3kUDxeH",
                 "https://tenor.com/view/cat-witch-potion-fantasy-gif-11296839",
                 "https://tenor.com/view/harry-meower-cats-cat-flying-broom-wizard-cat-gif-15555690",
                 "https://tenor.com/view/cats-cute-cat-cute-kitten-fluffy-kitten-kittens-gif-13060002",
@@ -310,7 +314,6 @@ module.exports = {
                 "https://giphy.com/gifs/hallmarkecards-cute-hallmark-shoebox-BzyTuYCmvSORqs1ABM",
                 "https://giphy.com/stickers/box-katze-catshome-00zfNRrxYbRpBuTnio",
                 "https://giphy.com/stickers/S86b5qZE7fHWXOyy0P",
-                "https://giphy.com/stickers/catsmartmarketing-transparent-ZijvAiuznUI2umXr4M",
                 "https://giphy.com/stickers/justin-transparent-iemwpbriqGa52BAAu1",
                 "https://giphy.com/gifs/viralhog-viral-hog-bengal-kitten-wants-a-taste-of-sushi-KFaPIpOY3QPeudhfJw",
                 "https://giphy.com/gifs/tiktok-aww-VdDeiUL5yOIyE3kdHA",
@@ -348,6 +351,7 @@ module.exports = {
                 "https://tenor.com/view/cat-kitty-cute-adorable-this-is-my-toy-gif-17654445",
                 "https://giphy.com/gifs/cat-kitten-hiding-dxqOkrl29R8ac",
                 "https://giphy.com/gifs/cats-gl8ymnpv4Sqha",
+                "https://giphy.com/gifs/dance-animal-kitty-xcfz72KwMHZ7O",
                 "https://giphy.com/gifs/viralhog-viral-hog-kitty-spots-trouble-in-mirror-gm06f2sy5t2nDXfFKP"
             ];
             // choose a random kitty pic
