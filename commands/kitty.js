@@ -9,7 +9,7 @@ module.exports = {
         if (type === 'manul') {
             // define a list of manul pics
             const pics = [
-                'https://giphy.com/gifs/cat-manul-haies-F0ZriKBdzZjnARVTeM',
+                "https://giphy.com/clips/SWAG-winter-cats-seasons-USGOwslFbI7czAxahZ",
                 'https://i.makeagif.com/media/7-18-2014/QXVCFz.gif',
                 'https://giphy.com/gifs/reaction-mrw-screen-Tq0pFzzBpg4SI',
                 'https://tenor.com/view/manul-pallas-cat-rolling-cuddle-cuddle-roll-gif-26410302',
@@ -90,17 +90,63 @@ module.exports = {
             // send a response with the manul pic
             interaction.reply(pic);
         } else if (type === 'cartoon') {
-            // do something for cartoon kitties here
-            interaction.reply('check out this uwu cartoon kitty!');
+             // define a list of cartoon pics
+             const pics = [
+                "https://giphy.com/gifs/AlphaESS-love-cat-sad-BGH9MWQegcu84hY9DT",
+                "https://giphy.com/gifs/nehumanesociety-funny-cat-3o6fJbwYFe3SmVVQ4M",
+                "https://giphy.com/gifs/hmm-listen-eye-on-you-gBEOMfhTJsPxko30hU",
+                "https://giphy.com/gifs/cartoon-hello-kitty-sanrio-xT3i14Ddnbl75cEN4A",
+                "https://giphy.com/gifs/hello-kitty-cute-kZqbBT64ECtjy",
+                "https://giphy.com/gifs/cartoonnetwork-cartoon-network-blossom-powerpuff-girls-mdxsBbm66pJ1OUqz2O",
+                "https://giphy.com/gifs/love-kitty-cartoons-Q72XkpZKhYV7W",
+                "https://tenor.com/view/cat-homestuck-mutini-vodka-mutini-vodka-gif-15244779",
+                "https://giphy.com/gifs/cat-kitty-cute-DjYqNVITTewEM",
+                "https://giphy.com/gifs/thesimpsons-l2JeiEBF9WWXCK5R6",
+                "https://giphy.com/clips/studiosoriginals-good-morning-i0zTwaJzcj2LxCmY5P",
+                "https://giphy.com/gifs/drinking-apple-sip-epOu8XC1QMml4aX72D",
+                "https://giphy.com/gifs/HSeSi8IIywrF6",
+                "https://tenor.com/view/smile-cat-gif-26232996",
+                "https://giphy.com/gifs/gifnews-fox-adhd-14yBLTW0nH2V9K",
+                "https://giphy.com/gifs/dominosuk-pizza-feelings-dominos-3osxYaxIZyzYcHPcnC",
+                "https://giphy.com/gifs/gifnewstest-artists-on-tumblr-csaba-klement-Ls5DgFlS9xQ2I",
+                "https://giphy.com/gifs/leomainecoon-chonk-chonksociety-society-tJOmxmTddfsLzuPOLD",
+                "https://giphy.com/gifs/Carlsen-Kinderbuch-katze-meine-freundin-conni-kater-mau-d9jU6nQeiNDkvLYSku",
+                "https://giphy.com/gifs/cat-cats-i-like-naps-WJ1fD3sUvJcIb8nfdE",
+                "https://giphy.com/gifs/season-17-the-simpsons-17x4-3orieOsYilcxFU5MIw",
+                "https://giphy.com/gifs/season-10-the-simpsons-10x20-3o6MbcDYW8cjAOJE1G",
+                "https://giphy.com/gifs/fat-cat-14xmEqduE5QBMs",
+                "https://giphy.com/gifs/kitty-cat-gif-cute-TF9OxDUKJVA6Q",
+                "https://giphy.com/gifs/cartoon-kawaii-kitty-8VL96bR7PtBOE",
+                "https://giphy.com/gifs/season-10-the-simpsons-10x16-3orieL8grL9jv04bU4",
+                "https://giphy.com/gifs/season-16-the-simpsons-16x14-l2JebvLFYf9j3TmMM",
+                "https://giphy.com/gifs/AlphaESS-wow-surprised-amazed-YyQk8mzP146ZdhlWKT",
+                "https://giphy.com/gifs/ProBitExchange-hello-hi-greetings-38I3v6VURNa6QzHJTn",
+                "https://giphy.com/gifs/cartoon-hello-kitty-sanrio-3o6wNIK2unphUcCcqQ",
+                "https://giphy.com/gifs/chubbiverse-ride-ufo-chubbicat-9IrTBo2LvyPa8utMK3",
+                "https://giphy.com/gifs/cartoon-hello-kitty-sanrio-xT3i0UhQzqmZY0rIGY",
+                "https://giphy.com/gifs/dance-ballet-cat-and-comics-T6eVqPRDurmRQraQjk",
+             ];
+             // choose a random cartoon pic
+            const pic = pics[Math.floor(Math.random() * pics.length)];
+            // send a response with the cartoon pic
+            interaction.reply(pic);
         } else if (type === 'wizard') { 
-            // do something for wizard kitties here
             interaction.reply('omg wizard kitties are the best!!');
-        } else if (type === 'wizard') {
-            // do something for wizard kitties here
-            interaction.reply('omg wizard kitties are the best!!');
+            // define a list of wizard kitty pics
+            const pics = [
+                "https://giphy.com/gifs/cat-halloween-cartoon-RVcMF53XeXmf78yYpP",
+            ];
+            // choose a random wizard kitty pic
+            const pic = pics[Math.floor(Math.random() * pics.length)];
+            // send a response with the wizard kitty pic
+            interaction.reply(pic);
         } else if (type === 'spotty kitty') {
-            // do something for spotty kitties here
-            interaction.reply('spotty kitties are so chic, rite??');
+            // define a list of spotted kitty pics
+            const pics = [];
+            // choose a random spotted kitty pic
+            const pic = pics[Math.floor(Math.random() * pics.length)];
+            // send a response with the spotted kitty pic
+            interaction.reply(pic);
         } else if (type === 'meow') {
                 // randomize the response
                 const options = [
@@ -109,6 +155,10 @@ module.exports = {
                     'mewwww 🐾🐱',
                     'nyawn (^ω^)',
                     'ME-OW!',
+                    "mewwwwmewwwwmewwwwmewwww",
+                    "mewwwwmewwwwmewwwwmewwwwmewwwwmewwwwmewwwwmewwwwmewwwwmewwww",
+                    "*purrs loudly",
+                    "*purrs angrily",
                     'Rawwr! (coz cats think they’re savage)',
                     'Mroooooow',
                     'Meow meow meow!',
@@ -142,8 +192,51 @@ module.exports = {
                     console.error('Failed to reply to interaction:', error);
             }
         } else {
-            // if they didn't specify a type or gave an unknown type, just give them a random kitty
-            interaction.reply('here\'s a random kitty for ya!');
+            // define a list of kitty pics
+            const pics = [
+                "https://giphy.com/clips/studiosoriginals-kitten-sunshine-good-morning-love-l2jg3kT9ku7YeiuQrY",
+                "https://giphy.com/clips/bestfriends-best-friends-kittens-society-eaoTFOSzIkEyliMBUA",
+                "https://giphy.com/gifs/community-bad-general-KHhs4BXpy5dba",
+                "https://giphy.com/gifs/eating-gallery-watermelon-v0chtzArxVklO",
+                "https://giphy.com/gifs/cat-eating-10eSPfhWNat2Xm",
+                "https://giphy.com/gifs/robert-downey-jr-cats-ASvQ3A2Q7blzq",
+                "https://giphy.com/stickers/cute-cat-paws-SsCLe5ozI3C3wRHL9r",
+                "https://giphy.com/gifs/food-puppy-urlmYUSD7Bx6w",
+                "https://tenor.com/view/sad-cat-gif-26067066",
+                "https://tenor.com/view/sad-cat-sunakook-tired-exhausted-gif-24687868",
+                "https://tenor.com/view/cat-sad-gif-26415220",
+                "https://tenor.com/view/smilecat-gif-25781442",
+                "https://giphy.com/gifs/cat-kitty-kitten-kkEmNte4tRmZ0fgBhE",
+                "https://giphy.com/gifs/cat-laugh-funny-q1MeAPDDMb43K",
+                "https://giphy.com/gifs/hallmarkecards-cute-hallmark-shoebox-BzyTuYCmvSORqs1ABM",
+                "https://giphy.com/stickers/box-katze-catshome-00zfNRrxYbRpBuTnio",
+                "https://giphy.com/stickers/S86b5qZE7fHWXOyy0P",
+                "https://giphy.com/stickers/catsmartmarketing-transparent-ZijvAiuznUI2umXr4M",
+                "https://giphy.com/stickers/justin-transparent-iemwpbriqGa52BAAu1",
+                "https://giphy.com/gifs/viralhog-viral-hog-bengal-kitten-wants-a-taste-of-sushi-KFaPIpOY3QPeudhfJw",
+                "https://giphy.com/gifs/tiktok-aww-VdDeiUL5yOIyE3kdHA",
+                "https://giphy.com/gifs/cat-baby-kawaii-FrEnONcaBGJ0c",
+                "https://giphy.com/stickers/getsmittenkitten-nathan-the-catlady-nathanthecatlady-j921bcrmhN6C4dk7ne",
+                "https://giphy.com/gifs/cat-gifs-gif-Df0JB6yixeNqg",
+                "https://giphy.com/gifs/justin-cat-stickers-PF83OmDFWCpP80l0X3",
+                "https://giphy.com/gifs/editor-cat-gif-gifs-12T3GI5PpTrhoQ",
+                "https://giphy.com/gifs/editor-cat-gif-gifs-AImgH8tbFOZhe",
+                "https://giphy.com/gifs/justviralnet-cute-cat-animal-Jrk36uGtaZWOaBuHIX",
+                "https://giphy.com/gifs/cats-cat-gif-cute-VJIXbKPKcOnio",
+                "https://giphy.com/gifs/editor-kitten-cat-gif-gifs-KBCyVZsZMdhSM",
+                "https://giphy.com/gifs/cat-WYEWpk4lRPDq0",
+                "https://giphy.com/gifs/cat-angry-kitten-KQwZNdsEtMecg",
+                "https://giphy.com/gifs/YmVNzDnboB0RQEpmLr",
+                "https://giphy.com/gifs/reaction-mood-2x0VePimPaFJDpGZ7H",
+                "https://giphy.com/gifs/C9x8gX02SnMIoAClXa",
+                "https://giphy.com/gifs/jerseydemic-3oriO0OEd9QIDdllqo",
+                "https://giphy.com/gifs/cat-funny-animation-aC45M5Q4D07Pq"
+                
+            ];
+            // choose a random kitty pic
+            const pic = pics[Math.floor(Math.random() * pics.length)];
+            // send a response with the kitty pic
+            interaction.reply(pic);
         }
     },
 };

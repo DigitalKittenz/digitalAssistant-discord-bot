@@ -166,11 +166,15 @@ const logits = require('./logits');
 let response;
 //console.log(response, "first");
 
+
 // getting a bunch of banned words. 
 const bannedWords =   new RegExp([
-    "as an ai language model",
+    "as an AI language model",
     'furthermore',
     "nonetheless",
+    "sorry if I gave you the impression",
+    "sorry if I gave you that impression",
+    "designed to",
     "remember",
     "it's important to",
     "thus",
@@ -184,11 +188,13 @@ const bannedWords =   new RegExp([
     "accordingly",
     "additionally",
     "subsequently",
+    "clarify",
     "help",
     "absolutely",
     "in addition",
     "mentioned",
     "additional",
+    "priority",
     "cannot",
     "apologize",
     "simply",
@@ -197,6 +203,7 @@ const bannedWords =   new RegExp([
     "certainly",
     "unfortunately",
     "regarding",
+    "I'm programmed to",
     "proceed",
     "cannot",
     "tapestry",
@@ -256,12 +263,12 @@ do {
             // get bot's response after restart
     response = await openai.createChatCompletion({
         model: 'gpt-3.5-turbo-0301',
-        temperature: 1.96, //randomness
-        top_p: 0.9632, // output filter! only lets % of whats considered out! do NOT go under 9.6
-        frequency_penalty: 1.8, // penalizes common responses
-        n : 1, // number of responses
-        presence_penalty: 0.79, /* penalizes irrelevant responses (to the topic ykno) - do NOT go over 0.8*/
-        logit_bias: logits.biases, // token bias
+        temperature: 1.95,
+        top_p: 0.9613,
+        frequency_penalty: 1.8,
+        n : 1,
+        presence_penalty: 0.79,
+        logit_bias: logits.biases,
         messages: result.messages
     });
     // add bot's response to the array
@@ -274,7 +281,6 @@ do {
     }
 } while ((response.data.choices[0].message.content.match(bannedWords)) && attempts < 10);
 console.log(attempts);
-
 
 // Ok then, let's send that message back to discord!
     await sendLongMessage(message.channel, `${response.data.choices[0].message.content}`);
@@ -311,7 +317,7 @@ client.on('messageCreate', async (message) => {
     }
   
 // if the message contains 'dotty'/'dottybot' OR if autoReply is enabled, call processMessage
-if (/dotty(bot)?/i.test(message.content) || client.globalState.autoReply[message.channel.id] || /doty(bot)?/i.test(message.content)) {
+if (/dot(y|ty)(bot)?/i.test(message.content) || client.globalState.autoReply[message.channel.id]) {
     processMessage(message);
 }
 // clear with the !clear command and if botReset is true!!!
@@ -329,7 +335,6 @@ if (/dotty(bot)?/i.test(message.content) || client.globalState.autoReply[message
         return;
     }
 });
-
 
 // load commands
 client.commands = new Collection();
