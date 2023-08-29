@@ -30,19 +30,19 @@ description: 'says goodbye!'
           },
           {
             name: 'cartoon',
-            value: 'shows some illustrated kittys'
+            value: 'cartoon'
           },
           {
            name: 'wizard',
-           value: 'shows some wizard kittys'
+           value: 'wizard'
           },
           {
             name: 'spotty kitty',
-            value: 'shows some rusted spotted cats'
+            value: 'spotty kitty'
           },
           {
             name: 'meow',
-            value: 'meows at u'
+            value: 'meow'
           }
         ],
       },
