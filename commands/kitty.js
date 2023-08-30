@@ -14,7 +14,6 @@ module.exports = {
         if (type === 'manul') {
             // define a list of manul pics
             const pics = [
-                "https://giphy.com/clips/SWAG-winter-cats-seasons-USGOwslFbI7czAxahZ",
                 'https://i.makeagif.com/media/7-18-2014/QXVCFz.gif',
                 'https://giphy.com/gifs/reaction-mrw-screen-Tq0pFzzBpg4SI',
                 'https://tenor.com/view/manul-pallas-cat-rolling-cuddle-cuddle-roll-gif-26410302',

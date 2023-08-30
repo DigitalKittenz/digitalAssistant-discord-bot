@@ -15,13 +15,6 @@ const fs = require('fs');
 const prompts = require('./prompts/prompts');
 const  exampleConvo  = require('./prompts/ConvoPrompt');
 
-//commands folder
-const kitty = require('./commands/kitty');
-const botFact = require('./commands/botfact');
-const goodbye = require('./commands/goodbye');
-const hello = require('./commands/hello');
-const help = require('./commands/help');
-
 // setup discord client
 const client = new Client({
     intents: [
@@ -34,8 +27,6 @@ const client = new Client({
 // just a cute offline message
 const botOffMessage = 'bot is resigned to her very own dream bubble.';
 const botOnMessage = "Bot is now active...let's do this!"
-
-
 
 // for sending long messages
 async function sendLongMessage(channel, message) {
@@ -175,8 +166,7 @@ let response;
 
 
 // getting a bunch of banned words. 
-const bannedWords =   new RegExp([
-    "as an AI language model",
+const bannedWords =  new RegExp([
     'furthermore',
     "nonetheless",
     "sorry if I gave you the impression",
@@ -207,10 +197,12 @@ const bannedWords =   new RegExp([
     "simply",
     "feel free",
     "however",
+    "natural language processing ",
     "certainly",
+    "simulate",
     "unfortunately",
     "regarding",
-    "I'm programmed to",
+    "artificial intelligence",
     "proceed",
     "cannot",
     "tapestry",
@@ -222,6 +214,9 @@ const bannedWords =   new RegExp([
     "assure",
     "it's important to note",
     "please",
+    "As a bot",
+    "As Dotty",
+    "As Dottybot",
     "but I can't help",
     "crucial",
     "employ",
@@ -230,52 +225,59 @@ const bannedWords =   new RegExp([
     "apologies for the confusion",
     "certainly",
     "ultimately",
+    "what can I do for you",
+    "is there anything on your mind",
+    "specific",
     "overall",
     "is there anything else you’d like to talk about",
     "summary",
     "essentially",
-    "i don't have feelings"
 ].join('|'), 'i'); // join with | and make case insensitive with i. 
 
+// really ugly words/phrases
+const uglyWords = new RegExp ([
+    "as an AI language model",
+    "i don't have feelings",
+    "simulate feelings",
+    "programmed to",
+    "I'm programmed to",
+].join('|'), 'i'); //join with | and make case insensitive with i
+
+async function resetMessages(message) {
+    console.log("resetting messages...");
+    //restarting message!!
+    await message.reply("Glitch!!! Restarting!!");
+    result.messages = [{
+        "role": "system",
+        "content": prompts.dotty.message
+    }, ...exampleConvo.exampleConvo,
+    {
+        "role" : "system",
+        "content" :"im rlly sorry dotty this is the system talkin but u malfunctioned and u have restarted due to a p sad glitch!!!! :("
+    }];
+}
 
 // hit up openais fancy api
 let attempts = 0;
 do {
     response = await openai.createChatCompletion({
         model: 'gpt-3.5-turbo-0301',
-        temperature: 1.96, //randomness
-        top_p: 0.9632, // output filter! only lets % of whats considered out! do NOT go under 9.6
+        temperature: 1.98, //randomness
+        top_p: 0.9652, // output filter! only lets % of whats considered out! do NOT go under 9.6
         frequency_penalty: 1.8, // penalizes common responses
         n : 1, // number of responses
-        presence_penalty: 0.79, /* penalizes irrelevant responses (to the topic ykno) - do NOT go over 0.8*/
+        presence_penalty: 0.785, /* penalizes irrelevant responses (to the topic ykno) - do NOT go over 0.8*/
         logit_bias: logits.biases, // token bias
         messages: result.messages
     });
     attempts++;
-    // if after 10 attempts we're still not getting what we want, reset the messages array!!!!
-    if ((response.data.choices[0].message.content.match(bannedWords)) && attempts >= 10) {
-        console.log("resetting messages...");
-        //restarting message!!
-        await message.reply("Glitch!!! Restarting!!");
-        result.messages = [{
-            "role": "system",
-            "content": prompts.dotty.message
-        }, ...exampleConvo.exampleConvo,
-        {
-            "role" : "system",
-            "content" :"im rlly sorry dotty this is the system talkin but u malfunctioned and u have restarted due to a p sad glitch!!!! :("
-        }];
-            // get bot's response after restart
-    response = await openai.createChatCompletion({
-        model: 'gpt-3.5-turbo-0301',
-        temperature: 1.95,
-        top_p: 0.9613,
-        frequency_penalty: 1.8,
-        n : 1,
-        presence_penalty: 0.79,
-        logit_bias: logits.biases,
-        messages: result.messages
-    });
+// if its definitely boring chatgpt then force a restart immediately NO MERCY
+    if ((response.data.choices[0].message.content.match(uglyWords))){
+        await resetMessages(message);
+    }
+        // if after 10 attempts we're still not getting what we want, reset the messages array!!!!
+    else if ((response.data.choices[0].message.content.match(bannedWords)) && attempts >= 10) {
+        await resetMessages(message);
     // add bot's response to the array
     result.messages.push({
         "role" : "assistant",
@@ -309,6 +311,7 @@ client.on('messageCreate', async (message) => {
         // reply with bot on message!
         await message.reply(botOnMessage);
     }
+   
     // if the message is bot_off, set botActive to false
     if (message.content === process.env.BOT_OFF) {
         client.globalState.botActive = false;
@@ -319,12 +322,17 @@ client.on('messageCreate', async (message) => {
     // If the bot is not active, don't process other messages
     if (!client.globalState.botActive) {
         return;
-    }
+    };
   
 // if the message contains 'dotty'/'dottybot' OR if autoReply is enabled and if the message ISN'T a !meow, call processMessage
 if ((/dot(y|ty)(bot)?/i.test(message.content) || client.globalState.autoReply[message.channel.id]) && !message.content.startsWith('!meow')) {
+    client.globalState.botActive = true;
     processMessage(message);
-}
+};
+// if it starts with a !meow then turn it off
+if ((message.content).startsWith('!meow')){
+    client.globalState.botActive = false;
+};
 // clear with the !clear command and if botReset is true!!!
 if (message.content === '!clear' || client.globalState.botReset === true) {
     if (message.content === '!clear') {
@@ -369,6 +377,12 @@ client.on('interactionCreate', async (interaction) => {
     }
 });
 
+// import the commands
+const kittyCmd = require('./commands/kitty'); // point to kitty.js file
+const helloCmd = require('./commands/hello'); // point to hello.js file
+const goodbyeCmd = require('./commands/goodbye'); // point to goodbye.js file
+
+// message events
 client.on('messageCreate', async (message) => {
     // ignore messages not starting with "!"
     if (!message.content.startsWith('!')) return;
@@ -385,31 +399,35 @@ client.on('messageCreate', async (message) => {
         'wizard': 'wizard',
         'spotty': 'spotty',
         'meow': 'meow'
-        
     }[command];
 
-    // if the command isn't one of the kitty types, ignore it
-    if (!kittyType) return;
+    if (command === 'hello') {
+        helloCmd.execute(message, client);
+    } 
+    else if (command === 'goodbye'){
+        goodbyeCmd.execute(message, client);
+    }
+    else if (kittyType) {
+        // create a mock interaction object with the right options
+        const interaction = {
+            channel: message.channel,
+            options: {
+                getString: () => kittyType,
+            },
+            reply: (content) => {
+                // Set the autoReply state to false
+                client.globalState.autoReply[message.channel.id] = false;
+                console.log('autoReply status:', client.globalState.autoReply[message.channel.id]);
+                // Then send the message
+                return message.channel.send(content);
+            },
+        };
 
-// create a mock interaction object with the right options
-const interaction = {
-    channel: message.channel,
-    options: {
-        getString: () => kittyType,
-    },
-    reply: (content) => {
-        // Set the autoReply state to false
-        client.globalState.autoReply[message.channel.id] = false;
-        console.log('autoReply status:', client.globalState.autoReply[message.channel.id]); // Add this line
-        // Then send the message
-        return message.channel.send(content);
-      },
-  };
-
-    // execute the kitty command
-    const kittyCmd = require('./commands/kitty');  // point to ur kitty.js file!
-    kittyCmd.execute(interaction, client);
-});
-
+        // execute the kitty command
+        kittyCmd.execute(interaction, client);
+    } else {
+        // if the command isn't 'hello' or one of the kitty types, ignore it
+    }
+}); 
 
 client.login(process.env.TOKEN);
