@@ -182,11 +182,11 @@ const bannedWords =   new RegExp([
     "sorry if I gave you the impression",
     "sorry if I gave you that impression",
     "designed to",
-    "remember",
+    "remember,",
     "it's important to",
     "thus",
     "let me know",
-    "note",
+    "to note",
     "moreover",
     "hence",
     "correspondingly",
@@ -231,12 +231,9 @@ const bannedWords =   new RegExp([
     "certainly",
     "ultimately",
     "overall",
-    "seems",
     "is there anything else you’d like to talk about",
-    "let's",
     "summary",
     "essentially",
-    "ah",
     "i don't have feelings"
 ].join('|'), 'i'); // join with | and make case insensitive with i. 
 
@@ -324,11 +321,10 @@ client.on('messageCreate', async (message) => {
         return;
     }
   
-// if the message contains 'dotty'/'dottybot' OR if autoReply is enabled, call processMessage
-if (/dot(y|ty)(bot)?/i.test(message.content) || client.globalState.autoReply[message.channel.id]) {
+// if the message contains 'dotty'/'dottybot' OR if autoReply is enabled and if the message ISN'T a !meow, call processMessage
+if ((/dot(y|ty)(bot)?/i.test(message.content) || client.globalState.autoReply[message.channel.id]) && !message.content.startsWith('!meow')) {
     processMessage(message);
 }
-
 // clear with the !clear command and if botReset is true!!!
 if (message.content === '!clear' || client.globalState.botReset === true) {
     if (message.content === '!clear') {
@@ -352,12 +348,6 @@ for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
     client.commands.set(command.name, command);
 }
-
-
-
-
-
-
 client.on('ready', () => {
     console.log(`logged into discord as ${client.user.tag}!`);
 });
@@ -369,7 +359,7 @@ client.on('interactionCreate', async (interaction) => {
     if (!command) return;
 
     try {
-        await command.execute(interaction, client);
+        await command.execute(interaction);
     } catch (error) {
         console.error(error);
         await interaction.reply({
@@ -379,24 +369,47 @@ client.on('interactionCreate', async (interaction) => {
     }
 });
 
-
 client.on('messageCreate', async (message) => {
-    if (!message.content.startsWith('!') || message.author.bot) return;
+    // ignore messages not starting with "!"
+    if (!message.content.startsWith('!')) return;
 
+    // split the message into command and args
     const args = message.content.slice(1).trim().split(/ +/);
-    const commandName = args.shift().toLowerCase();
+    const command = args.shift().toLowerCase();
 
-    const command = client.commands.get(commandName);
-    if (!command) return;
+    // map the command to the right kitty type
+    const kittyType = {
+        'kitty': 'kitty',
+        'manul': 'manul',
+        'cartoon': 'cartoon',
+        'wizard': 'wizard',
+        'spotty': 'spotty',
+        'meow': 'meow'
+        
+    }[command];
 
-    try {
-        await command.execute(message, args);
-    } catch (error) {
-        console.error(error);
-        await message.reply('there was an error tryin to execute that command!');
-    }
+    // if the command isn't one of the kitty types, ignore it
+    if (!kittyType) return;
+
+// create a mock interaction object with the right options
+const interaction = {
+    channel: message.channel,
+    options: {
+        getString: () => kittyType,
+    },
+    reply: (content) => {
+        // Set the autoReply state to false
+        client.globalState.autoReply[message.channel.id] = false;
+        console.log('autoReply status:', client.globalState.autoReply[message.channel.id]); // Add this line
+        // Then send the message
+        return message.channel.send(content);
+      },
+  };
+
+    // execute the kitty command
+    const kittyCmd = require('./commands/kitty');  // point to ur kitty.js file!
+    kittyCmd.execute(interaction, client);
 });
-
 
 
 client.login(process.env.TOKEN);

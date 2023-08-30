@@ -2,8 +2,13 @@ module.exports = {
     name: 'kitty',
     description: 'Shows a kitty pic',
     async execute(interaction, client) {
-        // get the options from the interaction
-        const type = interaction.options.getString('type');
+
+ 
+        // first check if interaction and options exist
+        if (interaction && interaction.options) {
+            // get the options from the interaction
+            const type = interaction.options.getString('type');
+        
 
         // now u got the type of kitty they want, so u can do different stuff depending on the type
         if (type === 'manul') {
@@ -209,7 +214,7 @@ module.exports = {
         // send a response with the wizard kitty pic
         interaction.reply(pic);
         } 
-        else if (type === 'spotty kitty') {
+        else if (type === 'spotty') {
         // define a list of spotted kitty pics
         const pics = [
             "https://giphy.com/gifs/2kP2hpWo0rog1h9zQo",
@@ -358,5 +363,5 @@ module.exports = {
             // send a response with the kitty pic
             interaction.reply(pic);
         }
-    },
+    }},
 };

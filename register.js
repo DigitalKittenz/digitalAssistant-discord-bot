@@ -37,8 +37,8 @@ description: 'says goodbye!'
            value: 'wizard'
           },
           {
-            name: 'spotty kitty',
-            value: 'spotty kitty'
+            name: 'spotty',
+            value: 'spotty'
           },
           {
             name: 'meow',
@@ -51,10 +51,6 @@ description: 'says goodbye!'
 {
 name: 'botfact',
 description: 'Tells a random fact!'
-},
-{
-name: 'server',
-description: 'displays server info',
 },
 {
 name: 'help',
