@@ -318,7 +318,6 @@ do {
     }
 } while ((response.data.choices[0].message.content.match(bannedWords)) && attempts < 10);
 
-
 console.log(attempts);
 
 
@@ -367,14 +366,15 @@ client.on('messageCreate', async (message) => {
     if ((message.content).startsWith('!meow')){
         client.globalState.botActive[message.channel.id] = false;
     };
-   /* if ((message.content).startsWith('!hello')){
-        client.globalState.botActive = true;
-        client.globalState.autoReply[message.channel.id] = true;
+    if ((message.content).startsWith('!hello')){
+
         await processMessage(message);
+        client.globalState.autoReply[message.channel.id] = true;
     }
-    else if ((message.content).startsWith('!bye')){
+    if ((message.content).startsWith('!bye')){
         client.globalState.autoReply[message.channel.id] = false;
-    }*/
+    }
+  
 
     // clear with the !clear command and if botReset is true!!!
     if (message.content === '!clear' || client.globalState.botReset === true) {
