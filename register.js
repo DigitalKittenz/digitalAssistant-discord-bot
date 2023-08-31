@@ -7,14 +7,6 @@ const { Routes } = require('discord-api-types/v9');
 // define our commands! each command is a cute lil object with a name and a description
 const commands = [
 {
-name: 'hello',
-description: 'Says hello!'
-},
-{
-name: 'goodbye',
-description: 'says goodbye!'
-},
-{
     name: 'kitty',
     description: 'Shows a kitty pic',
     options: [
@@ -56,10 +48,6 @@ description: 'Tells a random fact!'
 name: 'help',
 description: 'gives u help'
 },
-{
-name: 'clear',
-description: 'wipes the convo history off the face of the earth... or at least this channel lol'
-}
 ];
 
 // our shiny new discord rest api! we're cool with version '9' and we're passing it our bot's super secret token

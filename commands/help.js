@@ -7,14 +7,28 @@ module.exports = {
     
     **====Commands====**
     \`/help\` - shows u this help menu lmao
-    \`/hello\` - start a conversation! this turns on AUTOREPLY!
-    \`/goodbye\` - ends a conversation, turns off autoreplying
-    \`clearconvo\` - wipes the convo history off the face of the earth... or at least this channel lol
+    \`clear\` - wipes the convo history off the face of the earth... or at least this channel lol
     \`/botfact\` - cool fact of the day ;)
-    \`/manul\` - sends manul gifs
+    \`/kitty\` - sends manul gifs - has OPTIONS
+    
+    ---kitty options---
+    - manul - pallas cats
+    - cartoon - cartoon kitties
+    - wizard - wizard kitties
+    - spotty - rusted spotted kitties
    
-    btw, u can mention dottys name and she'll reply to u. BUT autoreply IS OFF!
-    so use \`/hello\` for a proper convo!
+    btw, mention dottys name and she'll reply to u. 
+    here are the equiv ! commands
+    **!!!!!!!!!!!!!!!!**
+    !help
+    !clear
+    !kitty
+    !manul
+    !cartoon
+    !wizard
+    !spotty
+
+
     `);
         } 
         catch (error) {

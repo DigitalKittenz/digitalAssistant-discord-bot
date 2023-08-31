@@ -47,12 +47,16 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 // handle message events
+const globalState = 
 client.globalState = {
     autoReply: {},
     botActive: true, //bot's state
     conversations: {} /* object to store chat histories per channel*/,
     autoReply : false,
 };
+
+
+globalState;
 
 function cutLongMessage(messages, maxTokens = 4700) {
     // this will very roughly estimate the token count
@@ -136,7 +140,6 @@ async function processMessage(message) {
             },
             ...exampleConvo.exampleConvo];
         }
-
 
 
 // clone the array in the channel's history so we don't alter the original while adding the system message
@@ -262,7 +265,10 @@ const bannedWords =  new RegExp([
     "I am not able to experience feelings",
     "I am capable of understanding",
     "I am not capable of understanding",
-    "What would you like to discuss?"
+    "What would you like to discuss?", 
+    "my programming is functioning normally",
+    "I don't have any physical",
+    "I don't have physical"
 ].join('|'), 'i'); //join with | and make case insensitive with i
 
 // hit up openais fancy api
@@ -270,21 +276,21 @@ let attempts = 0;
 do {
     await openai.createChatCompletion({
         model: 'gpt-3.5-turbo-0301',
-        temperature: 1.96,
-        top_p: 0.973,
+        temperature: 1.965,
+        top_p: 0.975,
         frequency_penalty: 1.8,
         n : 1,
-        presence_penalty: 0.79,
+        presence_penalty: 0.78,
         logit_bias: logits.biases,
         messages: result.messages
     });
     response =  await openai.createChatCompletion({
         model: 'gpt-3.5-turbo-0301',
-        temperature: 1.96,
-        top_p: 0.973,
+        temperature: 1.965,
+        top_p: 0.965,
         frequency_penalty: 1.8,
         n : 1,
-        presence_penalty: 0.79,
+        presence_penalty: 0.78,
         logit_bias: logits.biases,
         messages: result.messages
     });
@@ -303,27 +309,21 @@ do {
             "role" : "system",
             "content" :"im rlly sorry dotty this is the system talkin but u malfunctioned and u have restarted due to a p sad glitch!!!! :("
         }];
-      // get bot's response after restart
-     await openai.createChatCompletion({
-        model: 'gpt-3.5-turbo-0301',
-        temperature: 1.96,
-        top_p: 0.973,
-        frequency_penalty: 1.8,
-        n : 1,
-        presence_penalty: 0.79,
-        logit_bias: logits.biases,
-        messages: result.messages
-    });
-
-    // add bot's response to the array
-    result.messages.push({
-        "role" : "assistant",
-        "content" : response.data.choices[0].message.content
-    });
+          // get bot's response after restart
+          await openai.createChatCompletion({
+            model: 'gpt-3.5-turbo-0301',
+            temperature: 1.96,
+            top_p: 0.973,
+            frequency_penalty: 1.8,
+            n : 1,
+            presence_penalty: 0.79,
+            logit_bias: logits.biases,
+            messages: result.messages
+        });
     console.log(result.messages);
         attempts = 0; // reset attempts count as well
     }
-} while ((response.data.choices[0].message.content.match(bannedWords)) && attempts < 10);
+} while ((response.data.choices[0].message.content.match(bannedWords)) && attempts < 6);
 console.log(attempts);
 
 // Ok then, let's send that message back to discord!
@@ -413,6 +413,8 @@ client.on('interactionCreate', async (interaction) => {
 
 // import the commands
 const kittyCmd = require('./commands/kitty'); // point to kitty.js file
+const botFactCmd = require('./commands/botfact'); // point to botfact.js file
+const helpCmd = require('./commands/help'); // point to help.js file
 
 // message events
 client.on('messageCreate', async (message) => {
@@ -443,7 +445,6 @@ client.on('messageCreate', async (message) => {
             reply: (content) => {
                 // Set the autoReply state to false
                 client.globalState.autoReply[message.channel.id] = false;
-                console.log('autoReply status:', client.globalState.autoReply[message.channel.id]);
                 // Then send the message
                 return message.channel.send(content);
             },
@@ -451,9 +452,37 @@ client.on('messageCreate', async (message) => {
 
         // execute the kitty command
         kittyCmd.execute(interaction, client);
+    } else if (command === 'botfact') {
+        // create a mock interaction object for the botfact command
+        const interaction = {
+            channelId: message.channel.id,
+            reply: (content) => {
+                // Set the autoReply state to false
+                client.globalState.autoReply[message.channel.id] = false;
+                // Then send the message
+                return message.channel.send(content);
+            },
+        };
+
+        // execute the botfact command
+        botFactCmd.execute(interaction, client);
+    } else if (command === 'help') {
+        // create a mock interaction object 4 help command. 
+        const interaction = {
+            channelId: message.channel.id,
+            reply: (content) => {
+                client.globalState.autoReply[message.channel.id] = false;
+                // then send a message
+                return message.channel.send(content);
+            },
+        };
+
+        // execute the help command
+        helpCmd.execute(interaction, client);
     } else {
         // if the command isn't 'hello' or one of the kitty types, ignore it
     }
 }); 
+
 // login with ur token
 client.login(process.env.TOKEN);
