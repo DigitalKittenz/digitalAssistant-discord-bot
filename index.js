@@ -11,6 +11,10 @@ const {
     OpenAIApi
 } = require('openai');
 const fs = require('fs');
+
+//requiring the logits file
+const logits = require('./logits');
+
 // here we load up those juicy prompts files
 const prompts = require('./prompts/prompts');
 const  exampleConvo  = require('./prompts/ConvoPrompt');
@@ -51,6 +55,23 @@ client.globalState = {
     botReset: false,
     conversations: {} /* object to store chat histories per channel*/,
 };
+// function to catch unclean input -- api can't handle spamming nonconforming characters!
+function sanitizeMessage(message) {
+    // match all emojis
+    let emojis = message.match(emojiRegex());
+    // remove anything that ain't an emoji or a regular text character
+    let sanitized = message.replace(/[^a-zA-Z0-9\s\.\,\!\?\:\;\-\_\+\=\*\(\)\[\]\{\}\"\'\#\$\%\&\<\>\@\~\`\^\|\\\/]+/g, '');
+    // add the emojis back in
+    if (emojis) {
+        for (let emoji of emojis) {
+            sanitized += ' ' + emoji;
+        }
+    }
+    return sanitized;
+};
+
+
+
 
 function cutLongMessage(messages, maxTokens = 4700) {
     // this will very roughly estimate the token count
@@ -94,7 +115,11 @@ function cutLongMessage(messages, maxTokens = 4700) {
         tokenCount: totalTokenCount
         
     };
-}
+};
+
+
+
+
 // for sending long messages
 async function sendLongMessage(channel, message) {
     const parts = message.match(/[\s\S]{1,2000}/g) || [];
@@ -105,75 +130,6 @@ async function sendLongMessage(channel, message) {
         await new Promise(resolve => setTimeout(resolve, 1000));
     }
 }
-
-async function processMessage(message) {
-    console.log("message is processing!", message.content);
-    try {
-        // send typing indicator
-        await message.channel.sendTyping();
-        // here we use nickname if there is one, otherwise we grab username
-        let displayName = message.member ? (message.member.nickname ? message.member.nickname : message.author.username) : message.author.username;
-        // if there's no record for this channel, initialize it with the instruction message 
-        if (!client.globalState.conversations[message.channel.id]) {
-            client.globalState.conversations[message.channel.id] = [{
-                "role": "system",
-                "content": prompts.dotty.message
-            },
-            ...exampleConvo.exampleConvo];
-        }
-
-// function to catch unclean input -- api can't handle spamming nonconforming characters!
-function sanitizeMessage(message) {
-    // match all emojis
-    let emojis = message.match(emojiRegex());
-    // remove anything that ain't an emoji or a regular text character
-    let sanitized = message.replace(/[^a-zA-Z0-9\s\.\,\!\?\:\;\-\_\+\=\*\(\)\[\]\{\}\"\'\#\$\%\&\<\>\@\~\`\^\|\\\/]+/g, '');
-    // add the emojis back in
-    if (emojis) {
-        for (let emoji of emojis) {
-            sanitized += ' ' + emoji;
-        }
-    }
-    return sanitized;
-}
-
-// clone the array in the channel's history so we don't alter the original while adding the system message
-let messages = [...client.globalState.conversations[message.channel.id]];
-
-// add new message
-let sanitizedContent = sanitizeMessage(`${displayName}: ${message.content}`);
-
-// trim down old convo before adding new message
-let result = cutLongMessage(messages); // leave some room for the bots message!
-
-// add new message
-result.messages.push({
-    "role": "user",
-    "content": sanitizedContent
-});
-
-// update the convos with trimmed messages and the new user message
-client.globalState.conversations[message.channel.id] = result.messages;
-//console.log(result.messages);
-
-//requiring the logits file
-const logits = require('./logits');
-
-// hit up openai's fancy api
-
-const chatStuff = {
-    model: 'gpt-3.5-turbo-0301',
-    temperature: 1.97, //randomness
-    top_p: 0.9661, // output filter! only lets % of whats considered out! do NOT go under 9.6
-    frequency_penalty: 1.8, // penalizes common responses
-    n : 1, // number of responses
-    presence_penalty: 0.79, /* penalizes irrelevant responses (to the topic ykno) - do NOT go over 0.8*/
-    logit_bias: logits.biases, // token bias
-    messages: result.messages
-};
-
-let response = openai.createChatCompletion(chatStuff);
-
 // getting a bunch of banned words. 
 const bannedWords =  new RegExp([
     'furthermore',
@@ -266,36 +222,93 @@ const uglyWords = new RegExp ([
     "Is there anything in particular",
     "I apologize if",
     "programmed me",
-    "I am capable of"
+    "I am capable of",
+    "anything in particular",
+    "as an AI chatbot",
+    "is there anything else",
+    "I am functioning ",
+    " I am programmed to understand ",
+    "I am not able to experience feelings",
+    "I am capable of understanding",
+    "I am not capable of understanding",
+    "What would you like to discuss?"
 ].join('|'), 'i'); //join with | and make case insensitive with i
 
-async function resetMessages(message) {
-    console.log("resetting messages...");
-    //restarting message!!
-    await message.reply("Glitch!!! Restarting!!");
-    result.messages = [{
-        "role": "system",
-        "content": prompts.dotty.message
-    }, ...exampleConvo.exampleConvo,
-    {
-        "role" : "system",
-        "content" :"im rlly sorry dotty this is the system talkin but u malfunctioned and u have restarted due to a p sad glitch!!!! :("
-    }];
-}
+async function processMessage(message) {
+    console.log("message is processing!", message.content);
+    try {
+        // send typing indicator
+        await message.channel.sendTyping();
+        // here we use nickname if there is one, otherwise we grab username
+        let displayName = message.member ? (message.member.nickname ? message.member.nickname : message.author.username) : message.author.username;
+        // if there's no record for this channel, initialize it with the instruction message 
+        if (!client.globalState.conversations[message.channel.id]) {
+            client.globalState.conversations[message.channel.id] = [{
+                "role": "system",
+                "content": prompts.dotty.message
+            },
+            ...exampleConvo.exampleConvo];
+        };
+    
+    // clone the array in the channel's history so we don't alter the original while adding the system message
+    let messages = [...client.globalState.conversations[message.channel.id]];
+
+    // add new message
+    let sanitizedContent = sanitizeMessage(`${displayName}: ${message.content}`);
+
+    // trim down old convo before adding new message
+    let result = cutLongMessage(messages); // leave some room for the bots message!
+
+    // add new message
+    result.messages.push({
+        "role": "user",
+        "content": sanitizedContent
+});
+
+// update the convos with trimmed messages and the new user message
+client.globalState.conversations[message.channel.id] = result.messages;
+//console.log(result.messages);
 
 // hit up openais fancy api
 let attempts = 0;
 do {
-    response = await openai.createChatCompletion(chatStuff);
+    response = await openai.createChatCompletion({
+        model: 'gpt-3.5-turbo-0301',
+        temperature: 1.96, //randomness
+        top_p: 0.9632, // output filter! only lets % of whats considered out! do NOT go under 9.6
+        frequency_penalty: 1.8, // penalizes common responses
+        n : 1, // number of responses
+        presence_penalty: 0.79, /* penalizes irrelevant responses (to the topic ykno) - do NOT go over 0.8*/
+        logit_bias: logits.biases, // token bias
+        messages: result.messages
+    });
     attempts++;
-// if its definitely boring chatgpt then force a restart immediately NO MERCY
-    if ((response.data.choices[0].message.content.match(uglyWords))){
-        await resetMessages(message);
-    }
-        // if after 10 attempts we're still not getting what we want, reset the messages array!!!!
-    else if ((response.data.choices[0].message.content.match(bannedWords)) && attempts >= 10) {
-        await resetMessages(message);
-    // add bot's response to the array
+    // if after 10 attempts we're still not getting what we want, reset the messages array!!!!
+    if ((response.data.choices[0].message.content.match(uglyWords)) ||
+        (response.data.choices[0].message.content.match(bannedWords)) && attempts >= 10) {
+        console.log("resetting messages...");
+        //restarting message!!
+        await message.reply("Glitch!!! Restarting!!");
+        result.messages = [{
+            "role": "system",
+            "content": prompts.dotty.message
+        }, ...exampleConvo.exampleConvo,
+        {
+            "role" : "system",
+            "content" :"im rlly sorry dotty this is the system talkin but u malfunctioned and u have restarted due to a p sad glitch!!!! :("
+        }];
+    // get bot's response after restart
+    response = await openai.createChatCompletion({
+        model: 'gpt-3.5-turbo-0301',
+        temperature: 1.95,
+        top_p: 0.9613,
+        frequency_penalty: 1.8,
+        n : 1,
+        presence_penalty: 0.79,
+        logit_bias: logits.biases,
+        messages: result.messages
+    });
+    // add bot's respons to the array
     result.messages.push({
         "role" : "assistant",
         "content" : response.data.choices[0].message.content
@@ -304,18 +317,22 @@ do {
         attempts = 0; // reset attempts count as well
     }
 } while ((response.data.choices[0].message.content.match(bannedWords)) && attempts < 10);
+
+
 console.log(attempts);
 
+
+
 // Ok then, let's send that message back to discord!
-    await sendLongMessage(message.channel, `${response.data.choices[0].message.content}`);
-        // store the bots message in the channel's conversation history
-        client.globalState.conversations[message.channel.id].push({
-            "role": "assistant",
-            "content": `${response.data.choices[0].message.content}`
-        });
-    } catch (error) {
-        console.error("oops got some errors: ", error);
-    }
+await sendLongMessage(message.channel, `${response.data.choices[0].message.content}`);
+// store the bots message in the channel's conversation history
+client.globalState.conversations[message.channel.id].push({
+    "role": "assistant",
+    "content": `${response.data.choices[0].message.content}`
+});
+} catch (error) {
+    console.error("oops got some errors: ", error);
+}
 }
 
 client.on('messageCreate', async (message) => {
@@ -341,22 +358,28 @@ client.on('messageCreate', async (message) => {
         return;
     };
   
-// if the message contains 'dotty'/'dottybot' OR if autoReply is enabled and if the message ISN'T a !meow, call processMessage
-if ((/dot(y|ty)(bot)?/i.test(message.content) || client.globalState.autoReply[message.channel.id]) && !message.content.startsWith('!meow')) {
-    client.globalState.botActive = true;
-    processMessage(message);
-};
-// if it starts with a !meow then turn it off
-if ((message.content).startsWith('!meow')){
-    client.globalState.botActive = false;
-};
-if ((message.content).startsWith('!goodbye')){
-    client.globalState.autoReply
-}
-// clear with the !clear command and if botReset is true!!!
-if (message.content === '!clear' || client.globalState.botReset === true) {
-    if (message.content === '!clear') {
-        message.reply('poof! convo history is gone!');
+    // if the message contains 'dotty'/'dottybot' OR if autoReply is enabled and if the message ISN'T a !meow, call processMessage
+    if ((/dot(y|ty)(bot)?/i.test(message.content) || client.globalState.autoReply[message.channel.id]) && !message.content.startsWith('!meow')) {
+      //  client.globalState.botActive[message.channel.id] = true;
+        await processMessage(message);
+    };
+    // if it starts with a !meow then turn it off
+    if ((message.content).startsWith('!meow')){
+        client.globalState.botActive[message.channel.id] = false;
+    };
+   /* if ((message.content).startsWith('!hello')){
+        client.globalState.botActive = true;
+        client.globalState.autoReply[message.channel.id] = true;
+        await processMessage(message);
+    }
+    else if ((message.content).startsWith('!bye')){
+        client.globalState.autoReply[message.channel.id] = false;
+    }*/
+
+    // clear with the !clear command and if botReset is true!!!
+    if (message.content === '!clear' || client.globalState.botReset === true) {
+        if (message.content === '!clear') {
+            message.reply('poof! convo history is gone!');
     }
     // clear convo and resend the prompts!
     client.globalState.conversations[message.channel.id] = [{
@@ -366,8 +389,7 @@ if (message.content === '!clear' || client.globalState.botReset === true) {
         ...exampleConvo.exampleConvo];
         client.globalState.botReset = false;
         return;
-}
-});
+}});
 
 // load commands
 client.commands = new Collection();
@@ -378,9 +400,6 @@ for (const file of commandFiles) {
 }
 client.on('ready', () => {
     console.log(`logged into discord as ${client.user.tag}!`);
-
-
-
 });
 
 client.on('interactionCreate', async (interaction) => {
@@ -402,8 +421,6 @@ client.on('interactionCreate', async (interaction) => {
 
 // import the commands
 const kittyCmd = require('./commands/kitty'); // point to kitty.js file
-const helloCmd = require('./commands/hello'); // point to hello.js file
-const goodbyeCmd = require('./commands/goodbye'); // point to goodbye.js file
 
 // message events
 client.on('messageCreate', async (message) => {
@@ -424,13 +441,7 @@ client.on('messageCreate', async (message) => {
         'meow': 'meow'
     }[command];
 
-    if (command === 'hello') {
-        helloCmd.execute(message, client);
-    } 
-    else if (command === 'goodbye'){
-        goodbyeCmd.execute(message, client);
-    }
-    else if (kittyType) {
+    if (kittyType) {
         // create a mock interaction object with the right options
         const interaction = {
             channel: message.channel,
