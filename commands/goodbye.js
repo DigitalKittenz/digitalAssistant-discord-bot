@@ -26,9 +26,13 @@ module.exports = {
         ];
 
         try {
-            await interaction.reply(options[Math.floor(Math.random() * options.length)]);
-            // Set the autoReply state to false for this channel
-            client.globalState.autoReply[interaction.channel.id] = false;
+            interaction.reply(options[Math.floor(Math.random() * options.length)]);
+            // check if interaction.channel and interaction.channel.id are defined
+            if (interaction.channel && interaction.channel.id) {
+                client.globalState.autoReply[interaction.channel.id] = false;
+            } else {
+                console.error('interaction.channel or interaction.channel.id is undefined!');
+            }
         } catch (error) {
             console.error('Failed to reply to interaction:', error);
         }

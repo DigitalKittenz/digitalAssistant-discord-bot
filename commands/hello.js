@@ -19,10 +19,13 @@ module.exports = {
             'Hi there! My pretty patches!? Guess whos joining the buzzing creatures in the internet zoo? Your favorite cheer tank, me!'
         ];
         try {
-            
             interaction.reply(options[Math.floor(Math.random() * options.length)]);
-            // Set the autoReply state to true
-            client.globalState.autoReply[interaction.channel.id] = true;
+            // check if interaction.channel and interaction.channel.id are defined
+            if (interaction.channel && interaction.channel.id) {
+                client.globalState.autoReply[interaction.channel.id] = true;
+            } else {
+                console.error('interaction.channel or interaction.channel.id is undefined!');
+            }
         } catch (error) {
             console.error('Failed to reply to interaction:', error);
         }

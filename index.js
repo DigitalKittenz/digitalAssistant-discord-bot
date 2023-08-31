@@ -161,9 +161,18 @@ const logits = require('./logits');
 
 // hit up openai's fancy api
 
-let response;
-//console.log(response, "first");
+const chatStuff = {
+    model: 'gpt-3.5-turbo-0301',
+    temperature: 1.97, //randomness
+    top_p: 0.9661, // output filter! only lets % of whats considered out! do NOT go under 9.6
+    frequency_penalty: 1.8, // penalizes common responses
+    n : 1, // number of responses
+    presence_penalty: 0.79, /* penalizes irrelevant responses (to the topic ykno) - do NOT go over 0.8*/
+    logit_bias: logits.biases, // token bias
+    messages: result.messages
+};
 
+let response = openai.createChatCompletion(chatStuff);
 
 // getting a bunch of banned words. 
 const bannedWords =  new RegExp([
@@ -182,6 +191,7 @@ const bannedWords =  new RegExp([
     "correspondingly",
     "retrospect",
     "assist",
+    "convey",
     "accordingly",
     "additionally",
     "subsequently",
@@ -205,6 +215,7 @@ const bannedWords =  new RegExp([
     "artificial intelligence",
     "proceed",
     "cannot",
+    "nevertheless",
     "tapestry",
     "wouldn't have it any other way",
     "remember",
@@ -232,6 +243,7 @@ const bannedWords =  new RegExp([
     "is there anything else you’d like to talk about",
     "summary",
     "essentially",
+    "regardless"
 ].join('|'), 'i'); // join with | and make case insensitive with i. 
 
 // really ugly words/phrases
@@ -240,7 +252,21 @@ const uglyWords = new RegExp ([
     "i don't have feelings",
     "simulate feelings",
     "programmed to",
+    "are programmed into me",
     "I'm programmed to",
+    "I am not programmed to",
+    "Is there anything else you need help with",
+    "I have virtualized feelings",
+    "running smoothly",
+    "I'm functioning",
+    "As a chatbot",
+    "Is there anything in particular you'd like to",
+    "Let's move on",
+    "I am designed for",
+    "Is there anything in particular",
+    "I apologize if",
+    "programmed me",
+    "I am capable of"
 ].join('|'), 'i'); //join with | and make case insensitive with i
 
 async function resetMessages(message) {
@@ -260,16 +286,7 @@ async function resetMessages(message) {
 // hit up openais fancy api
 let attempts = 0;
 do {
-    response = await openai.createChatCompletion({
-        model: 'gpt-3.5-turbo-0301',
-        temperature: 1.98, //randomness
-        top_p: 0.9652, // output filter! only lets % of whats considered out! do NOT go under 9.6
-        frequency_penalty: 1.8, // penalizes common responses
-        n : 1, // number of responses
-        presence_penalty: 0.785, /* penalizes irrelevant responses (to the topic ykno) - do NOT go over 0.8*/
-        logit_bias: logits.biases, // token bias
-        messages: result.messages
-    });
+    response = await openai.createChatCompletion(chatStuff);
     attempts++;
 // if its definitely boring chatgpt then force a restart immediately NO MERCY
     if ((response.data.choices[0].message.content.match(uglyWords))){
@@ -333,6 +350,9 @@ if ((/dot(y|ty)(bot)?/i.test(message.content) || client.globalState.autoReply[me
 if ((message.content).startsWith('!meow')){
     client.globalState.botActive = false;
 };
+if ((message.content).startsWith('!goodbye')){
+    client.globalState.autoReply
+}
 // clear with the !clear command and if botReset is true!!!
 if (message.content === '!clear' || client.globalState.botReset === true) {
     if (message.content === '!clear') {
@@ -358,6 +378,9 @@ for (const file of commandFiles) {
 }
 client.on('ready', () => {
     console.log(`logged into discord as ${client.user.tag}!`);
+
+
+
 });
 
 client.on('interactionCreate', async (interaction) => {
@@ -429,5 +452,5 @@ client.on('messageCreate', async (message) => {
         // if the command isn't 'hello' or one of the kitty types, ignore it
     }
 }); 
-
+// login with ur token
 client.login(process.env.TOKEN);

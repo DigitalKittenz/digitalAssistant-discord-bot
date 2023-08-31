@@ -54,7 +54,7 @@ module.exports = { biases :
         "23100" : -100, //exper
         "876" : -100, //ative,
         "653" : -100, //ition
-
+        "54562" : -100, //wass
 
     }
 };
