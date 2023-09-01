@@ -49,10 +49,9 @@ const openai = new OpenAIApi(configuration);
 // handle message events
 const globalState = 
 client.globalState = {
-    autoReply: {},
+    autoReply: false,
     botActive: true, //bot's state
     conversations: {} /* object to store chat histories per channel*/,
-    autoReply : false,
 };
 
 
