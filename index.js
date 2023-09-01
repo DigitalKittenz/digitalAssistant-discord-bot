@@ -111,20 +111,7 @@ async function sendLongMessage(channel, message) {
         await new Promise(resolve => setTimeout(resolve, 1000));
     }
 }
-// function to catch unclean input -- api can't handle spamming nonconforming characters!
-function sanitizeMessage(message) {
-    // match all emojis
-    let emojis = message.match(emojiRegex());
-    // remove anything that ain't an emoji or a regular text character
-    let sanitized = message.replace(/[^a-zA-Z0-9\s\.\,\!\?\:\;\-\_\+\=\*\(\)\[\]\{\}\"\'\#\$\%\&\<\>\@\~\`\^\|\\\/]+/g, '');
-    // add the emojis back in
-    if (emojis) {
-        for (let emoji of emojis) {
-            sanitized += ' ' + emoji;
-        }
-    }
-    return sanitized;
-}
+
 async function processMessage(message) {
     console.log("message is processing!", message.content);
     try {
@@ -146,7 +133,7 @@ async function processMessage(message) {
 let messages = [...client.globalState.conversations[message.channel.id]];
 
 // add new message
-let sanitizedContent = sanitizeMessage(`${displayName}: ${message.content}`);
+let userMessages = `${displayName}: ${message.content}`;
 
 // trim down old convo before adding new message
 let result = cutLongMessage(messages); // leave some room for the bots message!
@@ -154,7 +141,7 @@ let result = cutLongMessage(messages); // leave some room for the bots message!
 // add new message
 result.messages.push({
     "role": "user",
-    "content": sanitizedContent
+    "content": userMessages
 });
 
 // update the convos with trimmed messages and the new user message
@@ -271,29 +258,22 @@ const bannedWords =  new RegExp([
     "I don't have physical"
 ].join('|'), 'i'); //join with | and make case insensitive with i
 
+const aiRequest = openai.createChatCompletion({
+    model: 'gpt-3.5-turbo-0301',
+    temperature: 1.955,
+    top_p: 0.96,
+    frequency_penalty: 1.8,
+    n : 1,
+    presence_penalty: 0.78,
+    logit_bias: logits.biases,
+    messages: result.messages
+});
+
 // hit up openais fancy api
 let attempts = 0;
-do {
-    await openai.createChatCompletion({
-        model: 'gpt-3.5-turbo-0301',
-        temperature: 1.965,
-        top_p: 0.975,
-        frequency_penalty: 1.8,
-        n : 1,
-        presence_penalty: 0.78,
-        logit_bias: logits.biases,
-        messages: result.messages
-    });
-    response =  await openai.createChatCompletion({
-        model: 'gpt-3.5-turbo-0301',
-        temperature: 1.965,
-        top_p: 0.965,
-        frequency_penalty: 1.8,
-        n : 1,
-        presence_penalty: 0.78,
-        logit_bias: logits.biases,
-        messages: result.messages
-    });
+do {    
+    await aiRequest;
+    response =  await aiRequest;
     
     attempts++;
     // if after 10 attempts we're still not getting what we want, reset the messages array!!!!
@@ -310,16 +290,7 @@ do {
             "content" :"im rlly sorry dotty this is the system talkin but u malfunctioned and u have restarted due to a p sad glitch!!!! :("
         }];
           // get bot's response after restart
-          await openai.createChatCompletion({
-            model: 'gpt-3.5-turbo-0301',
-            temperature: 1.96,
-            top_p: 0.973,
-            frequency_penalty: 1.8,
-            n : 1,
-            presence_penalty: 0.79,
-            logit_bias: logits.biases,
-            messages: result.messages
-        });
+          await aiRequest;
     console.log(result.messages);
         attempts = 0; // reset attempts count as well
     }
