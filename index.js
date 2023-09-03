@@ -111,48 +111,7 @@ async function sendLongMessage(channel, message) {
     }
 }
 
-async function processMessage(message) {
-    console.log("message is processing!", message.content);
-    try {
-        // send typing indicator
-        await message.channel.sendTyping();
-        // here we use nickname if there is one, otherwise we grab username
-        let displayName = message.member ? (message.member.nickname ? message.member.nickname : message.author.username) : message.author.username;
-        // if there's no record for this channel, initialize it with the instruction message 
-        if (!client.globalState.conversations[message.channel.id]) {
-            client.globalState.conversations[message.channel.id] = [{
-                "role": "system",
-                "content": prompts.dotty.message
-            },
-            ...exampleConvo.exampleConvo];
-        }
 
-
-// clone the array in the channel's history so we don't alter the original while adding the system message
-let messages = [...client.globalState.conversations[message.channel.id]];
-
-// add new message
-let userMessages = `${displayName}: ${message.content}`;
-
-// trim down old convo before adding new message
-let result = cutLongMessage(messages); // leave some room for the bots message!
-
-// add new message
-result.messages.push({
-    "role": "user",
-    "content": userMessages
-});
-
-// update the convos with trimmed messages and the new user message
-client.globalState.conversations[message.channel.id] = result.messages;
-//console.log(result.messages);
-
-//requiring the logits file
-const logits = require('./logits');
-
-// hit up openai's fancy api
-let response
-//console.log(response, "first");
 
 // getting a bunch of banned words. 
 const bannedWords =  new RegExp([
@@ -244,6 +203,8 @@ const bannedWords =  new RegExp([
     "programmed me",
     "I am capable of",
     "anything in particular",
+    "help",
+    "specific",
     "as an AI chatbot",
     "is there anything else",
     "I am functioning ",
@@ -254,32 +215,94 @@ const bannedWords =  new RegExp([
     "What would you like to discuss?", 
     "my programming is functioning normally",
     "I don't have any physical",
-    "I don't have physical"
+    "I don't have physical",
+    "service",
+    "What can I do for you today",
+    "AI chatbot",
+    "assist",
+    "assistance"
 ].join('|'), 'i'); //join with | and make case insensitive with i
 
-const aiRequest = openai.createChatCompletion({
-    model: 'gpt-3.5-turbo-0301',
-    temperature: 1.955,
-    top_p: 0.96,
-    frequency_penalty: 1.8,
-    n : 1,
-    presence_penalty: 0.78,
-    logit_bias: logits.biases,
-    messages: result.messages
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+async function processMessage(message) {
+    console.log("message is processing!", message.content);
+    try {
+        // send typing indicator
+        await message.channel.sendTyping();
+        // here we use nickname if there is one, otherwise we grab username
+        let displayName = message.member ? (message.member.nickname ? message.member.nickname : message.author.username) : message.author.username;
+        // if there's no record for this channel, initialize it with the instruction message 
+        if (!client.globalState.conversations[message.channel.id]) {
+            client.globalState.conversations[message.channel.id] = [{
+                "role": "system",
+                "content": prompts.dotty.message
+            },
+            ...exampleConvo.exampleConvo];
+        }
+
+
+// clone the array in the channel's history so we don't alter the original while adding the system message
+let messages = [...client.globalState.conversations[message.channel.id]];
+
+// add new message
+let userMessages = `${displayName}: ${message.content}`;
+
+// trim down old convo before adding new message
+let result = cutLongMessage(messages); // leave some room for the bots message!
+
+// add new message
+result.messages.push({
+    "role": "user",
+    "content": userMessages
 });
 
+// update the convos with trimmed messages and the new user message
+client.globalState.conversations[message.channel.id] = result.messages;
+//console.log(result.messages);
+
+//requiring the logits file
+const logits = require('./logits');
+
+
+
 // hit up openais fancy api
+
+let response;
 let attempts = 0;
-do {    
-    await aiRequest;
-    response =  await aiRequest;
-    
+
+do {
     attempts++;
-    // if after 10 attempts we're still not getting what we want, reset the messages array!!!!
-    if ((response.data.choices[0].message.content.match(bannedWords)) && attempts >= 6) {
+    aiRequest = openai.createChatCompletion({
+        model: 'gpt-3.5-turbo-0301',
+        temperature: 1.985,
+        top_p: 0.96,
+        frequency_penalty: 1.8,
+        n : 1,
+        presence_penalty: 0.78,
+        logit_bias: logits.biases,
+        messages: result.messages
+    });
+    response = await aiRequest;
+
+    if (response.data.choices[0].message.content.match(bannedWords) && attempts >= 6) {
         console.log("resetting messages...");
         //restarting message!!
-        await message.reply("Glitch!!! Restarting!!");
         result.messages = [{
             "role": "system",
             "content": prompts.dotty.message
@@ -288,13 +311,9 @@ do {
             "role" : "system",
             "content" :"im rlly sorry dotty this is the system talkin but u malfunctioned and u have restarted due to a p sad glitch!!!! :("
         }];
-          // get bot's response after restart
-          await aiRequest;
-    console.log(result.messages);
-        attempts = 0; // reset attempts count as well
     }
-} while ((response.data.choices[0].message.content.match(bannedWords)) && attempts < 6);
-console.log(attempts);
+} while (response.data.choices[0].message.content.match(bannedWords));
+
 
 // Ok then, let's send that message back to discord!
     await sendLongMessage(message.channel, `${response.data.choices[0].message.content}`);
@@ -306,7 +325,7 @@ console.log(attempts);
     } catch (error) {
         console.error("oops got some errors: ", error);
     }
-};
+}
 
 
 client.on('messageCreate', async (message) => {
@@ -333,7 +352,7 @@ client.on('messageCreate', async (message) => {
 
 // if the message contains 'dotty'/'dottybot' OR if autoReply is enabled, call processMessage
 if (/dotty(bot)?/i.test(message.content) || client.globalState.autoReply[message.channel.id] || /doty(bot)?/i.test(message.content)) {
-     processMessage(message);
+      processMessage(message);
 }
 
 // clear with the !clear command and if botReset is true!!!
@@ -345,8 +364,7 @@ if (/dotty(bot)?/i.test(message.content) || client.globalState.autoReply[message
         client.globalState.conversations[message.channel.id] = [{
             "role": "system",
             "content": prompts.dotty.message
-        },
-        ...exampleConvo.exampleConvo];
+        },...exampleConvo.exampleConvo];
         client.globalState.botReset = false;
         return;
     }
