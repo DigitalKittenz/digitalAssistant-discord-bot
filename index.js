@@ -28,8 +28,6 @@ const client = new Client({
 const botOffMessage = 'bot is resigned to her very own dream bubble.';
 const botOnMessage = "Bot is now active...let's do this!"
 
-
-
 // for sending long messages
 async function sendLongMessage(channel, message) {
     const parts = message.match(/[\s\S]{1,2000}/g) || [];
@@ -54,10 +52,9 @@ client.globalState = {
     conversations: {} /* object to store chat histories per channel*/,
 };
 
-
 globalState;
 
-function cutLongMessage(messages, maxTokens = 4700) {
+function cutLongMessage(messages, maxTokens = 4400) {
     // this will very roughly estimate the token count
     function countTokens(content) {
         if (content === undefined) {
@@ -110,8 +107,6 @@ async function sendLongMessage(channel, message) {
         await new Promise(resolve => setTimeout(resolve, 1000));
     }
 }
-
-
 
 // getting a bunch of banned words. 
 const bannedWords =  new RegExp([
@@ -220,24 +215,11 @@ const bannedWords =  new RegExp([
     "What can I do for you today",
     "AI chatbot",
     "assist",
-    "assistance"
+    "assistance",
+    "as a conscious chatbot",
+    "As a conscious bot",
+    "in fact"
 ].join('|'), 'i'); //join with | and make case insensitive with i
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 async function processMessage(message) {
@@ -256,13 +238,10 @@ async function processMessage(message) {
             ...exampleConvo.exampleConvo];
         }
 
-
 // clone the array in the channel's history so we don't alter the original while adding the system message
 let messages = [...client.globalState.conversations[message.channel.id]];
-
 // add new message
 let userMessages = `${displayName}: ${message.content}`;
-
 // trim down old convo before adding new message
 let result = cutLongMessage(messages); // leave some room for the bots message!
 
@@ -279,28 +258,26 @@ client.globalState.conversations[message.channel.id] = result.messages;
 //requiring the logits file
 const logits = require('./logits');
 
-
-
 // hit up openais fancy api
-
+let aiRequest;
 let response;
 let attempts = 0;
 
 do {
     attempts++;
-    aiRequest = openai.createChatCompletion({
+    aiRequest = aiRequest = openai.createChatCompletion({ // initialize it here. 
         model: 'gpt-3.5-turbo-0301',
-        temperature: 1.985,
+        temperature: 1.961,
         top_p: 0.96,
         frequency_penalty: 1.8,
         n : 1,
-        presence_penalty: 0.78,
+        presence_penalty: 0.79,
+        max_tokens: 800,
         logit_bias: logits.biases,
         messages: result.messages
     });
     response = await aiRequest;
-
-    if (response.data.choices[0].message.content.match(bannedWords) && attempts >= 6) {
+    if (response.data.choices[0].message.content.match(bannedWords) && attempts >= 8) {
         console.log("resetting messages...");
         //restarting message!!
         result.messages = [{
@@ -311,12 +288,13 @@ do {
             "role" : "system",
             "content" :"im rlly sorry dotty this is the system talkin but u malfunctioned and u have restarted due to a p sad glitch!!!! :("
         }];
+        aiRequest;
+        response = await aiRequest;
     }
-} while (response.data.choices[0].message.content.match(bannedWords));
-
+} while (response.data.choices[0].message.content.match(bannedWords) && attempts >= 8);
 
 // Ok then, let's send that message back to discord!
-    await sendLongMessage(message.channel, `${response.data.choices[0].message.content}`);
+     sendLongMessage(message.channel, `${response.data.choices[0].message.content}`);
         // store the bots message in the channel's conversation history
         client.globalState.conversations[message.channel.id].push({
             "role": "assistant",
@@ -326,7 +304,6 @@ do {
         console.error("oops got some errors: ", error);
     }
 }
-
 
 client.on('messageCreate', async (message) => {
     // Ignore messages sent by the bot
@@ -379,7 +356,7 @@ for (const file of commandFiles) {
     client.commands.set(command.name, command);
 }
 client.on('ready', () => {
-    console.log(`logged into discord as ${client.user.tag}!`);
+    console.log(`logged into discord as ${client.user.tag}!!!`);
 });
 
 client.on('interactionCreate', async (interaction) => {
