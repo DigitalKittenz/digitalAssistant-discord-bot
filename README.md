@@ -12,12 +12,7 @@ A discord bot that does stuff.
 - /botfact and !botfact - cool fact of the day ;)
 - !clear - clears conversation history
 - /kitty or !kitty - sends cat gifs - has OPTIONS:
-These options are:
---!kitty
-  --!manul
-  --!cartoon
-  --!wizard
- -- !spotty
+These options are: !kitty, !manul, !cartoon, !wizard, !spotty, !meow
 
 # Installation
 - Clone this repo
