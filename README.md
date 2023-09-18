@@ -9,7 +9,7 @@ A discord bot that does stuff.
 
 # Usage
 - /help and !help - shows you a help menu
-- /botfact - cool fact of the day ;)
+- /botfact and !botfact - cool fact of the day ;)
 - !clear - clears conversation history
 - /kitty or !kitty - sends cat gifs - has OPTIONS:
 These options are:
