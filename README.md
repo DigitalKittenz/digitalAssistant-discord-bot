@@ -3,19 +3,21 @@ A discord bot that does stuff.
 
 # Features
 - Says hello
-- Shows manul pics
+- Shows cat pics
 - random facts!
-- basic server info
-- deletes duplicate urls
-- now chats
 - some surprises ;)
 
 # Usage
-- /botfact: gives you a random fact
-- /hello: Says hello with a random message
-- /manul: Shows a manul pic with a cute message
-- /server: Shows basic server info
-- /goodbye: says goodbye
+- /help and !help - shows you a help menu
+- /botfact - cool fact of the day ;)
+- !clear - clears conversation history
+- /kitty or !kitty - sends cat gifs - has OPTIONS:
+These options are:
+-1. !kitty
+-2. !manul
+-3. !cartoon
+-4. !wizard
+-5. !spotty
 
 # Installation
 - Clone this repo
