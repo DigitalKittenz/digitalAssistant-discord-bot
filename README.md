@@ -13,11 +13,11 @@ A discord bot that does stuff.
 - !clear - clears conversation history
 - /kitty or !kitty - sends cat gifs - has OPTIONS:
 These options are:
-- 1. !kitty
-- 2. !manul
-- 3. !cartoon
-- 4. !wizard
-- 5. !spotty
+- !kitty
+- !manul
+- !cartoon
+- !wizard
+- !spotty
 
 # Installation
 - Clone this repo
