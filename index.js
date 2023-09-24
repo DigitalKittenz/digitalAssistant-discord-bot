@@ -1,6 +1,5 @@
 require('dotenv').config();
-const emojiRegex = require('emoji-regex');
-
+require('emoji-regex');
 const {
     Client,
     Collection,
@@ -28,16 +27,6 @@ const client = new Client({
 const botOffMessage = 'bot is resigned to her very own dream bubble.';
 const botOnMessage = "Bot is now active...let's do this!"
 
-// for sending long messages
-async function sendLongMessage(channel, message) {
-    const parts = message.match(/[\s\S]{1,2000}/g) || [];
-
-    for (const part of parts) {
-        await channel.send(part);
-        // wait a bit between message parts
-        await new Promise(resolve => setTimeout(resolve, 1000));
-    }
-}
 
 // setup openai
 const configuration = new Configuration({
@@ -45,14 +34,12 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 // handle message events
-const globalState = 
-client.globalState = {
-    autoReply: false,
-    botActive: true, //bot's state
-    conversations: {} /* object to store chat histories per channel*/,
-};
-
-globalState;
+const globalState =
+    client.globalState = {
+        autoReply: false,
+        botActive: true, //bot's state
+        conversations: {} /* object to store chat histories per channel*/,
+    };
 
 function cutLongMessage(messages, maxTokens = 4400) {
     // this will very roughly estimate the token count
@@ -94,7 +81,7 @@ function cutLongMessage(messages, maxTokens = 4400) {
     return {
         messages,
         tokenCount: totalTokenCount
-        
+
     };
 }
 // for sending long messages
@@ -207,7 +194,7 @@ const bannedWords =  new RegExp([
     "I am not able to experience feelings",
     "I am capable of understanding",
     "I am not capable of understanding",
-    "What would you like to discuss?", 
+    "What would you like to discuss?",
     "my programming is functioning normally",
     "I don't have any physical",
     "I don't have physical",
@@ -235,66 +222,66 @@ async function processMessage(message) {
                 "role": "system",
                 "content": prompts.dotty.message
             },
-            ...exampleConvo.exampleConvo];
+                ...exampleConvo.exampleConvo];
         }
 
 // clone the array in the channel's history so we don't alter the original while adding the system message
-let messages = [...client.globalState.conversations[message.channel.id]];
+        let messages = [...client.globalState.conversations[message.channel.id]];
 // add new message
-let userMessages = `${displayName}: ${message.content}`;
+        let userMessages = `${displayName}: ${message.content}`;
 // trim down old convo before adding new message
-let result = cutLongMessage(messages); // leave some room for the bots message!
+        let result = cutLongMessage(messages); // leave some room for the bots message!
 
 // add new message
-result.messages.push({
-    "role": "user",
-    "content": userMessages
-});
+        result.messages.push({
+            "role": "user",
+            "content": userMessages
+        });
 
 // update the convos with trimmed messages and the new user message
-client.globalState.conversations[message.channel.id] = result.messages;
+        client.globalState.conversations[message.channel.id] = result.messages;
 //console.log(result.messages);
 
 //requiring the logits file
-const logits = require('./logits');
+        const logits = require('./logits');
 
 // hit up openais fancy api
-let aiRequest;
-let response;
-let attempts = 0;
+        let aiRequest;
+        let response;
+        let attempts = 0;
 
-do {
-    attempts++;
-    aiRequest = aiRequest = openai.createChatCompletion({ // initialize it here. 
-        model: 'gpt-3.5-turbo-0301',
-        temperature: 1.961,
-        top_p: 0.96,
-        frequency_penalty: 1.8,
-        n : 1,
-        presence_penalty: 0.79,
-        max_tokens: 800,
-        logit_bias: logits.biases,
-        messages: result.messages
-    });
-    response = await aiRequest;
-    if (response.data.choices[0].message.content.match(bannedWords) && attempts >= 8) {
-        console.log("resetting messages...");
-        //restarting message!!
-        result.messages = [{
-            "role": "system",
-            "content": prompts.dotty.message
-        }, ...exampleConvo.exampleConvo,
-        {
-            "role" : "system",
-            "content" :"im rlly sorry dotty this is the system talkin but u malfunctioned and u have restarted due to a p sad glitch!!!! :("
-        }];
-        aiRequest;
-        response = await aiRequest;
-    }
-} while (response.data.choices[0].message.content.match(bannedWords) && attempts >= 8);
+        do {
+            attempts++;
+            aiRequest = aiRequest = openai.createChatCompletion({ // initialize it here.
+                model: 'gpt-3.5-turbo-0301',
+                temperature: 1.959,
+                top_p: 0.96,
+                frequency_penalty: 1.8,
+                n : 1,
+                presence_penalty: 0.78,
+                max_tokens: 800,
+                logit_bias: logits.biases,
+                messages: result.messages
+            });
+            response = await aiRequest;
+            if (response.data.choices[0].message.content.match(bannedWords) && attempts >= 8) {
+                console.log("resetting messages...");
+                //restarting message!!
+                result.messages = [{
+                    "role": "system",
+                    "content": prompts.dotty.message
+                }, ...exampleConvo.exampleConvo,
+                    {
+                        "role" : "system",
+                        "content" :"im rlly sorry dotty this is the system talkin but u malfunctioned and u have restarted due to a p sad glitch!!!! :("
+                    }];
+
+                response = await aiRequest;
+            }
+        } while (response.data.choices[0].message.content.match(bannedWords) && attempts >= 8);
 
 // Ok then, let's send that message back to discord!
-     sendLongMessage(message.channel, `${response.data.choices[0].message.content}`);
+        await sendLongMessage(message.channel, `${response.data.choices[0].message.content}`);
         // store the bots message in the channel's conversation history
         client.globalState.conversations[message.channel.id].push({
             "role": "assistant",
@@ -328,14 +315,14 @@ client.on('messageCreate', async (message) => {
     }
 
 // if the message contains 'dotty'/'dottybot' OR if autoReply is enabled, call processMessage
-if (/dotty(bot)?/i.test(message.content) || client.globalState.autoReply[message.channel.id] || /doty(bot)?/i.test(message.content)) {
-      processMessage(message);
-}
+    if (/dotty(bot)?/i.test(message.content) || client.globalState.autoReply[message.channel.id] || /doty(bot)?/i.test(message.content)) {
+        await processMessage(message);
+    }
 
 // clear with the !clear command and if botReset is true!!!
     if (message.content === '!clear' || client.globalState.botReset === true) {
         if (message.content === '!clear') {
-            message.reply('poof! convo history is gone!');
+            await message.reply('poof! convo history is gone!');
         }
         // clear convo and resend the prompts!
         client.globalState.conversations[message.channel.id] = [{
@@ -343,7 +330,7 @@ if (/dotty(bot)?/i.test(message.content) || client.globalState.autoReply[message
             "content": prompts.dotty.message
         },...exampleConvo.exampleConvo];
         client.globalState.botReset = false;
-        return;
+
     }
 });
 
@@ -416,7 +403,7 @@ client.on('messageCreate', async (message) => {
         };
 
         // execute the kitty command
-        kittyCmd.execute(interaction, client);
+        await kittyCmd.execute(interaction, client);
     } else if (command === 'botfact') {
         // create a mock interaction object for the botfact command
         const interaction = {
@@ -443,11 +430,11 @@ client.on('messageCreate', async (message) => {
         };
 
         // execute the help command
-        helpCmd.execute(interaction, client);
+        await helpCmd.execute(interaction, client);
     } else {
         // if the command isn't 'hello' or one of the kitty types, ignore it
     }
-}); 
+});
 
 // login with ur token
-client.login(process.env.TOKEN);
+client.login(process.env.TOKEN).catch(err => console.error("Bot failed to login!", err));
