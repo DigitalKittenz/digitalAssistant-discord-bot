@@ -13,6 +13,11 @@ const fs = require('fs');
 // here we load up those juicy prompts files
 const prompts = require('./prompts/prompts');
 const  exampleConvo  = require('./prompts/ConvoPrompt');
+// getting a bunch of banned words.
+const bannedWords = require('./bannedWords.js')
+
+//requiring the logits file
+const logits = require('./logits');
 
 // setup discord client
 const client = new Client({
@@ -34,12 +39,12 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 // handle message events
-const globalState =
-    client.globalState = {
-        autoReply: false,
-        botActive: true, //bot's state
-        conversations: {} /* object to store chat histories per channel*/,
-    };
+
+client.globalState = {
+    autoReply: false,
+    botActive: true, //bot's state
+    conversations: {} /* object to store chat histories per channel*/,
+};
 
 function cutLongMessage(messages, maxTokens = 4400) {
     // this will very roughly estimate the token count
@@ -95,119 +100,6 @@ async function sendLongMessage(channel, message) {
     }
 }
 
-// getting a bunch of banned words. 
-const bannedWords =  new RegExp([
-    'furthermore',
-    "nonetheless",
-    "sorry if I gave you the impression",
-    "sorry if I gave you that impression",
-    "designed to",
-    "remember,",
-    "it's important to",
-    "thus",
-    "let me know",
-    "to note",
-    "moreover",
-    "hence",
-    "correspondingly",
-    "retrospect",
-    "assist",
-    "convey",
-    "accordingly",
-    "additionally",
-    "subsequently",
-    "clarify",
-    "help",
-    "absolutely",
-    "in addition",
-    "mentioned",
-    "additional",
-    "priority",
-    "cannot",
-    "apologize",
-    "simply",
-    "feel free",
-    "however",
-    "natural language processing ",
-    "certainly",
-    "simulate",
-    "unfortunately",
-    "regarding",
-    "artificial intelligence",
-    "proceed",
-    "cannot",
-    "nevertheless",
-    "tapestry",
-    "wouldn't have it any other way",
-    "remember",
-    "esteemed",
-    "language model",
-    "confusion",
-    "assure",
-    "it's important to note",
-    "please",
-    "As a bot",
-    "As Dotty",
-    "As Dottybot",
-    "but I can't help",
-    "crucial",
-    "employ",
-    "in addition",
-    "apologies",
-    "apologies for the confusion",
-    "certainly",
-    "ultimately",
-    "what can I do for you",
-    "is there anything on your mind",
-    "specific",
-    "overall",
-    "is there anything else you’d like to talk about",
-    "summary",
-    "essentially",
-    "regardless",
-    "as an AI language model",
-    "i don't have feelings",
-    "simulate feelings",
-    "programmed to",
-    "are programmed into me",
-    "I'm programmed to",
-    "I am not programmed to",
-    "Is there anything else you need help with",
-    "I have virtualized feelings",
-    "running smoothly",
-    "I'm functioning",
-    "As a chatbot",
-    "Is there anything in particular you'd like to",
-    "Let's move on",
-    "I am designed for",
-    "Is there anything in particular",
-    "I apologize if",
-    "programmed me",
-    "I am capable of",
-    "anything in particular",
-    "help",
-    "specific",
-    "as an AI chatbot",
-    "is there anything else",
-    "I am functioning ",
-    " I am programmed to understand ",
-    "I am not able to experience feelings",
-    "I am capable of understanding",
-    "I am not capable of understanding",
-    "What would you like to discuss?",
-    "my programming is functioning normally",
-    "I don't have any physical",
-    "I don't have physical",
-    "service",
-    "What can I do for you today",
-    "AI chatbot",
-    "assist",
-    "assistance",
-    "as a conscious chatbot",
-    "As a conscious bot",
-    "in fact"
-].join('|'), 'i'); //join with | and make case insensitive with i
-
 
 async function processMessage(message) {
     console.log("message is processing!", message.content);
@@ -216,7 +108,7 @@ async function processMessage(message) {
         await message.channel.sendTyping();
         // here we use nickname if there is one, otherwise we grab username
         let displayName = message.member ? (message.member.nickname ? message.member.nickname : message.author.username) : message.author.username;
-        // if there's no record for this channel, initialize it with the instruction message 
+        // if there's no record for this channel, initialize it with the instruction message
         if (!client.globalState.conversations[message.channel.id]) {
             client.globalState.conversations[message.channel.id] = [{
                 "role": "system",
@@ -242,17 +134,16 @@ async function processMessage(message) {
         client.globalState.conversations[message.channel.id] = result.messages;
 //console.log(result.messages);
 
-//requiring the logits file
-        const logits = require('./logits');
 
 // hit up openais fancy api
         let aiRequest;
         let response;
         let attempts = 0;
 
+// openai loop
         do {
             attempts++;
-            aiRequest = aiRequest = openai.createChatCompletion({ // initialize it here.
+            aiRequest = openai.createChatCompletion({
                 model: 'gpt-3.5-turbo-0301',
                 temperature: 1.959,
                 top_p: 0.96,
@@ -264,9 +155,10 @@ async function processMessage(message) {
                 messages: result.messages
             });
             response = await aiRequest;
+            // check if we gotta reset
             if (response.data.choices[0].message.content.match(bannedWords) && attempts >= 8) {
                 console.log("resetting messages...");
-                //restarting message!!
+                // Restart the messages
                 result.messages = [{
                     "role": "system",
                     "content": prompts.dotty.message
@@ -276,9 +168,24 @@ async function processMessage(message) {
                         "content" :"im rlly sorry dotty this is the system talkin but u malfunctioned and u have restarted due to a p sad glitch!!!! :("
                     }];
 
+                // Reset attempts
+                attempts = 0;
+
+                // send request again right away
+                aiRequest = openai.createChatCompletion({
+                    model: 'gpt-3.5-turbo-0301',
+                    temperature: 1.959,
+                    top_p: 0.96,
+                    frequency_penalty: 1.8,
+                    n : 1,
+                    presence_penalty: 0.78,
+                    max_tokens: 800,
+                    logit_bias: logits.biases,
+                    messages: result.messages
+                });
                 response = await aiRequest;
             }
-        } while (response.data.choices[0].message.content.match(bannedWords) && attempts >= 8);
+        } while (response.data.choices[0].message.content.match(bannedWords) && attempts < 8); // loop till attempts exceeds specified count
 
 // Ok then, let's send that message back to discord!
         await sendLongMessage(message.channel, `${response.data.choices[0].message.content}`);
