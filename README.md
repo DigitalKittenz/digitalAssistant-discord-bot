@@ -18,7 +18,6 @@ These options are: !kitty, !manul, !cartoon, !wizard, !spotty, !meow
 - Clone this repo
 - npm init
 - npm install dotenv
-- npm install emoji-regex
 - Create a .env file with your bot token
 - npm run register to register the slash commands with your application
 - fill out example.env and rename it to .env
