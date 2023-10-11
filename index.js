@@ -133,32 +133,31 @@ async function processMessage(message) {
 // update the convos with trimmed messages and the new user message
         client.globalState.conversations[message.channel.id] = result.messages;
 //console.log(result.messages);
-
-
 // hit up openais fancy api
-        let aiRequest;
-        let response;
-        let attempts = 0;
+        let aiRequest = openai.createChatCompletion({ // ok im literally putting values in here lmao
+            model: 'gpt-3.5-turbo-0301',
+            temperature: 1.985,
+            top_p: 0.963,
+            frequency_penalty: 1.8,
+            n : 1,
+            presence_penalty: 0.78,
+            max_tokens: 800,
+            logit_bias: logits.biases,
+            messages: result.messages
+        });
 
-// openai loop
-        do {
-            attempts++;
-            aiRequest = openai.createChatCompletion({
-                model: 'gpt-3.5-turbo-0301',
-                temperature: 1.959,
-                top_p: 0.96,
-                frequency_penalty: 1.8,
-                n : 1,
-                presence_penalty: 0.78,
-                max_tokens: 800,
-                logit_bias: logits.biases,
-                messages: result.messages
-            });
-            response = await aiRequest;
+        //initialize stuff
+        let attempts = 0;
+        let response = await aiRequest;
+        let cuteResponse = ["that was a lil bit too much for me u guys 。゜゜(´Ｏ`) ゜゜。", ];
+
+        // (response.data.choices[0].message.content.match(bannedWords) && attempts < 8)
+        for (attempts;response.data.choices[0].message.content.match(bannedWords) && attempts < 8; attempts++){
+            response;
             // check if we gotta reset
             if (response.data.choices[0].message.content.match(bannedWords) && attempts >= 8) {
-                console.log("resetting messages...");
-                // Restart the messages
+                console.log("resetting ig");
+                // add the prompts back into the bots dumb brain
                 result.messages = [{
                     "role": "system",
                     "content": prompts.dotty.message
@@ -167,25 +166,13 @@ async function processMessage(message) {
                         "role" : "system",
                         "content" :"im rlly sorry dotty this is the system talkin but u malfunctioned and u have restarted due to a p sad glitch!!!! :("
                     }];
-
-                // Reset attempts
+                message.reply("that was a lil bit too much for me u guys 。゜゜(´Ｏ`) ゜゜。");
+               // Reset attempts
                 attempts = 0;
-
-                // send request again right away
-                aiRequest = openai.createChatCompletion({
-                    model: 'gpt-3.5-turbo-0301',
-                    temperature: 1.959,
-                    top_p: 0.96,
-                    frequency_penalty: 1.8,
-                    n : 1,
-                    presence_penalty: 0.78,
-                    max_tokens: 800,
-                    logit_bias: logits.biases,
-                    messages: result.messages
-                });
-                response = await aiRequest;
+                response;
             }
-        } while (response.data.choices[0].message.content.match(bannedWords) && attempts < 8); // loop till attempts exceeds specified count
+            }
+
 
 // Ok then, let's send that message back to discord!
         await sendLongMessage(message.channel, `${response.data.choices[0].message.content}`);
