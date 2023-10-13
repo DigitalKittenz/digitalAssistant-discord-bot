@@ -1,0 +1,141 @@
+
+/*
+        // hard code birthdays in a map
+        const friends = new Map();
+        // friend objects
+        friends.set('Terezi', {
+            name: 'Terezi',
+            birthdate: new Date('January 3'),
+            classpect: 'questing',
+            timezone: 'America/Los_Angeles' //PST
+        });
+        friends.set('Eridan', {
+            name: 'Eridan',
+            birthdate: new Date('January 24'),
+            classpect: 'Prince of Mind',
+            timezone: 'America/Chicago' //CST
+        });
+        friends.set('Jade', {
+            name: 'Jade',
+            birthdate: new Date('February 20'),
+            classpect: 'Rogue of Doom',
+            timezone: 'America/Caracas' //Venezuela
+        });
+        friends.set('Jake', {
+            name: 'Jake',
+            birthdate: new Date('March 10'),
+            classpect: 'questing',
+            timezone: 'America/Chicago' //Central Time Zone
+        });
+        friends.set('Roxy', {
+            name: 'Roxy',
+            birthdate: new Date('March 29'),
+            classpect: 'Witch of Breath',
+            timezone: 'Europe/Dublin' //Ireland
+        });
+        friends.set('Caliborn', {
+            name: 'Caliborn',
+            birthdate: new Date('April 28'),
+            classpect: 'questing',
+            timezone: 'America/New_York' //EST
+        });
+        friends.set('Tavros', {
+            name: 'Tavros',
+            birthdate: new Date('May 9'),
+            classpect: 'Bard of Life',
+            timezone: 'America/New_York' //Philadelphia
+        });
+        friends.set('Dave', {
+            name: 'Dave',
+            birthdate: new Date('May 27'),
+            classpect: 'Sylph of Blood',
+            timezone: 'America/New_York' //Florida
+        });
+        friends.set('Dirk', {
+            name: 'Dirk',
+            birthdate: new Date('May 31'),
+            classpect: 'Prince of Light',
+            timezone: 'America/New_York' //EST
+        });
+        friends.set('Rose', {
+            name: 'Rose',
+            birthdate: new Date('June 5'),
+            classpect: 'questing',
+            timezone: 'America/New_York' //EST
+        });
+        friends.set('The Mayor', {
+            name: 'The Mayor',
+            birthdate: new Date('June 29'),
+            classpect: 'questing',
+            timezone: 'Europe/Copenhagen' //Denmark
+        });
+        friends.set('Sollux', {
+            name: 'Sollux',
+            birthdate: new Date('October 27'),
+            classpect: 'Rogue of Breath',
+            timezone: 'Europe/Copenhagen' //Denmark
+        });
+        friends.set('Gamzee', {
+            name: 'Gamzee',
+            birthdate: new Date('October 28'),
+            classpect: 'Seer of Space',
+            timezone: 'America/Los_Angeles' //PST
+        });
+        friends.set('Nepeta', {
+            name: 'Nepeta',
+            birthdate: new Date('November 4'),
+            classpect: 'questing',
+            timezone: 'America/Chicago' //Texas
+        });
+        friends.set('Aradia', {
+            name: 'Aradia',
+            birthdate: new Date('December 20'),
+            classpect: 'questing',
+            timezone: 'America/Chicago' //Topeka
+        });
+        friends.set('Test', {
+            name: 'Test',
+            birthdate: new Date('September 26'),
+            classpect: 'questing',
+            timezone: 'Europe/Dublin' //test
+        });
+
+        /*
+          wait, you gave me your DOB, it's 6/11, huh? Page of Blood is pretty awesome, and Pacific Standard Time is cool, too!
+         */
+/*         for (let friend of friends.values()) {
+
+            for (let friend of friends.values()) {
+
+                // build the current date, but be mindful of the friend's timezone!
+                const now = new Date();
+                const options = {
+                     timeZone: friend.timezone,
+                     year: "numeric",
+                     month: "2-digit",
+                     day: "2-digit"
+                };
+
+                const formatter = new Intl.DateTimeFormat([], options);
+                const timezonedNow = formatter.format(now).split('/').reverse().join('-');
+
+                //faithfully borrowing now's year to celebrate our friend's wriggling day! 🎉
+                const birthdayThisYear = new Date(now.getFullYear(), friend.birthdate.getMonth(), friend.birthdate.getDate());
+
+                // Let's take the friend's day with the current year!
+                const friendBirthdateFormatter = new Intl.DateTimeFormat([], {year: "numeric", month: "2-digit", day: "2-digit"});
+                const friendBirthdateThisYear = friendBirthdateFormatter.format(birthdayThisYear).split('/').reverse().join('-');
+
+                let guild = message.guild;
+                let channel = message.channel;
+
+                // If they match, then fingers crossed, its party time!!! 🎆
+                if (timezonedNow === friendBirthdateThisYear) {
+                    channel.send(`happy wriggling day ${friend.name}!! reality is silly sometimes so don't forget to enjoy your special day :D 🎂💖🎈🎉`);
+                }
+            };
+        }})
+
+*/
+
+// login with your token (just promise me it's not a trick!)

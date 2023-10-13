@@ -109,7 +109,8 @@ const bannedWords =  new RegExp([
     "assistance",
     "as a conscious chatbot",
     "As a conscious bot",
-    "in fact"
+    "in fact",
+    "strive"
 ].join('|'), 'i'); //join with | and make case insensitive with i
 
 module.exports = bannedWords;
