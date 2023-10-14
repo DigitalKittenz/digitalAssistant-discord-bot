@@ -134,21 +134,19 @@ async function processMessage(message) {
         client.globalState.conversations[message.channel.id] = result.messages;
 
 // initialize stuff!!
-// hit up openais fancy api
+// hit up openais fancy api 🧐
         let aiRequest = openai.createChatCompletion({ // ok im literally putting values in here lmao
             model: 'gpt-3.5-turbo-0301',
-            temperature: 1.965,//craziness
-            top_p: 0.973,//filter
+            temperature: 1.985,//craziness
+            top_p: 0.923,//crazy filter
             frequency_penalty: 1.8, // unlikeliness 2 repeat same word
             n : 1, // num of iterations prolly dont need this tbh
             presence_penalty: 0.78,// unlikeliness 2 repeat same topic (p sure)
-            max_tokens: 800,
+            max_tokens: 500,
             logit_bias: logits.biases,// banned tokens (like fancy 1s)
             messages: result.messages // lol so she can see previous messages SUPER IMPORTANT
         });
 
-
-        let attempts = 0;
         let response = await aiRequest;
         let cuteResponse = ["that was a lil bit too much for me u guys 。゜゜(´Ｏ`) ゜゜。", ];
 
