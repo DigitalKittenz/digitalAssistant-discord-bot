@@ -138,8 +138,8 @@ async function processMessage(message) {
             model: 'gpt-3.5-turbo-0301',
             temperature: 1.985,
             top_p: 0.963,
-            frequency_penalty: 1.8,
-            n : 1,
+            frequency_penalty: 1.8, // unlikeliness 2 repeat same word
+            n : 1, // num of iterations prolly dont need this tbh
             presence_penalty: 0.78,
             max_tokens: 800,
             logit_bias: logits.biases,
@@ -151,27 +151,32 @@ async function processMessage(message) {
         let response = await aiRequest;
         let cuteResponse = ["that was a lil bit too much for me u guys 。゜゜(´Ｏ`) ゜゜。", ];
 
-        // (response.data.choices[0].message.content.match(bannedWords) && attempts < 8)
-        for (attempts;response.data.choices[0].message.content.match(bannedWords) && attempts < 8; attempts++){
+       // might just make this an infinite loop lmao
+        // openai loop
+        // i wanna and need 2 rewrite this dumb thing UGH
+        for(let attempts=0;response.data.choices[0].message.content.match(bannedWords) && attempts < 8; attempts++){
+            attempts++;
+            aiRequest;
             response;
-            // check if we gotta reset
-            if (response.data.choices[0].message.content.match(bannedWords) && attempts >= 8) {
-                console.log("resetting ig");
-                // add the prompts back into the bots dumb brain
+            // stfu over 8 is rly bad
+            if (response.data.choices[0].message.content.match(bannedWords) && attempts >= 8){
+                console.log("restarting 🙄");
+                //restart the msgs
                 result.messages = [{
                     "role": "system",
                     "content": prompts.dotty.message
                 }, ...exampleConvo.exampleConvo,
                     {
                         "role" : "system",
-                        "content" :"im rlly sorry dotty this is the system talkin but u malfunctioned and u have restarted due to a p sad glitch!!!! :("
+                        "content" :"im rlly sorry dotty this is the system talkin but u malfunctioned and u have restarted due to a p sad glitch!!!! :( say hi 2 the user again!"
                     }];
-                message.reply("that was a lil bit too much for me u guys 。゜゜(´Ｏ`) ゜゜。");
-               // Reset attempts
+                //reset attempts
                 attempts = 0;
+                // send request BACK AGAIN
+                aiRequest;
                 response;
             }
-            }
+        }
 
 
 // Ok then, let's send that message back to discord!
