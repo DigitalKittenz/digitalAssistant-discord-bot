@@ -132,28 +132,28 @@ async function processMessage(message) {
 
 // update the convos with trimmed messages and the new user message
         client.globalState.conversations[message.channel.id] = result.messages;
-//console.log(result.messages);
+
+// initialize stuff!!
 // hit up openais fancy api
         let aiRequest = openai.createChatCompletion({ // ok im literally putting values in here lmao
             model: 'gpt-3.5-turbo-0301',
-            temperature: 1.985,
-            top_p: 0.963,
+            temperature: 1.965,//craziness
+            top_p: 0.973,//filter
             frequency_penalty: 1.8, // unlikeliness 2 repeat same word
             n : 1, // num of iterations prolly dont need this tbh
-            presence_penalty: 0.78,
+            presence_penalty: 0.78,// unlikeliness 2 repeat same topic (p sure)
             max_tokens: 800,
-            logit_bias: logits.biases,
-            messages: result.messages
+            logit_bias: logits.biases,// banned tokens (like fancy 1s)
+            messages: result.messages // lol so she can see previous messages SUPER IMPORTANT
         });
 
-        //initialize stuff
+
         let attempts = 0;
         let response = await aiRequest;
         let cuteResponse = ["that was a lil bit too much for me u guys 。゜゜(´Ｏ`) ゜゜。", ];
 
-       // might just make this an infinite loop lmao
+
         // openai loop
-        // i wanna and need 2 rewrite this dumb thing UGH
         for(let attempts=0;response.data.choices[0].message.content.match(bannedWords) && attempts < 8; attempts++){
             attempts++;
             aiRequest;
