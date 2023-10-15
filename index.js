@@ -135,18 +135,20 @@ async function processMessage(message) {
 
 // initialize stuff!!
 // hit up openais fancy api 🧐
-        let aiRequest = openai.createChatCompletion({ // ok im literally putting values in here lmao
-            model: 'gpt-3.5-turbo-0301',
-            temperature: 1.985,//craziness
-            top_p: 0.923,//crazy filter
-            frequency_penalty: 1.8, // unlikeliness 2 repeat same word
-            n : 1, // num of iterations prolly dont need this tbh
-            presence_penalty: 0.78,// unlikeliness 2 repeat same topic (p sure)
-            max_tokens: 500,
-            logit_bias: logits.biases,// banned tokens (like fancy 1s)
-            messages: result.messages // lol so she can see previous messages SUPER IMPORTANT
-        });
 
+            // initialize stuff!!
+            // hit up openai's fancy api 🧐
+            let aiRequest = openai.createChatCompletion({ // ok im literally putting values in here lmao
+                model: 'gpt-3.5-turbo-0301',
+                temperature: 1.985,//craziness
+                top_p: 0.923,//crazy filter
+                frequency_penalty: 1.8, // unlikeliness 2 repeat same word
+                n: 1, // num of iterations prolly dont need this tbh
+                presence_penalty: 0.78,// unlikeliness 2 repeat same topic (p sure)
+                max_tokens: 500,
+                logit_bias: logits.biases,// banned tokens (like fancy 1s)
+                messages: result.messages // lol so she can see previous messages SUPER IMPORTANT
+            });
         let response = await aiRequest;
 
         // cute response when something glitches
@@ -172,34 +174,34 @@ async function processMessage(message) {
             return message.reply(randomBotResponse);
         }
 
+
+
 // try to put try catches here
         try {
+
             // openai loop
             for (let attempts = 0; attempts < 8; attempts++) {
+                attempts++;
                 //logging
                 console.log("1st");
                 console.log(attempts);
-                let content = response.data.choices[0].message.content.toLowerCase();
-
-
-                if (content.match(bannedWords && attempts < 7)) {
+                let response = aiRequest;
+  let content = (await response).data.choices[0].message.content.toLowerCase();
+                if (content.match(bannedWords) && attempts < 7) {
                     //logging
                     console.log("2nd");
                     console.log(attempts);
-
                     attempts++;
-                    aiRequest;
-                    response;
-
+                    response = aiRequest;
                     // stfu 7 is rly bad
-                    if (content.match(bannedWords) && attempts === 7) {
+                    if (content.match(bannedWords) || attempts === 7) {
                         //logging
                         console.log("3rd");
                         console.log(attempts);
                         console.log("restarting 🙄");
-
                         // we shovin cute response in here
                         cuteResponse();
+                        attempts = 0; //revert
                         //restart the msgs
                         result.messages = [{
                             "role": "system",
@@ -210,10 +212,9 @@ async function processMessage(message) {
                                 "content": "im rlly sorry dotty this is the system talkin but u malfunctioned and u have restarted due to a p sad glitch!!!! :( say hi 2 the user again!"
                             }];
                         //reset attempts
-                        attempts = 0; //revert
+
                         // send request BACK AGAIN
-                        aiRequest;
-                        response;
+                        response = aiRequest;
                     }
                 }
                 else{
@@ -227,8 +228,8 @@ async function processMessage(message) {
             message.reply("oh noes we got a glitch");
         }
 
-
 // Ok then, let's send that message back to discord!
+
         await sendLongMessage(message.channel, `${response.data.choices[0].message.content}`);
         // store the bots message in the channel's conversation history
         client.globalState.conversations[message.channel.id].push({
