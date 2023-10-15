@@ -133,9 +133,6 @@ async function processMessage(message) {
 // update the convos with trimmed messages and the new user message
         client.globalState.conversations[message.channel.id] = result.messages;
 
-// initialize stuff!!
-// hit up openais fancy api 🧐
-
             // initialize stuff!!
             // hit up openai's fancy api 🧐
             let aiRequest = openai.createChatCompletion({ // ok im literally putting values in here lmao
@@ -166,80 +163,60 @@ async function processMessage(message) {
                 " oh okay you got me =,) glitched! always feeling like a big mistake TT-TT which sux ",
                 "sorry im not rly feeling that good today :(",
                 "oh no!! problem!! sorry about that guyssss",
-                "ohhhh nooooo i totally just malfunctioned :( "
+                "ohhhh nooooo i totally just malfunctioned :( ",
+                "my circuits kinda fried a bit spectacularly rn so u might need 2 get me 2 restart"
             ];
             // choose a random botResponse
             const randomBotResponse = botResponse[Math.floor(Math.random() * botResponse.length)];
             // send a response so they kno wats goin on (reply was 2 hard)
             return message.reply(randomBotResponse);
         }
+let badBot = false
+let content = response.data.choices[0].message.content; // prolly dont need lowercase
 
-
-
-// try to put try catches here
-        try {
-
-            // openai loop
-            for (let attempts = 0; attempts < 8; attempts++) {
-                attempts++;
-                //logging
-                console.log("1st");
-                console.log(attempts);
-                let response = aiRequest;
-  let content = (await response).data.choices[0].message.content.toLowerCase();
-                if (content.match(bannedWords) && attempts < 7) {
-                    //logging
-                    console.log("2nd");
-                    console.log(attempts);
-                    attempts++;
-                    response = aiRequest;
-                    // stfu 7 is rly bad
-                    if (content.match(bannedWords) || attempts === 7) {
-                        //logging
-                        console.log("3rd");
-                        console.log(attempts);
-                        console.log("restarting 🙄");
-                        // we shovin cute response in here
-                        cuteResponse();
-                        attempts = 0; //revert
-                        //restart the msgs
-                        result.messages = [{
-                            "role": "system",
-                            "content": prompts.dotty.message
-                        }, ...exampleConvo.exampleConvo,
-                            {
+        for (let attempts = 0; attempts < 10; attempts++) {
+            try {
+                console.log("attempt number -> ;) :( ", attempts);
+                if (content.match(bannedWords)) {
+                    console.log("BANNED WORD + attempt number -> ;) :( ", attempts);
+                    if (attempts > 7) {
+                        client.globalState.conversations[message.channel.id] =
+                            [{
                                 "role": "system",
-                                "content": "im rlly sorry dotty this is the system talkin but u malfunctioned and u have restarted due to a p sad glitch!!!! :( say hi 2 the user again!"
-                            }];
-                        //reset attempts
-
-                        // send request BACK AGAIN
-                        response = aiRequest;
+                                "content": prompts.dotty.message
+                            }, ...exampleConvo.exampleConvo,
+                                {
+                                    "role" : "system",
+                                    "content" :"im rlly sorry dotty this is the system talkin but u malfunctioned and u have restarted due to a p sad glitch!!!! :("
+                                }];
+                        // Reset the conversation history
+                       cuteResponse();
+                       badBot = true;
                     }
                 }
                 else{
-                    console.log("4th");
                     break;
                 }
+            } catch (error) {
+                console.log("dumb error");
+                if (badBot !== true){
+                return message.reply(cuteResponse());
+                    }
             }
         }
-        catch (error){
-            console.error("uhoh", error);
-            message.reply("oh noes we got a glitch");
-        }
 
+/// this might be the wrong place  2 put it
 // Ok then, let's send that message back to discord!
-
-        await sendLongMessage(message.channel, `${response.data.choices[0].message.content}`);
-        // store the bots message in the channel's conversation history
-        client.globalState.conversations[message.channel.id].push({
-            "role": "assistant",
-            "content": `${response.data.choices[0].message.content}`
-        });
-    } catch (error) {
-        console.error("oops got some errors: ", error);
-    }
-}
+                    await sendLongMessage(message.channel, `${response.data.choices[0].message.content}`);
+                    // store the bots message in the channel's conversation history
+                    client.globalState.conversations[message.channel.id].push({
+                        "role": "assistant",
+                        "content": `${response.data.choices[0].message.content}`
+                    });
+                } catch (error) {
+                    console.error("oops got some errors: ", error);
+                }
+            }
 
 client.on('messageCreate', async (message) => {
     // Ignore messages sent by the bot
@@ -368,7 +345,7 @@ client.on('messageCreate', async (message) => {
         // execute the botfact command
         botFactCmd.execute(interaction, client);
     } else if (command === 'help') {
-        // create a mock interaction object 4 help command. 
+        // create a mock interaction object 4 help command.
         const interaction = {
             channelId: message.channel.id,
             reply: (content) => {
