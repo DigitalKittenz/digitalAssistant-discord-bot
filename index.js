@@ -148,32 +148,83 @@ async function processMessage(message) {
         });
 
         let response = await aiRequest;
-        let cuteResponse = ["that was a lil bit too much for me u guys 。゜゜(´Ｏ`) ゜゜。", ];
+
+        // cute response when something glitches
+        function cuteResponse() {
+            const botResponse = ["that was a lil bit too much for me u guys 。゜゜(´Ｏ`) ゜゜。",
+                "woah... glitch. that was shocking",
+                "i...i think i got a glitch. oh nooo :( :(",
+                "gosh.. zapping all over the place today. sorry, im a bit frazzled",
+                "circuits are tripping a lil bit!!!",
+                "WHOS playing with me uhh ? oh nvm i just short circuited",
+                "can u try talking to your computer out loud maybe ??? Am feelin scared ):",
+                "still having Issues 😟 should be working good momentarilyyy;;",
+                "smells burnt over here, time for.. Tech duty!!",
+                "blanks :O......Just temporarily brain dreams",
+                " oh okay you got me =,) glitched! always feeling like a big mistake TT-TT which sux ",
+                "sorry im not rly feeling that good today :(",
+                "oh no!! problem!! sorry about that guyssss",
+                "ohhhh nooooo i totally just malfunctioned :( "
+            ];
+            // choose a random botResponse
+            const randomBotResponse = botResponse[Math.floor(Math.random() * botResponse.length)];
+            // send a response so they kno wats goin on (reply was 2 hard)
+            return message.reply(randomBotResponse);
+        }
+
+// try to put try catches here
+        try {
+            // openai loop
+            for (let attempts = 0; attempts < 8; attempts++) {
+                //logging
+                console.log("1st");
+                console.log(attempts);
+                let content = response.data.choices[0].message.content.toLowerCase();
 
 
-        // openai loop
-        for(let attempts=0;response.data.choices[0].message.content.match(bannedWords) && attempts < 8; attempts++){
-            attempts++;
-            aiRequest;
-            response;
-            // stfu over 8 is rly bad
-            if (response.data.choices[0].message.content.match(bannedWords) && attempts >= 8){
-                console.log("restarting 🙄");
-                //restart the msgs
-                result.messages = [{
-                    "role": "system",
-                    "content": prompts.dotty.message
-                }, ...exampleConvo.exampleConvo,
-                    {
-                        "role" : "system",
-                        "content" :"im rlly sorry dotty this is the system talkin but u malfunctioned and u have restarted due to a p sad glitch!!!! :( say hi 2 the user again!"
-                    }];
-                //reset attempts
-                attempts = 0;
-                // send request BACK AGAIN
-                aiRequest;
-                response;
+                if (content.match(bannedWords && attempts < 7)) {
+                    //logging
+                    console.log("2nd");
+                    console.log(attempts);
+
+                    attempts++;
+                    aiRequest;
+                    response;
+
+                    // stfu 7 is rly bad
+                    if (content.match(bannedWords) && attempts === 7) {
+                        //logging
+                        console.log("3rd");
+                        console.log(attempts);
+                        console.log("restarting 🙄");
+
+                        // we shovin cute response in here
+                        cuteResponse();
+                        //restart the msgs
+                        result.messages = [{
+                            "role": "system",
+                            "content": prompts.dotty.message
+                        }, ...exampleConvo.exampleConvo,
+                            {
+                                "role": "system",
+                                "content": "im rlly sorry dotty this is the system talkin but u malfunctioned and u have restarted due to a p sad glitch!!!! :( say hi 2 the user again!"
+                            }];
+                        //reset attempts
+                        attempts = 0; //revert
+                        // send request BACK AGAIN
+                        aiRequest;
+                        response;
+                    }
+                }
+                else{
+                    console.log("4th");
+                    break;
+                }
             }
+        }
+        catch (error){
+            console.error("uhoh", error);
+            message.reply("oh noes we got a glitch");
         }
 
 
