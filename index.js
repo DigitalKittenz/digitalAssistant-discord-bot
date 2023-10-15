@@ -189,7 +189,7 @@ let content = response.data.choices[0].message.content; // prolly dont need lowe
                                     "role" : "system",
                                     "content" :"im rlly sorry dotty this is the system talkin but u malfunctioned and u have restarted due to a p sad glitch!!!! :("
                                 }];
-                        // Reset the conversation history
+                        // reset the conversation history
                        cuteResponse();
                        badBot = true;
                     }
