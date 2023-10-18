@@ -102,6 +102,7 @@ async function sendLongMessage(channel, message) {
 
 
 async function processMessage(message) {
+
     console.log("message is processing!", message.content);
     try {
         // send typing indicator
@@ -137,11 +138,11 @@ async function processMessage(message) {
             // hit up openai's fancy api 🧐
             let aiRequest = openai.createChatCompletion({ // ok im literally putting values in here lmao
                 model: 'gpt-3.5-turbo-0301',
-                temperature: 1.985,//craziness
-                top_p: 0.923,//crazy filter
+                temperature: 2, //1.985,//craziness
+                top_p: 0.9141,//crazy filter
                 frequency_penalty: 1.8, // unlikeliness 2 repeat same word
                 n: 1, // num of iterations prolly dont need this tbh
-                presence_penalty: 0.78,// unlikeliness 2 repeat same topic (p sure)
+                presence_penalty: 0.7,// unlikeliness 2 repeat same topic (p sure)
                 max_tokens: 500,
                 logit_bias: logits.biases,// banned tokens (like fancy 1s)
                 messages: result.messages // lol so she can see previous messages SUPER IMPORTANT
@@ -177,9 +178,12 @@ let content = response.data.choices[0].message.content; // prolly dont need lowe
         for (let attempts = 0; attempts < 10; attempts++) {
             try {
                 console.log("attempt number -> ;) :( ", attempts);
+                badBot = false;
                 if (content.match(bannedWords)) {
                     console.log("BANNED WORD + attempt number -> ;) :( ", attempts);
-                    if (attempts > 7) {
+                    badBot = false;
+                    if (attempts > 7 && content.match(bannedWords)) {
+                        cuteResponse = cuteResponse();
                         client.globalState.conversations[message.channel.id] =
                             [{
                                 "role": "system",
@@ -187,10 +191,9 @@ let content = response.data.choices[0].message.content; // prolly dont need lowe
                             }, ...exampleConvo.exampleConvo,
                                 {
                                     "role" : "system",
-                                    "content" :"im rlly sorry dotty this is the system talkin but u malfunctioned and u have restarted due to a p sad glitch!!!! :("
+                                    "content" : cuteResponse,
                                 }];
-                        // reset the conversation history
-                       cuteResponse();
+                        // Reset the conversation history _ _ _ _ hopefully
                        badBot = true;
                     }
                 }
@@ -201,7 +204,7 @@ let content = response.data.choices[0].message.content; // prolly dont need lowe
                 console.log("dumb error");
                 if (badBot !== true){
                 return message.reply(cuteResponse());
-                    }
+                  }
             }
         }
 
