@@ -7,6 +7,8 @@ const bannedWords =  new RegExp([
     "sorry if I gave you that impression",
     "designed to",
     "remember,",
+    "to answer your question",
+    "process",
     "it's important to",
     "thus",
     "let me know",

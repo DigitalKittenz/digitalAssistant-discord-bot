@@ -172,18 +172,24 @@ async function processMessage(message) {
             // send a response so they kno wats goin on (reply was 2 hard)
             return message.reply(randomBotResponse);
         }
-let badBot = false
-let content = response.data.choices[0].message.content; // prolly dont need lowercase
+        // actually fml kinda
+
+        let badBot = false
+        let content = ''
 
         for (let attempts = 0; attempts < 10; attempts++) {
             try {
                 console.log("attempt number -> ;) :( ", attempts);
-                badBot = false;
+
+                // get a new response from dumb bot
+                let response = await aiRequest; // aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                content = response.data.choices[0].message.content;
+
                 if (content.match(bannedWords)) {
                     console.log("BANNED WORD + attempt number -> ;) :( ", attempts);
-                    badBot = false;
+
                     if (attempts > 7 && content.match(bannedWords)) {
-                        cuteResponse = cuteResponse();
+
                         client.globalState.conversations[message.channel.id] =
                             [{
                                 "role": "system",
@@ -193,8 +199,8 @@ let content = response.data.choices[0].message.content; // prolly dont need lowe
                                     "role" : "system",
                                     "content" : cuteResponse,
                                 }];
-                        // Reset the conversation history _ _ _ _ hopefully
-                       badBot = true;
+                        // reset the conversation history _ _ _ _ hopefully
+                        badBot = true;
                     }
                 }
                 else{
@@ -203,10 +209,11 @@ let content = response.data.choices[0].message.content; // prolly dont need lowe
             } catch (error) {
                 console.log("dumb error");
                 if (badBot !== true){
-                return message.reply(cuteResponse());
-                  }
+                    return message.reply(cuteResponse());
+                }
             }
         }
+
 
 /// this might be the wrong place  2 put it
 // Ok then, let's send that message back to discord!
